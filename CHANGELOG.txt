@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1423130 by pwolanin | rickmanelius: Fixed apachesolr_user_update() Issues.
 #1403810 by Nick_vh | SangersDrupalDude: Fixed some warning in admin area.
 #1419290 by Nick_vh, paulmckibben: Fixed When $conditions is empty, search_data() results in 'The Apache Solr search engine is not available" (but results are returned).
 #1429230 by Nick_vh: Fixed Default values for for mapping per-field is not added correctly.
