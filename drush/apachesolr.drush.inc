@@ -56,6 +56,33 @@ function apachesolr_drush_command() {
       'keywords' => dt('One or more keywords, separated by spaces.'),
     ),
   );
+  $items['solr-get-env-id'] = array(
+    'callback' => 'apachesolr_drush_solr_get_env_id',
+    'description' => dt('Get the default Apache Solr environment id'),
+    'arguments' => array(),
+  );
+  $items['solr-get-env-name'] = array(
+    'callback' => 'apachesolr_drush_solr_get_env_name',
+    'description' => dt('Get the default Apache Solr environment name, uses the default environment by default.'),
+    'arguments' => array(
+      'id' => dt('Optional. Apache Solr environment id.'),
+    ),
+  );
+  $items['solr-get-env-url'] = array(
+    'callback' => 'apachesolr_drush_solr_get_env_url',
+    'description' => dt('Get the default Apache Solr environment url, uses the default environment by default.'),
+    'arguments' => array(
+      'id' => dt('Optional. Apache Solr environment id.'),
+    ),
+  );
+  $items['solr-set-env-url'] = array(
+    'callback' => 'apachesolr_drush_solr_set_env_url',
+    'description' => dt('Set the url for an Apache Solr environment, uses the default environment by default.'),
+    'arguments' => array(
+      'url' => dt('Apache Solr server url string.'),
+      'id' => dt('Optional. Apache Solr environment id.'),
+    ),
+  );
   return $items;
 }
 
@@ -135,4 +162,58 @@ function apachesolr_drush_solr_search() {
     $output .= preg_replace('/[\s]+/', ' ', strip_tags($result['snippet'])) . "\n\n";
     drush_print($output);
   }
+}
+
+function apachesolr_drush_solr_get_env_id() {
+  $solr_env_id = apachesolr_default_environment();
+  drush_print($solr_env_id);
+}
+
+function apachesolr_drush_solr_get_env_name() {
+  $args = func_get_args();
+  if (isset($args[0])) {
+    $solr_env_id = $args[0];
+  }
+  else {
+    $solr_env_id = apachesolr_default_environment();
+  }
+
+  $solr_env = apachesolr_environment_load($solr_env_id);
+  drush_print($solr_env['name']);
+}
+
+function apachesolr_drush_solr_get_env_url() {
+  $args = func_get_args();
+  if (isset($args[0])) {
+    $solr_env_id = $args[0];
+  }
+  else {
+    $solr_env_id = apachesolr_default_environment();
+  }
+
+  $solr_env = apachesolr_environment_load($solr_env_id);
+  if (!empty($solr_env['url'])) {
+    drush_print($solr_env['url']);
+  }
+}
+
+function apachesolr_drush_solr_set_env_url() {
+  $args = func_get_args();
+
+  // url
+  if (!isset($args[0])) {
+    return drush_set_error('DRUSH_VARIABLE_ERROR', dt('No apachesolr environment url specified'));
+  }
+  // environment id
+  if (isset($args[1])) {
+    $solr_env_id = $args[1];
+  }
+  else {
+    $solr_env_id = apachesolr_default_environment();
+  }
+
+  $solr_env = array();
+  $solr_env['url'] = $args[0];
+  $solr_env['env_id'] = $solr_env_id;
+  apachesolr_environment_save($solr_env);
 }
