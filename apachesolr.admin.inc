@@ -447,11 +447,6 @@ function apachesolr_status_page($environment = NULL) {
   }
 
   $messages = array();
-  // Add a read-only notification
-  if (apachesolr_environment_variable_get(apachesolr_default_environment(), 'apachesolr_read_only', APACHESOLR_READ_WRITE) == APACHESOLR_READ_ONLY) {
-    $messages['readonly'] = t('Operating in read-only mode; updates are disabled.');
-  }
-
   if (isset($data->index->numDocs)) {
     try {
       // Collect the stats
