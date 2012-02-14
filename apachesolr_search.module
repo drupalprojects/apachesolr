@@ -764,13 +764,19 @@ function apachesolr_search_search_page_custom($results, $search_page, $build = a
  * See apachesolr_search.pages.inc for another use of this function
  */
 function apachesolr_search_search_results($keys = NULL, $conditions = NULL, $search_page = NULL) {
+  // Check input variables
   if (empty($search_page)) {
     $search_page = apachesolr_search_page_load('core_search');
+    // Verify if it actually loaded
+    if (empty($search_page)) {
+      // Something must have been really messed up.
+      apachesolr_failure(t('Solr search'), $keys);
+    }
   }
-  // Check our parameters
-  if (empty($conditions) || empty($search_page)) {
-    apachesolr_failure(t('Solr search'), $keys);
+  if (empty($conditions)) {
+    $conditions = apachesolr_search_conditions_default($search_page);
   }
+
   // Sort options from the conditions array.
   // @see apachesolr_search_conditions_default()
   //   See This condition callback to find out how.
@@ -966,7 +972,7 @@ function apachesolr_search_run($name, array $params = array(), $solrsort = '', $
   if ($query->getParam('q')) {
     apachesolr_search_add_spellcheck_params($query);
   }
-  
+
   // Add custom params after we add the default params
   $query->addParams($params);
 
