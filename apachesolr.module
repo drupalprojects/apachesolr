@@ -516,7 +516,7 @@ function apachesolr_mark_entity($entity_type, $entity_id) {
 }
 
 /**
- * Implements hook_user().
+ * Implements hook_user_update().
  *
  * Mark nodes as needing re-indexing if the author name changes.
  *
@@ -526,7 +526,7 @@ function apachesolr_mark_entity($entity_type, $entity_id) {
  *   To know why PDO in drupal does not support UPDATE and JOIN at once.
  */
  function apachesolr_user_update(&$edit, $account, $category) {
-   if (isset($account->name) && $account->name != $account->original->name) {
+   if (isset($account->name) && isset($account->original) && isset($account->original->name) && $account->name != $account->original->name) {
      $table = apachesolr_get_indexer_table('node');
      switch (db_driver()) {
        case 'mysql' :
