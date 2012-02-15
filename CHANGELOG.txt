@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1440394 by grendzy: fix for Field bias setting has no effect.
 #1399584 by halcyonCorsair | Nick_vh: Added As a developer I want to change environment variables with drush.
 #1423130 by pwolanin | rickmanelius: Fixed apachesolr_user_update() Issues.
 #1403810 by Nick_vh | SangersDrupalDude: Fixed some warning in admin area.
