@@ -1749,6 +1749,8 @@ function apachesolr_entity_should_index($entity, $type) {
  * Implements hook_entity_update().
  */
 function apachesolr_entity_update($entity, $type) {
+  // Include the index file for the status callback
+  module_load_include('inc', 'apachesolr', 'apachesolr.index');
   if (apachesolr_entity_should_index($entity, $type)) {
     $info = entity_get_info($type);
     list($id, $vid, $bundle) = entity_extract_ids($type, $entity);

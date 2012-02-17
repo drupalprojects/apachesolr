@@ -669,7 +669,10 @@ function apachesolr_index_node_solr_reindex($env_id) {
  * Status callback for ApacheSolr, for nodes.
  */
 function apachesolr_index_node_status_callback($node, $type) {
-  return $node->status;
+  // Make sure we have a boolean value.
+  // Anything different from 1 becomes zero
+  $status = ($node->status == 1 ? 1 : 0);
+  return $status;
 }
 
 
