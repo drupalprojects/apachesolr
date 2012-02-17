@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1437842 by duellj: Added Facetapi block titles on empty search page should use theme_facetapi_title().
 #1442358 by johnennew, Nick_vh: Fixed Nodes not queued to be removed from index when unpublished.
 #1440394 by grendzy: fix for Field bias setting has no effect.
 #1399584 by halcyonCorsair | Nick_vh: Added As a developer I want to change environment variables with drush.
