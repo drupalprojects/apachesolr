@@ -89,7 +89,8 @@ function apachesolr_search_page_list_pages() {
     // Operations
     $row[] = array('data' => l(t('Edit'), 'admin/config/search/apachesolr/search-pages/' . $search_page['page_id'] . '/edit'));
     $row[] = array('data' => l(t('Clone'), 'admin/config/search/apachesolr/search-pages/' . $search_page['page_id'] . '/clone'));
-    $settings = unserialize($search_page['settings']);
+    // CTools already unserializes settings.
+    $settings = is_array($search_page['settings']) ? $search_page['settings'] : unserialize($search_page['settings']);
     if (!isset($settings['apachesolr_search_not_removable'])) {
       $row[] = array('data' => l(t('Delete'), 'admin/config/search/apachesolr/search-pages/' . $search_page['page_id'] . '/delete'));
     }
