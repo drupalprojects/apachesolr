@@ -129,7 +129,7 @@ function apachesolr_search_schema() {
       'env_id' => array(
         'description' => 'The machine name of the search environment.',
         'type' => 'varchar',
-        'length' => 32,
+        'length' => 64,
         'not null' => TRUE,
         'default' => '',
       ),
@@ -337,4 +337,26 @@ function apachesolr_search_update_7004() {
     $message  = t('If you had the apachesolr_taxonomy module enabled please go to the !link and enable the Taxonomy Term page', array('!link' => l('Apache Solr custom pages', 'admin/config/search/apachesolr/search-pages')));
     drupal_set_message($message, 'warning');
   }
+}
+
+/**
+ * Make the env_id length on the apachesolr_search_page table 64 characters
+ * to match the length of the env_id on all other tables
+ */
+function apachesolr_search_update_7005(&$sandbox) {
+  db_drop_index('apachesolr_search_page', 'env_id');
+  db_change_field('apachesolr_search_page', 'env_id', 'env_id',
+    array(
+        'description' => 'The machine name of the search environment.',
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      array(
+        'indexes' => array(
+          'env_id' => array('env_id'),
+        )
+      )
+    );
 }
