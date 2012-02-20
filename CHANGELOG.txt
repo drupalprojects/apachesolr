@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1411066 by Nick_vh | heacu: Fixed Unchecking 'Custom filter" has no effect if custom filter has been entered on Edit Search Page.
 #1424578 by Nick_vh | cpliakas: Fixed Errors thrown on admin/reports/apachesolr when the server is unavailable.
 #1439492 by recidive: Fixed Features importing of search page not working.
 #1446694 by edb: Fixed env_id() length is only 32 characters on apachesolr_search_page() table.

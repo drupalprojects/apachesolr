@@ -321,7 +321,7 @@ function apachesolr_search_page_settings_form($form, &$form_state, $search_page 
   $form['info']['custom_filter_enable'] = array(
     '#type' => 'checkbox',
     '#title' => t('Custom Filter'),
-    '#default_value' => !empty($search_page->settings['fq'])  ? TRUE : FALSE
+    '#default_value' => !empty($search_page->settings['apachesolr_search_custom_enable'])  ? TRUE : FALSE
   );
 
   $form['info']['filters'] = array(
@@ -478,6 +478,7 @@ function apachesolr_search_page_settings_form_submit($form, &$form_state) {
       }
     }
   }
+  $settings['apachesolr_search_custom_enable'] = $form_state['values']['custom_filter_enable'];
   $settings['apachesolr_search_search_type'] = $form_state['values']['search_type'];
   $settings['apachesolr_search_search_box'] = $form_state['values']['apachesolr_search_search_box'];
   $settings['apachesolr_search_per_page'] = $form_state['values']['apachesolr_search_per_page'];

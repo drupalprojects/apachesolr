@@ -852,6 +852,7 @@ function apachesolr_search_conditions_default($search_page) {
   $search_type = isset($search_page->settings['apachesolr_search_search_type']) ? $search_page->settings['apachesolr_search_search_type'] : '';
   $allow_user_input = isset($search_page->settings['apachesolr_search_allow_user_input']) ? $search_page->settings['apachesolr_search_allow_user_input'] : FALSE;
   $path_replacer = isset($search_page->settings['apachesolr_search_path_replacer']) ? $search_page->settings['apachesolr_search_path_replacer'] : '';
+  $set_custom_filter = isset($search_page->settings['apachesolr_search_custom_enable']) ? $search_page->settings['apachesolr_search_custom_enable'] : '';
   $search_page_fq = !empty($search_page->settings['fq']) ? $search_page->settings['fq'] : '';
 
   $conditions['fq'] = array();
@@ -873,7 +874,7 @@ function apachesolr_search_conditions_default($search_page) {
   }
 
   // Custom filters added in search pages
-  if (!empty($search_page_fq)) {
+  if (!empty($search_page_fq) && !empty($set_custom_filter)) {
     if (!empty($path_replacer)) {
       // If the manual filter has a % in it, replace it with $value
       $conditions['fq'][] = str_replace('%', $path_replacer, $search_page_fq);
