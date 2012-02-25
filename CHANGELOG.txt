@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1404284 by pwolanin: Fix for possible undefined function apachesolr_default_environment() during update.
 #1441066 by pwolanin: Fix for incorrect hook_schema() definition for {apachesolr_index_entities}.
 #1411066 by Nick_vh | heacu: Fixed Unchecking 'Custom filter" has no effect if custom filter has been entered on Edit Search Page.
 #1424578 by Nick_vh | cpliakas: Fixed Errors thrown on admin/reports/apachesolr when the server is unavailable.

@@ -601,7 +601,11 @@ function apachesolr_update_7011() {
  * Rename some variables and update the database tables
  */
 function apachesolr_update_7012() {
-  module_load_include('inc', 'apachesolr', 'apachesolr.index');
+  // @see: drupal_load()
+  if (!function_exists('apachesolr_default_environment')) {
+    include_once dirname(__FILE__) . '/apachesolr.module';
+  }
+
   $env_id = apachesolr_default_environment();
 
   // Variable changed from integer to array with environment integers
@@ -737,8 +741,26 @@ function apachesolr_update_7012() {
       }
     }
     // Set all except the excluded types
+    // @see apachesolr_index_set_bundles()
     foreach ($options as $entity_type => $bundles) {
-       apachesolr_index_set_bundles($env_id, $entity_type, $bundles);
+      db_delete('apachesolr_index_bundles')
+        ->condition('env_id', $env_id)
+        ->condition('entity_type', $entity_type)
+        ->execute();
+
+      if ($bundles) {
+        $insert = db_insert('apachesolr_index_bundles')
+          ->fields(array('env_id', 'entity_type', 'bundle'));
+
+        foreach ($bundles as $bundle) {
+          $insert->values(array(
+            'env_id' => $env_id,
+            'entity_type' => $entity_type,
+            'bundle' => $bundle,
+          ));
+        }
+        $insert->execute();
+      }
     }
     // Remove the excluded types
     apachesolr_environment_variable_del($env_id, 'apachesolr_search_excluded_types');
