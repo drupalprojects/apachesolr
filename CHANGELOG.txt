@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1429230 by Nick_vh: Fixed Default values for for mapping per-field is not added correctly.
 #1357588 by becw, Bußmeyer, pwolanin, Nick_vh: Added follow-up for import (needs to be optionally available when ctools is enabled).
 #1408190 by DeFr: Fixed Port check wrong for URL with credentials.
 #1411354 by Nick_vh | SangersDrupalDude: Fixed Incorrect reporting of documents indexed.
