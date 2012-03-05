@@ -1097,7 +1097,7 @@ function apachesolr_search_add_boost_params(DrupalSolrQueryInterface $query) {
     'tags_inline' => '1.0',
     'tags_a' => '0',
   );
-  $qf = apachesolr_environment_variable_get($env_id, 'apachesolr_search_query_fields', $defaults);
+  $qf = apachesolr_environment_variable_get($env_id, 'field_bias', $defaults);
   $fields = $query->solr('getFields');
   if ($qf && $fields) {
     foreach ($fields as $field_name => $field) {
