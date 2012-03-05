@@ -406,7 +406,7 @@ function apachesolr_index_delete_entity_from_index($env_id, $entity_type, $entit
 function apachesolr_index_mark_for_reindex($env_id, $entity_type = NULL) {
   foreach (entity_get_info() as $type => $entity_info) {
     if (($type == $entity_type) || ($entity_type == NULL)) {
-      if ($entity_info['apachesolr']['indexable']) {
+      if (isset($entity_info['apachesolr']) && ($entity_info['apachesolr']['indexable'])) {
         $bundles = apachesolr_get_index_bundles($env_id, $type);
         $reindex_callback = '';
         if (!empty($bundles)) {
