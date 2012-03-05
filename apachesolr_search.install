@@ -128,7 +128,7 @@ function apachesolr_search_schema() {
       'env_id' => array(
         'description' => 'The machine name of the search environment.',
         'type' => 'varchar',
-        'length' => 32,
+        'length' => 64,
         'not null' => TRUE,
         'default' => '',
       ),
