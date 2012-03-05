@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1439492 by recidive: Fixed Features importing of search page not working.
 #1446694 by edb, Nick_vh: Fixed env_id() length is only 32 characters on apachesolr_search_page() table.
 #1437842 by duellj: Added Facetapi block titles on empty search page should use theme_facetapi_title().
 #1440394 by grendzy: Fixed Field bias has no effect.

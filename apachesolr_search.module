@@ -342,6 +342,13 @@ function apachesolr_search_page_load($page_id, $reset = FALSE) {
         $page->env_id = apachesolr_default_environment();
       }
     }
+    elseif (module_exists('ctools')) {
+      // Try also loading the page from ctools exportables.
+      ctools_include('export');
+      if ($pages_from_code = ctools_export_load_object('apachesolr_search_page', 'names', array($page_id))) {
+        $page = array_shift($pages_from_code);
+      }
+    }
     $pages[$page_id] = $page;
   }
   return $pages[$page_id];
@@ -511,6 +518,17 @@ function apachesolr_search_load_all_search_pages() {
   $result = db_query('SELECT * FROM {apachesolr_search_page}');
   while($search_page = db_fetch_array($result)) {
     $search_pages[$search_page['page_id']] = $search_page;
+  }
+  // If ctools module is enabled, add search pages from code, e.g. from a
+  // feature module.
+  if (module_exists('ctools')) {
+    ctools_include('export');
+    $defaults = ctools_export_load_object('apachesolr_search_page', 'all');
+    foreach ($defaults as $page_id => $default) {
+      if (!isset($search_pages[$page_id])) {
+        $search_pages[$page_id] = (array) $default;
+      }
+    }
   }
   return $search_pages;
 }
