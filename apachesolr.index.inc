@@ -36,9 +36,9 @@ function apachesolr_index_entities($env_id, $limit) {
 function apachesolr_index_status($env_id) {
   $remaining = 0;
   $total = 0;
-  $type = 'node';
-  $bundles = apachesolr_get_index_bundles($env_id, $type);
-  $table = apachesolr_get_indexer_table($type);
+  $entity_type = 'node';
+  $bundles = apachesolr_get_index_bundles($env_id, $entity_type);
+  $table = apachesolr_get_indexer_table($entity_type);
 
   $query = "SELECT count(*)
     FROM {{$table}} asn
@@ -46,7 +46,7 @@ function apachesolr_index_status($env_id) {
   $total += db_result(db_query($query), $bundles);
 
   // Get $last_entity_id and $last_change.
-  extract(apachesolr_get_last_index_position($env_id, $type));
+  extract(apachesolr_get_last_index_position($env_id, $entity_type));
 
 
   // Find the next batch of entities to index for this entity type.  Note that
@@ -58,11 +58,11 @@ function apachesolr_index_status($env_id) {
    AND (aie.bundle IN (" . db_placeholders($bundles, 'varchar') . "))
    AND (aie.entity_type = '%s')
    AND ((aie.changed > %d) OR ((aie.changed = %d) AND (aie.entity_id > %d)))";
-  $arguments = array_merge($bundles, array($type, $last_changed, $last_changed, $last_entity_id));
+  $arguments = array_merge($bundles, array($entity_type, $last_changed, $last_changed, $last_entity_id));
   if ($table == 'apachesolr_index_entities') {
     // Other, entity-specific tables don't need this condition.
     $query .= " AND aie.entity_type = '%s'";
-    $arguments[] = $type;
+    $arguments[] = $entity_type;
   }
   $query .= " ORDER BY aie.entity_id ASC";
   $remaining += db_result(db_query($query, $arguments));
