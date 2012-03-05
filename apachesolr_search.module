@@ -921,7 +921,7 @@ function apachesolr_search_page_browse($empty_search_behavior, $env_id) {
           $block->visibility = TRUE;
           $block->enabled = TRUE;
           $block->module = 'facetapi';
-          $block->subject = check_plain($elements[$key]['#title']);
+          $block->subject = theme('facetapi_title', array('title' => $elements[$key]['#title']));
           $build[$delta] = $elements[$key];
           $block->region = NULL;
           $block->delta = 'apachesolr-' . $key;
