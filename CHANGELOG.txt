@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1409146 by Nick_vh: Fixed Add all possible index_types() to apachesolr_index_key().
 #1409470 by Nick_vh | xeconsulting: Fixed Some Errors in dev Version from 18th January.
 #1408192 by becw: Fixed Add apachesolr.interface.inc to the .info file (patch).
 #1402746 by Nick_vh: Clean up apachesolr_do_query() so the page variable will be inside the query object.
