@@ -542,7 +542,7 @@ function apachesolr_mark_entity($entity_type, $entity_id) {
 }
 
 /**
- * Implements of hook_user().
+ * Implements hook_user().
  * Mark nodes as needing re-indexing if the author name changes.
  *
  * @see http://drupal.org/node/592522
