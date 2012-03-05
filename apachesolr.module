@@ -1808,7 +1808,7 @@ function apachesolr_entity_delete($entity, $type) {
     // There was no exception, so delete from the table.
     $id = $entity->nid;
     $indexer_table = apachesolr_get_indexer_table($type);
-    $query = "DELETE FRON {{$indexer_table}} WHERE entity_type = '%s' AND entity_id = %d";
+    $query = "DELETE FROM {{$indexer_table}} WHERE entity_type = '%s' AND entity_id = %d";
     db_query($query, array($type, $id));
   }
 }
