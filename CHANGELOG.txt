@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1441066 by pwolanin | SangersDrupalDude: Fixed Broken Schema.
 #1419290 by Nick_vh, paulmckibben: Fixed When $conditions is empty, search_data() results in 'The Apache Solr search engine is not available" (but results are returned).
 #1411066 by Nick_vh | heacu: Fixed Unchecking 'Custom filter" has no effect if custom filter has been entered on Edit Search Page.
 #1424578 by Nick_vh | cpliakas: Fixed Errors thrown on admin/reports/apachesolr when the server is unavailable.

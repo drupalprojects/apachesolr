@@ -196,8 +196,8 @@ function apachesolr_schema() {
       'other' => 'apachesolr_index_entities',
       'node' => 'apachesolr_index_entities_node',
   );
-  foreach ($types as $type) {
-    $schema[$type] = array(
+  foreach ($types as $type => $table) {
+    $schema[$table] = array(
       'description' => t('Stores a record of when an entity changed to determine if it needs indexing by Solr.'),
       'fields' => array(
         'entity_type' => array(
@@ -238,7 +238,7 @@ function apachesolr_schema() {
     );
     if ($type == 'other') {
       // Need the entity type also in the pkey for multiple entities in one table.
-      $schema[$type]['primary key'][] = 'entity_type';
+      $schema[$table]['primary key'][] = 'entity_type';
     }
   }
 
