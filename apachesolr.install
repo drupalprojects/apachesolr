@@ -198,34 +198,34 @@ function apachesolr_schema() {
   );
   foreach ($types as $type => $table) {
     $schema[$table] = array(
-      'description' => t('Stores a record of when an entity changed to determine if it needs indexing by Solr.'),
+      'description' => 'Stores a record of when an entity changed to determine if it needs indexing by Solr.',
       'fields' => array(
         'entity_type' => array(
-          'description' => t('The type of entity.'),
+          'description' => 'The type of entity.',
           'type' => 'varchar',
-          'length' => 128,
+          'length' => 32,
           'not null' => TRUE,
         ),
         'entity_id' => array(
-          'description' => t('The primary identifier for an entity.'),
+          'description' => 'The primary identifier for an entity.',
           'type' => 'int',
           'unsigned' => TRUE,
           'not null' => TRUE,
         ),
         'bundle' => array(
-          'description' => t('The bundle to which this entity belongs.'),
+          'description' => 'The bundle to which this entity belongs.',
           'type' => 'varchar',
           'length' => 128,
           'not null' => TRUE,
         ),
         'status' => array(
-          'description' => t('Boolean indicating whether the entity is visible to non-administrators (eg, published for nodes).'),
+          'description' => 'Boolean indicating whether the entity is visible to non-administrators (eg, published for nodes).',
           'type' => 'int',
           'not null' => TRUE,
           'default' => 1,
         ),
         'changed' => array(
-          'description' => t('The Unix timestamp when an entity was changed.'),
+          'description' => 'The Unix timestamp when an entity was changed.',
           'type' => 'int',
           'not null' => TRUE,
           'default' => 0,
@@ -243,22 +243,22 @@ function apachesolr_schema() {
   }
 
   $schema['apachesolr_index_bundles'] = array(
-    'description' => t('Records what bundles we should be indexing for a given environment.'),
+    'description' => 'Records what bundles we should be indexing for a given environment.',
     'fields' => array(
       'env_id' => array(
-        'description' => t('The name of the environment.'),
+        'description' => 'The name of the environment.',
         'type' => 'varchar',
-        'length' => 128,
+        'length' => 64,
         'not null' => TRUE,
       ),
       'entity_type' => array(
-        'description' => t('The type of entity.'),
+        'description' => 'The type of entity.',
         'type' => 'varchar',
-        'length' => 128,
+        'length' => 32,
         'not null' => TRUE,
       ),
       'bundle' => array(
-        'description' => t('The bundle to index.'),
+        'description' => 'The bundle to index.',
         'type' => 'varchar',
         'length' => 128,
         'not null' => TRUE,
