@@ -372,7 +372,7 @@ function apachesolr_index_delete_index($env_id) {
     $solr->deleteByQuery($query);
     $solr->commit();
     apachesolr_clear_last_index_position($env_id);
-    apachesolr_set_last_index_updated($env_id, REQUEST_TIME);
+    apachesolr_set_last_index_updated($env_id, APACHESOLR_REQUEST_TIME);
   }
   catch (Exception $e) {
     watchdog('Apache Solr', nl2br(check_plain($e->getMessage())), NULL, WATCHDOG_ERROR);

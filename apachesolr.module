@@ -1086,11 +1086,21 @@ function apachesolr_load_all_environments($reset = FALSE) {
     $environments = array();
     $result = db_query('SELECT * FROM {apachesolr_environment}');
     while($environment = db_fetch_array($result)) {
+      $environment['conf'] = array();
       $result_conf = db_query("SELECT name, value FROM {apachesolr_environment_variable} WHERE env_id = '%s'", array($environment['env_id']));
       while($environment_conf = db_fetch_array($result_conf)) {
         $environment['conf'][$environment_conf['name']] = unserialize($environment_conf['value']);
       }
       $environments[$environment['env_id']] = $environment;
+    }
+    if (module_exists('ctools')) {
+      ctools_include('export');
+      $defaults = ctools_export_load_object('apachesolr_environment', 'all');
+      foreach ($defaults as $env_id => $default) {
+        if (!isset($environments[$env_id])) {
+          $environments[$env_id] = (array) $default;
+        }
+      }
     }
     cache_set('apachesolr:environments', $environments, 'cache_apachesolr');
   }
@@ -1224,7 +1234,13 @@ function apachesolr_environment_save($environment) {
   static $environments;
   static $solr_cache;
   $default = array('env_id' => NULL, 'name' => '', 'url' => '', 'service_class' => '', 'conf' => array());
-  $is_new = !apachesolr_environment_load($environment['env_id']);
+
+  $old_environment = apachesolr_environment_load($environment['env_id']);
+  $is_new = FALSE;
+  if (!$old_environment || isset($old_environment['in_code_only'])) {
+    $is_new = TRUE;
+  }
+
   // Remove any unexpected fields.
   // @todo - get this from the schema?.
   $environment = array_intersect_key($environment, $default);
@@ -2427,4 +2443,52 @@ function theme_apachesolr_settings_title($vars) {
   }
 
   return $output;
+}
+
+/**
+ * Callback for saving Apache Solr environment CTools exportables.
+ *
+ * CTools uses objects, while Apache Solr uses arrays; turn CTools value into an
+ * array, then call the normal save function.
+ *
+ * @param stdclass $environment
+ *   An environment object.
+ */
+function apachesolr_ctools_environment_save($environment) {
+  apachesolr_environment_save((array) $environment);
+}
+
+/**
+ * Callback for reverting Apache Solr environment CTools exportables.
+ *
+ * @param mixed $env_id
+ *   An environment machine name. CTools may provide an id OR a complete
+ *   environment object; Since Apache Solr loads environments as arrays, this
+ *   may also be an environment array.
+ */
+function apachesolr_ctools_environment_delete($env_id) {
+  if (is_object($env_id) || is_array($env_id)) {
+    $env_id = (object) $env_id;
+    $env_id = $env_id->env_id;
+  }
+  apachesolr_environment_delete($env_id);
+}
+
+/**
+ * Callback for exporting Apache Solr environments as CTools exportables.
+ *
+ * @param array $environment
+ *   An environment array from Apache Solr.
+ * @param string $indent
+ *   White space for indentation from CTools.
+ */
+function apachesolr_ctools_environment_export($environment, $indent) {
+  ctools_include('export');
+  $environment = (object) $environment;
+  // Re-load the enviroment, since in some cases the conf
+  // is stripped since it's not in the actual schema.
+  $environment = (object) apachesolr_environment_load($environment->env_id);
+  $additions_top = array();
+  $additions_bottom = array('conf' => $environment->conf);
+  return ctools_export_object('apachesolr_environment', $environment, $indent, NULL, $additions_top, $additions_bottom);
 }
