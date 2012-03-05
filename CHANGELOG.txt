@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1408190 by DeFr: Fixed Port check wrong for URL with credentials.
 #1411354 by Nick_vh | SangersDrupalDude: Fixed Incorrect reporting of documents indexed.
 #1418136 by pwolanin, zengenuity: Fixed Fatal error: Call to undefined function apachesolr_index_set_last_updated() in apachesolr_access()/apachesolr_access().module.
 #1409076 by Nick_vh, sdrycroft: Fixed Entities that use the 'apachesolr_index_entities()" table are not indexed.
