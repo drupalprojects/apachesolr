@@ -525,14 +525,15 @@ function apachesolr_index_report($env_id) {
   catch (Exception $e) {
     watchdog('Apache Solr', nl2br(check_plain($e->getMessage())), NULL, WATCHDOG_ERROR);
     drupal_set_message(nl2br(check_plain($e->getMessage())), "warning");
-    $data->fields = array();
+    return '';
   }
 
-  $output = '<p>' . t('Number of documents in index: @num !pending', array('@num' => $data->index->numDocs, '!pending' => '')) . "</p>\n";
+  $messages = array();
+  $messages[] = array(t('Number of documents in index'), $data->index->numDocs);
 
   $limit = variable_get('apachesolr_luke_limit', 20000);
   if (isset($data->index->numDocs) && $data->index->numDocs > $limit) {
-    $output .= '<p>' . t('You have more than @limit documents, so term frequencies are being omitted for performance reasons.', array('@limit' => $limit)) . "</p>\n";
+    $messages[] = array(t('Limit'), t('You have more than @limit documents, so term frequencies are being omitted for performance reasons.', array('@limit' => $limit)));
     $not_found = t('<em>Omitted</em>');
   }
   elseif (isset($data->index->numDocs)) {
@@ -541,18 +542,24 @@ function apachesolr_index_report($env_id) {
       $solr = apachesolr_get_solr($env_id);
       // Note: we use 2 since 1 fails on Ubuntu Hardy.
       $data = $solr->getLuke(2);
-      $output .= '<p>' . t('Number of terms in index: @num', array('@num' => $data->index->numTerms)) . "</p>\n";
+      $messages[] = array(t('# of terms in index'), $data->index->numTerms);
     }
     catch (Exception $e) {
       watchdog('Apache Solr', nl2br(check_plain($e->getMessage())), NULL, WATCHDOG_ERROR);
       $data->fields = array();
     }
   }
-
+  // Initializes output with information about which server's setting we are
+  // editing, as it is otherwise not transparent to the end user.
   $fields = (array)$data->fields;
   if ($fields) {
-    $output .= '<p>' . t('Number of fields in index: @num', array('@num' => count($fields))) . "</p>\n";
+    $messages[] = array(t('# of fields in index'), count($fields));
+  }
 
+  // Output the messages we have for this page
+  $output['apachesolr_index_report'] = theme('table', array('type', 'value'), array_values($messages));
+
+  if ($fields) {
     // Initializes table header.
     $header = array(
       'name' => t('Field name'),
@@ -572,13 +579,19 @@ function apachesolr_index_report($env_id) {
     }
     ksort($rows);
 
-    // Display the table of field names, index types, and term counts.
-    $output .= theme('table', $header, $rows);
+    // Output the fields we found for this environment
+    $output['field_table'] = theme('table', $header, array_values($rows));
   }
   else {
-    $output .= '<p>' . t('No data on indexed fields.') . "</p>\n";
+    $output['field_table'] = '<p>' . t('No data on indexed fields.') . "</p>/n";
   }
-  return $output;
+
+  // Print in a similar way as the Drupal 7 version
+  $output_print = NULL;
+  foreach ($output as $print) {
+    $output_print .= $print;
+  }
+  return $output_print;
 }
 
 /**
@@ -586,6 +599,7 @@ function apachesolr_index_report($env_id) {
  */
 function apachesolr_config_files_overview() {
   $xml = NULL;
+  $output = NULL;
   try {
     $solr = apachesolr_get_solr();
     $response = $solr->makeServletRequest('admin/file', array('wt' => 'xml'));
