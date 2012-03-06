@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1442358 by johnennew, Nick_vh: Fixed Nodes not queued to be removed from index when unpublished.
 #995526 by pwolanin, chx, Nick_vh | VladGh: Fixed Key length greater than 1000 bytes causes install error on MyISAM.
 #1441066 by pwolanin | SangersDrupalDude: Fixed Broken Schema.
 #1419290 by Nick_vh, paulmckibben: Fixed When $conditions is empty, search_data() results in 'The Apache Solr search engine is not available" (but results are returned).
