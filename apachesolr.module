@@ -1706,6 +1706,7 @@ function apachesolr_get_index_callbacks() {
   $default_entity_info['node']['status callback'] = 'apachesolr_index_node_status_callback';
   $default_entity_info['node']['document callback'][] = 'apachesolr_index_node_solr_document';
   $default_entity_info['node']['reindex callback'] = 'apachesolr_index_node_solr_reindex';
+  $default_entity_info['node']['bundles changed callback'] = 'apachesolr_index_node_bundles_changed';
   $default_entity_info['node']['index_table'] = 'apachesolr_index_entities_node';
   $default_entity_info['node']['cron_check'] = 'apachesolr_index_node_check_table';
   // apachesolr_search implements a new callback for every entity type
@@ -1734,6 +1735,7 @@ function apachesolr_content_extra_fields($content_type) {
     'status callback' => '',
     'document callback' => '',
     'reindex callback' => '',
+    'bundles changed callback' => '',
     'label' => t('Apachesolr settings'),
     'description' => 'Apachesolr Content type info',
     'weight' => 100,
@@ -1837,7 +1839,7 @@ function apachesolr_entity_update($entity, $type) {
     if ($status == 0) {
       return apachesolr_entity_delete($entity, $type);
     }
-    
+
     $indexer_table = apachesolr_get_indexer_table($type);
 
     // If we haven't seen this entity before it may not be there, so merge

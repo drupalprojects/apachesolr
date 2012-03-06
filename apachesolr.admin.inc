@@ -1059,17 +1059,23 @@ function apachesolr_index_config_form_submit($form, &$form_state) {
   $entity_count = 0;
 
   foreach ($form_values['entities'] as $entity_type => $bundles) {
-    $entity_bundles = array_flip($bundles);
-    unset($entity_bundles[0]); // Nuke unchecked bundles
-    if (!empty($entity_bundles)) {
-      $entity_count++;
+    $existing_bundles = apachesolr_get_index_bundles($env_id, $entity_type);
+    $all_bundles = array_keys($bundles);
+    $new_bundles = array_values(array_filter($bundles));
+    apachesolr_index_set_bundles($env_id, $entity_type, $new_bundles);
+
+    // Remove all excluded bundles - this happens on form submit
+    // even if there is no change so the admin can remove
+    // bundles if there was an error.
+    $excluded_bundles = array_diff($all_bundles, $new_bundles);
+    apachesolr_index_delete_bundles($env_id, $entity_type, $excluded_bundles);
+    $callback = apachesolr_entity_get_callback($entity_type, 'bundles changed callback');
+    if (!empty($callback)) {
+      call_user_func($callback, $env_id, $existing_bundles, $new_bundles);
     }
-    apachesolr_index_set_bundles($env_id, $entity_type, $entity_bundles);
-    // Mark all for reindex
-    apachesolr_index_mark_for_reindex($env_id, $entity_type);
   }
 
   // Clear the content type cache, since we will be changing its data.
   content_clear_type_cache();
-  drupal_set_message(t('Your settings have been saved. You should reindex your site for the changes to take effect.'));
+  drupal_set_message(t('Your settings have been saved.'));
 }
