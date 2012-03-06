@@ -19,18 +19,15 @@ function apachesolr_index_entities($env_id, $limit) {
       $documents = array_merge($documents, apachesolr_index_entity_to_documents($row, $env_id));
     }
 
-    // When there are no documents to send we do not want to execute the
-    // indexing function either
-    if (!empty($documents)) {
-      $indexed = apachesolr_index_send_to_solr($env_id, $documents);
-      if ($indexed !== FALSE && $indexed > 0) {
-        $entities_processed += count($rows);
-        $last_row = end($rows);
-        apachesolr_set_last_index_position($env_id, $entity_type, $last_row->changed, $last_row->entity_id);
-        apachesolr_set_last_index_updated($env_id, REQUEST_TIME);
-      }
+    $indexed = apachesolr_index_send_to_solr($env_id, $documents);
+    if ($indexed !== FALSE) {
+      $entities_processed += count($rows);
+      $last_row = end($rows);
+      apachesolr_set_last_index_position($env_id, $entity_type, $last_row->changed, $last_row->entity_id);
+      apachesolr_set_last_index_updated($env_id, REQUEST_TIME);
     }
   }
+
   return $entities_processed;
 }
 
@@ -171,6 +168,11 @@ function apachesolr_index_entity_to_documents($item, $env_id) {
  * @return number indexed, or FALSE on failure.
  */
 function apachesolr_index_send_to_solr($env_id, $documents) {
+  // Do not index when we do not have any documents to send
+  if (empty($documents)) {
+    return FALSE;
+  }
+
   try {
     // Get the $solr object
     $solr = apachesolr_get_solr($env_id);
@@ -181,10 +183,6 @@ function apachesolr_index_send_to_solr($env_id, $documents) {
   }
   catch (Exception $e) {
     watchdog('Apache Solr', nl2br(check_plain($e->getMessage())), NULL, WATCHDOG_ERROR);
-    return FALSE;
-  }
-  // Do not index when we do not have any documents to send
-  if (empty($documents)) {
     return FALSE;
   }
 
@@ -363,7 +361,7 @@ function apachesolr_index_delete_index($env_id) {
     // Allow other modules to modify the delete query.
     // For example, use the site hash so that you only delete this site's
     // content:  $query = 'hash:' . apachesolr_site_hash()
-    drupal_alter('apachesolr_delete_index', $query);
+    drupal_alter('apachesolr_delete_by_query', $query);
     $solr->deleteByQuery($query);
     $solr->commit();
     apachesolr_clear_last_index_position($env_id);
@@ -371,6 +369,28 @@ function apachesolr_index_delete_index($env_id) {
   }
   catch (Exception $e) {
     watchdog('Apache Solr', nl2br(check_plain($e->getMessage())), NULL, WATCHDOG_ERROR);
+  }
+}
+
+function apachesolr_index_delete_bundles($env_id, $entity_type, $excluded_bundles) {
+  // Remove newly omitted bundles.
+  try {
+    $solr = apachesolr_get_solr($env_id);
+    foreach ($excluded_bundles as $bundle) {
+      $query = "bundle:$bundle AND entity_type:$entity_type";
+      // Allow other modules to modify the delete query.
+      // For example, use the site hash so that you only delete this site's
+      // content:  $query = 'hash:' . apachesolr_site_hash()
+      drupal_alter('apachesolr_delete_by_query', $query);
+      $solr->deleteByQuery($query);
+    }
+    if ($excluded_bundles) {
+      $solr->commit();
+    }
+  }
+  catch (Exception $e) {
+    watchdog('Apache Solr', nl2br(check_plain($e->getMessage())), NULL, WATCHDOG_ERROR);
+    drupal_set_message(t('The Apache Solr search engine is not available. Please contact your site administrator.'), 'error');
   }
 }
 
@@ -398,25 +418,17 @@ function apachesolr_index_delete_entity_from_index($env_id, $entity_type, $entit
 }
 
 /**
+ * @param $entity_id
  *
- * @param type $type
- * @return type
- * @todo Add Type support
+ * @throws Exception
  */
 function apachesolr_index_mark_for_reindex($env_id, $entity_type = NULL) {
   foreach (entity_get_info() as $type => $entity_info) {
     if (($type == $entity_type) || ($entity_type == NULL)) {
       if (isset($entity_info['apachesolr']) && ($entity_info['apachesolr']['indexable'])) {
-        $bundles = apachesolr_get_index_bundles($env_id, $type);
-        $reindex_callback = '';
-        if (!empty($bundles)) {
-          $reindex_callback = apachesolr_entity_get_callback($type, 'reindex callback');
-        }
+        $reindex_callback = apachesolr_entity_get_callback($type, 'reindex callback');
         if (!empty($reindex_callback)) {
-          if (!call_user_func($reindex_callback, $env_id)) {
-            drupal_set_message(t('There was an error reindexing @entity_type.  Please consult the log for more information.', array('@entity_type' => $entity_info['label'])), 'error');
-            return;
-          }
+          call_user_func($reindex_callback, $env_id);
         }
       }
     }
@@ -424,6 +436,7 @@ function apachesolr_index_mark_for_reindex($env_id, $entity_type = NULL) {
   apachesolr_clear_last_index_position($env_id, $entity_type);
   cache_clear_all('*', 'cache_apachesolr', TRUE);
 }
+
 
 /**
  * Sets what bundles on the specified entity type should be indexed.
@@ -434,6 +447,8 @@ function apachesolr_index_mark_for_reindex($env_id, $entity_type = NULL) {
  *   The entity type to index.
  * @param array $bundles
  *   The machine names of the bundles to index.
+ *
+ * @throws Exception
  */
 function apachesolr_index_set_bundles($env_id, $entity_type, array $bundles) {
   $transaction = db_transaction();
@@ -459,7 +474,8 @@ function apachesolr_index_set_bundles($env_id, $entity_type, array $bundles) {
   }
   catch (Exception $e) {
     $transaction->rollback();
-    watchdog_exception('Apache Solr', $e);
+    // Re-throw the exception so we are aware of the failure.
+    throw $e;
   }
 }
 
@@ -630,10 +646,46 @@ function apachesolr_index_node_solr_document(ApacheSolrDocument $document, $node
   return $documents;
 }
 
+
+function apachesolr_index_node_bundles_changed($env_id, $existing_bundles, $new_bundles) {
+  $removed_bundles = array_diff($existing_bundles, $new_bundles);
+  $added_bundles = array_diff($new_bundles, $existing_bundles);
+  $indexer_table = apachesolr_get_indexer_table('node');
+  $transaction = db_transaction();
+  try {
+    if ($removed_bundles) {
+      db_delete($indexer_table)
+        ->condition('entity_type', 'node')
+        ->condition('bundle', $removed_bundles)
+        ->execute();
+    }
+    if ($added_bundles) {
+      $select = db_select('node', 'n');
+      $select->addExpression("'node'", 'entity_type');
+      $select->condition('type', $added_bundles);
+      $select->addField('n', 'nid', 'entity_id');
+      $select->addField('n', 'type', 'bundle');
+      $select->addField('n', 'status', 'status');
+      $select->addExpression(REQUEST_TIME, 'changed');
+
+      $insert = db_insert($indexer_table)
+        ->fields(array('entity_id', 'bundle', 'status', 'entity_type', 'changed'))
+        ->from($select)
+        ->execute();
+    }
+  }
+  catch (Exception $e) {
+    $transaction->rollback();
+    throw $e;
+  }
+}
+
 /**
  * Reindexing callback for ApacheSolr, for nodes.
+ *
  * @param String $env_id
- * @return boolean
+ *
+ * @throws Exception
  */
 function apachesolr_index_node_solr_reindex($env_id) {
   $indexer_table = apachesolr_get_indexer_table('node');
@@ -648,7 +700,6 @@ function apachesolr_index_node_solr_reindex($env_id) {
     $select->addField('n', 'type', 'bundle');
     $select->addField('n', 'status', 'status');
     $select->addExpression(REQUEST_TIME, 'changed');
-    $select->condition('n.type', apachesolr_get_index_bundles($env_id, 'node'), 'IN');
 
     $insert = db_insert($indexer_table)
       ->fields(array('entity_id', 'bundle', 'status', 'entity_type', 'changed'))
@@ -657,12 +708,8 @@ function apachesolr_index_node_solr_reindex($env_id) {
   }
   catch (Exception $e) {
     $transaction->rollback();
-    //drupal_set_message($e->getMessage(), 'error');
-    watchdog_exception('Apache Solr', $e);
-    return FALSE;
+    throw $e;
   }
-
-  return TRUE;
 }
 
 /**

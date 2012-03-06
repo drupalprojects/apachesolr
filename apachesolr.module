@@ -1654,6 +1654,7 @@ function apachesolr_entity_info_alter(&$entity_info) {
   $default_entity_info['node']['status callback'] = 'apachesolr_index_node_status_callback';
   $default_entity_info['node']['document callback'][] = 'apachesolr_index_node_solr_document';
   $default_entity_info['node']['reindex callback'] = 'apachesolr_index_node_solr_reindex';
+  $default_entity_info['node']['bundles changed callback'] = 'apachesolr_index_node_bundles_changed';
   $default_entity_info['node']['index_table'] = 'apachesolr_index_entities_node';
   $default_entity_info['node']['cron_check'] = 'apachesolr_index_node_check_table';
   // apachesolr_search implements a new callback for every entity type
@@ -1674,6 +1675,7 @@ function apachesolr_entity_info_alter(&$entity_info) {
       'status callback' => '',
       'document callback' => '',
       'reindex callback' => '',
+      'bundles changed callback' => '',
     );
     $entity_info[$type]['apachesolr'] += $default;
   }

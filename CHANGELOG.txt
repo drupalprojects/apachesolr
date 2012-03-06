@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1456368 by Nick_vh, pwolanin: Fixed Entities not removed when excluded, unnecessary re-indexing.
 #1470042 by klaasvw: Fixed Existing node table error on drupal update.
 #1458696 by Nick_vh | m1r1k: Fixed Apache Solr bug with re-index.
 #1418834 by levialliance | drewmacphee: Beta15+ problems with i18n and entity_translation().

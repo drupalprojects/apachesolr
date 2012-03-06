@@ -185,9 +185,14 @@ function hook_apachesolr_query_alter($query) {
  * @param string $query
  *   Defaults to *:*
  */
-function hook_apachesolr_delete_index_alter($query) {
+function hook_apachesolr_delete_by_query_alter($query) {
   // use the site hash so that you only delete this site's content
-  $query = 'hash:' . apachesolr_site_hash();
+  if ($query == '*:*') {
+    $query = 'hash:' . apachesolr_site_hash();
+  }
+  else {
+    $query .= ' AND hash:' . apachesolr_site_hash();
+  }
 }
 
 /**
