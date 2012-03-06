@@ -1023,16 +1023,17 @@ function apachesolr_add_tags_to_document($document, $text) {
 function apachesolr_index_node_check_table() {
   // Check for unpublished content that wasn't deleted from the index.
   $table = apachesolr_get_indexer_table('node');
+  // We do not check more nodes than double the cron limit per time
+  // Update or delete at most this many in each Solr query.
+  $limit = variable_get('apachesolr_cron_mass_limit', 500);
   $query = db_select($table, 'aien')
     ->fields('n', array('nid', 'status'))
-    ->where('aien.status <> n.status');
+    ->where('aien.status <> n.status')
+    ->range(0, ($limit*2));
   $query->innerJoin('node', 'n', 'n.nid = aien.entity_id');
   $nodes = $query->execute()->fetchAllAssoc('nid');
 
-  // Update or delete at most this many in each Solr query.
-  $limit = variable_get('apachesolr_cron_mass_limit', 500);
   $node_lists = array_chunk($nodes, $limit, TRUE);
-
   foreach ($node_lists as $nodes) {
     watchdog('Apache Solr', 'On cron running apachesolr_nodeapi_mass_update() on nids @nids', array('@nids' => implode(',', array_keys($nodes))), WATCHDOG_WARNING);
     if (!apachesolr_index_nodeapi_mass_update($nodes, $table)) {
@@ -1040,10 +1041,12 @@ function apachesolr_index_node_check_table() {
       break;
     }
   }
+
   // Check for deleted content that wasn't deleted from the index.
   $query = db_select($table, 'aien')
     ->fields('aien', array('entity_id'))
-    ->isNull('n.nid');
+    ->isNull('n.nid')
+    ->range(0, ($limit*2));
   $query->leftJoin('node', 'n', 'n.nid = aien.entity_id');
   $nodes = $query->execute()->fetchAllAssoc('nid');
   $node_lists = array_chunk($nodes, $limit, TRUE);

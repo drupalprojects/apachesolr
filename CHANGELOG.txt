@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1469484 by Nick_vh, Josh Waihi: Fixed Limit select queries when checking index node table to prevent memory overload.
 #1442358 by johnennew, Nick_vh: Fixed Nodes not queued to be removed from index when unpublished.
 #1456368 by Nick_vh, pwolanin: Fixed Entities not removed when excluded, unnecessary re-indexing.
 #1470042 by klaasvw: Fixed Existing node table error on drupal update.
