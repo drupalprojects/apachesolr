@@ -1027,14 +1027,15 @@ function apachesolr_add_tags_to_document($document, $text) {
 function apachesolr_index_node_check_table() {
   // Check for unpublished content that wasn't deleted from the index.
   $table = apachesolr_get_indexer_table('node');
-  $result = db_query("SELECT n.nid, n.status FROM {{$table}} aien INNER JOIN node n ON n.nid = aien.entity_id WHERE aien.status <> n.status");
+  // We do not check more nodes than double the cron limit per time
+  // Update or delete at most this many in each Solr query.
+  $limit = variable_get('apachesolr_cron_mass_limit', 500);
+  $result = db_query("SELECT n.nid, n.status FROM {{$table}} aien INNER JOIN node n ON n.nid = aien.entity_id WHERE aien.status <> n.status LIMIT 0, %d", array($limit*2));
   $nodes = array();
   while($record = db_fetch_array($result)) {
     $nodes[$record['nid']] = $record;
   }
 
-  // Update or delete at most this many in each Solr query.
-  $limit = variable_get('apachesolr_cron_mass_limit', 500);
   $node_lists = array_chunk($nodes, $limit, TRUE);
 
   foreach ($node_lists as $nodes) {
@@ -1046,7 +1047,7 @@ function apachesolr_index_node_check_table() {
   }
 
   // Check for deleted content that wasn't deleted from the index.
-  $result = db_query("SELECT aien.entity_id FROM {{$table}} aien LEFT JOIN node n ON n.nid = aien.entity_id WHERE n.nid = NULL");
+  $result = db_query("SELECT aien.entity_id FROM {{$table}} aien LEFT JOIN node n ON n.nid = aien.entity_id WHERE n.nid = NULL LIMIT 0, %d", array($limit*2));
   $nodes = array();
   while($record = db_fetch_array($result)) {
     $nodes[$record['nid']] = $record;

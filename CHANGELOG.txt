@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1469484 by Nick_vh, Josh Waihi: Fixed Limit select queries when checking index node table to prevent memory overload.
 #1456368 by Nick_vh, pwolanin: Fixed Entities not removed when excluded, unnecessary re-indexing.
 #1442358 by johnennew, Nick_vh: Fixed Nodes not queued to be removed from index when unpublished.
 #995526 by pwolanin, chx, Nick_vh | VladGh: Fixed Key length greater than 1000 bytes causes install error on MyISAM.
