@@ -1763,6 +1763,11 @@ function apachesolr_entity_update($entity, $type) {
       $status = $status_callback($entity, $type);
     }
 
+    // Delete the entity from our index if the status callback returns 0
+    if ($status == 0) {
+      return apachesolr_entity_delete($entity, $type);
+    }
+
     $indexer_table = apachesolr_get_indexer_table($type);
 
     // If we haven't seen this entity before it may not be there, so merge
