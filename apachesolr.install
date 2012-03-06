@@ -679,7 +679,7 @@ function apachesolr_update_7012() {
       $schema[$table]['primary key'][] = 'entity_type';
     }
     // Create the table
-    db_create_table($type, $schema[$table]);
+    db_create_table($table, $schema[$table]);
   }
 
   $schema['apachesolr_index_bundles'] = array(
