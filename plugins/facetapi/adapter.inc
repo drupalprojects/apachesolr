@@ -125,7 +125,7 @@ class ApacheSolrFacetapiAdapter extends FacetapiAdapter {
   /**
    * Allows for backend specific overrides to the settings form.
    */
-  public function settingsForm(&$form, &$form_state) {
-    $form['#validate'][] = 'apachesolr_facet_form_validate';
+  public function settingsForm(&$form_state) {
+    $form_state['#validate'][] = 'apachesolr_facet_form_validate';
   }
 }
