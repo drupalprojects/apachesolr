@@ -106,12 +106,10 @@ function apachesolr_access_node_access_records($node) {
 }
 
 /**
- * Implements hook_form_alter().
+ * Implements hook_form_FORM_ID_alter().
  */
-function apachesolr_access_form_alter(&$form, $form_state, $form_id) {
-  if ($form_id == 'node_configure_rebuild_confirm') {
-    $form['#submit'][] = 'apachesolr_access_rebuild_nodeaccess';
-  }
+function apachesolr_access_form_node_configure_alter(&$form, $form_state) {
+  $form['access']['rebuild']['#submit'][] = 'apachesolr_access_rebuild_nodeaccess';
 }
 
 /**

@@ -60,6 +60,7 @@ function apachesolr_requirements($phase) {
  * Implements hook_install().
  */
 function apachesolr_install() {
+  drupal_load('module', 'content');
   module_load_include('inc', 'apachesolr', 'apachesolr_search.admin');
   module_load_include('module', 'apachesolr', 'apachesolr');
   module_load_include('inc', 'apachesolr', 'apachesolr.index');

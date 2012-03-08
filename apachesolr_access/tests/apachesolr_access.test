@@ -14,7 +14,7 @@ class DrupalApacheSolrNodeAccess extends DrupalWebTestCase {
   }
 
   function setUp() {
-    parent::setUp('content', 'nodeaccess', 'apachesolr', 'apachesolr_search', 'apachesolr_access');
+    parent::setUp('content', 'nodeaccess', 'search', 'apachesolr', 'apachesolr_search', 'apachesolr_access');
     require_once dirname(dirname(dirname(realpath(__FILE__)))) . '/Apache_Solr_Document.php';
     require_once dirname(dirname(dirname(realpath(__FILE__)))) . '/tests/Dummy_Solr.php';
 
@@ -148,10 +148,10 @@ class DrupalApacheSolrNodeAccess extends DrupalWebTestCase {
     $env_id = apachesolr_default_environment();
     apachesolr_set_last_index_position($env_id, 'node', 1, 1);
     $empty = serialize(array());
-    $value = db_result(db_query('SELECT value FROM {variable} WHERE name = %s', array('apachesolr_index_last')));
+    $value = db_result(db_query('SELECT value FROM {variable} WHERE name = "%s"', array('apachesolr_index_last')));
     $this->assertNotEqual($value, $empty, 'value is not empty array');
-    $this->drupalPost('admin/reports/status/rebuild', array(), t('Rebuild permissions'));
-    $value = db_result(db_query('SELECT value FROM {variable} WHERE name = %s', array('apachesolr_index_last')));
+    $this->drupalPost('admin/content/node-settings', array(), t('Rebuild permissions'));
+    $value = db_result(db_query('SELECT value FROM {variable} WHERE name = "%s"', array('apachesolr_index_last')));
     $this->assertEqual($value, $empty, 'value is empty array');
   }
 }
