@@ -1201,7 +1201,7 @@ function apachesolr_search_process_response($response, DrupalSolrQueryInterface 
     $hl_fl = array('content', 'ts_comments');
   }
   $total = $response->response->numFound;
-  //pager_default_initialize($total, $query->getParam('rows'));
+  apachesolr_search_pager_default_initialize($total, $query->getParam('rows'));
   if ($total > 0) {
     $fl = $query->getParam('fl');
     // 'id' and 'entity_type' are the only required fields in the schema, and
@@ -1430,7 +1430,7 @@ function apachesolr_search_preprocess_search_results(&$variables) {
     ));
     // Redefine the pager if it was missing
     //pager_default_initialize($total, $params['rows']);
-    $variables['pager'] = theme('pager', array('tags' => NULL));
+    $variables['pager'] = theme('pager');
   }
 }
 
@@ -1605,25 +1605,25 @@ function apachesolr_search_theme() {
      * Shows the search snippet
      */
     'apachesolr_search_snippets' => array(
-      'variables' => array('doc' => NULL, 'snippets' => array()),
+      'arguments' => array('doc' => NULL, 'snippets' => array()),
     ),
     /**
      * Shows a message when the search does not return any result
      */
     'apachesolr_search_noresults' => array(
-      'variables' => array(),
+      'arguments' => array(),
     ),
     /**
      * Shows a list of suggestions
      */
     'apachesolr_search_suggestions' => array(
-      'variables' => array('links' => NULL),
+      'arguments' => array('links' => NULL),
     ),
     /**
      * Shows a list of results (docs) in content recommendation block
      */
     'apachesolr_search_mlt_recommendation_block' => array(
-      'variables' => array('docs' => NULL, 'delta' => NULL),
+      'arguments' => array('docs' => NULL, 'delta' => NULL),
     ),
   );
 }
@@ -1633,7 +1633,7 @@ function apachesolr_search_theme() {
  */
 function apachesolr_search_theme_registry_alter(&$theme_registry) {
   if (isset($theme_registry['search_results'])) {
-    $theme_registry['search_results']['variables']['search_page'] = NULL;
+    $theme_registry['search_results']['arguments']['search_page'] = NULL;
   }
 }
 
@@ -1675,4 +1675,32 @@ function theme_apachesolr_search_noresults() {
 <li>Remove quotes around phrases to match each word individually: <em>"blue drop"</em> will match less than <em>blue drop</em>.</li>
 <li>You can require or exclude terms using + and -: <em>big +blue drop</em> will require a match on <em>blue</em> while <em>big blue -drop</em> will exclude results that contain <em>drop</em>.</li>
 </ul>');
+}
+
+/**
+ * Backport of pager_default_initialize from Drupal 7.
+ */
+function apachesolr_search_pager_default_initialize($total, $limit, $element = 0) {
+  global $pager_page_array, $pager_total, $pager_total_items, $pager_limits;
+
+  $page = apachesolr_search_pager_find_page($element);
+
+  // We calculate the total of pages as ceil(items / limit).
+  $pager_total_items[$element] = $total;
+  $pager_total[$element] = ceil($pager_total_items[$element] / $limit);
+  $pager_page_array[$element] = max(0, min($page, ((int) $pager_total[$element]) - 1));
+  $pager_limits[$element] = $limit;
+  return $pager_page_array[$element];
+}
+
+/**
+ * Backport of pager_find_page from Drupal 7.
+ */
+function apachesolr_search_pager_find_page($element = 0) {
+  $page = isset($_GET['page']) ? $_GET['page'] : '';
+  $page_array = explode(',', $page);
+  if (!isset($page_array[$element])) {
+    $page_array[$element] = 0;
+  }
+  return (int) $page_array[$element];
 }
