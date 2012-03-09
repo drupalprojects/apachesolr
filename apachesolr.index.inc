@@ -655,7 +655,6 @@ function apachesolr_index_node_bundles_changed($env_id, $existing_bundles, $new_
       SELECT n.nid AS entity_id, n.type AS bundle, n.status AS status, 'node' AS entity_type, %d AS changed
       FROM node n
       WHERE (n.type IN (". db_placeholders($added_bundles, 'varchar') .")))";
-      dsm($query);
       db_query($query, array_merge(array(APACHESOLR_REQUEST_TIME), $added_bundles));
     }
   }
