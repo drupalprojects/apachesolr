@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1475010 by Nick_vh: Fixed Date filtering to minute returns faulty results.
 #1473302 by Nick_vh: Fixed Blocks don't show up under the search results.
 #1471766 by snufkin, Nick_vh: Fixed the simpletests.
 #1469484 by Nick_vh, Josh Waihi: Fixed Limit select queries when checking index node table to prevent memory overload.
