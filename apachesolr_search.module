@@ -937,7 +937,8 @@ function apachesolr_search_page_browse($empty_search_behavior, $env_id) {
         // Get facet render elements.
         $searcher = $query->getSearcher();
         $elements = facetapi_build_realm($searcher, 'block');
-        $build = array();
+        $blocks = array();
+        $build_results = array();
 
         foreach (element_children($elements) as $key) {
           $delta = "facetapi_{$key}";
@@ -947,32 +948,31 @@ function apachesolr_search_page_browse($empty_search_behavior, $env_id) {
           $block->enabled = TRUE;
           $block->module = 'facetapi';
           $block->subject = theme('facetapi_title', array('title' => $elements[$key]['#title']));
-          $build[$delta] = $elements[$key];
+          //$build[$delta] = $elements[$key];
           $block->region = NULL;
           $block->delta = 'apachesolr-' . $key;
-          // @todo: the final themed block's div id attribute does not coincide with "real" block's id (see facetapi_get_delta_map())
-          $build[$delta]['#block'] = $block;
-          $build[$delta]['#theme_wrappers'][] = 'block';
-          $build['#sorted'] = TRUE;
+          $block->content = $elements[$key][$key];
+          if (!empty($block->content)) {
+            $blocks[$delta] = $block;
+          }
         }
-        $build['#theme_wrappers'][] = 'apachesolr_search_browse_blocks';
       }
       break;
   }
-  return $build;
+
+  return theme('apachesolr_search_browse_blocks', $blocks);
 }
 
 /**
  * Shows a groups of blocks for starting a search from a filter.
  */
-function theme_apachesolr_search_browse_blocks($vars) {
-  $result = '';
-  if ($vars['content']['#children']) {
-    $result .= "<div class='apachesolr-browse-blocks'>\n<h2>" . t('Browse available categories') . "</h2>\n";
-    $result .= '<p>' . t('Pick a category to launch a search.') . "</p>\n";
-    $result .= $vars['content']['#children'] . "\n</div>\n";
+function theme_apachesolr_search_browse_blocks($blocks) {
+  $result = "<div class='apachesolr_browse_block'><h2>" . t('Browse available categories') .'</h2>';
+  $result .= '<p>' . t('Pick a category to launch a search.') . '</p>';
+  foreach ($blocks as $facet_field => $block) {
+    $result .= theme('block', $block);
   }
-
+  $result .= '</div>';
   return $result;
 }
 
