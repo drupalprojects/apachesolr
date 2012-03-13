@@ -762,7 +762,7 @@ function apachesolr_vocab_name($vid) {
   static $names = array();
 
   if (!isset($names[$vid])) {
-    $vocab_name = db_result(db_query("SELECT v.name FROM {taxonomy_vocabulary} v WHERE v.vid = '%s'", array($vid)));
+    $vocab_name = db_result(db_query("SELECT v.name FROM {vocabulary} v WHERE v.vid = '%s'", array($vid)));
     $names[$vid] = preg_replace('/[^a-zA-Z0-9_\x7f-\xff]/', '_', $vocab_name);
     // Fallback for names ending up all as '_'.
     $check = rtrim($names[$vid], '_');
