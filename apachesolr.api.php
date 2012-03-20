@@ -199,6 +199,12 @@ function hook_apachesolr_delete_by_query_alter($query) {
  * Add information to index other entities.
  * There are some modules in http://drupal.org that can give a good example of
  * custom entity indexing such as apachesolr_user_indexer, apachesolr_term
+ *
+ * This is the place to look for the replacement to hook_apachesolr_node_exclude
+ * You should define a replacement for the status callback and return
+ * 0 for nodes which you do not want to appear in the index and 1 for nodes
+ * that you do. See http://drupal.org/node/1474906 for an example.
+ * 
  * @param array $entity_info
  */
 function hook_apachesolr_entity_info_alter(&$entity_info) {
