@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1423580 by rjbrown99: Fixed Class 'ApacheSolrDocument' not found.
 #1485404 by gnucifer: Fixed Ctool plugin definitions.
 #1473324 by snufkin, Nick_vh: Fixed Pager doesn't get initialized.
 #1480274 by Nick_vh: Fixed Wrong table is used for vocabulary name.

@@ -260,9 +260,10 @@ function apachesolr_index_add_tags_to_document(&$document, $text) {
  * @return ApacheSolrDocument
  */
 function _apachesolr_index_process_entity_get_document($entity, $entity_type) {
+  module_load_include('php', 'apachesolr', 'Apache_Solr_Document');
+
   $entity_id = $entity->nid;
   $bundle = $entity->type;
-
 
   $document = new ApacheSolrDocument();
 
