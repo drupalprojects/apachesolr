@@ -300,6 +300,9 @@ function apachesolr_facetapi_adapters() {
     'apachesolr' => array(
       'handler' => array(
         'class' => 'ApacheSolrFacetapiAdapter',
+        'parent' => 'adapter',
+        'path' => drupal_get_path('module', 'apachesolr') . '/plugins/facetapi',
+        'file' => 'adapter.inc',
       ),
     ),
   );
@@ -309,22 +312,32 @@ function apachesolr_facetapi_adapters() {
  * Implements hook_facetapi_query_types().
  */
 function apachesolr_facetapi_query_types() {
+  $path = drupal_get_path('module', 'apachesolr') . '/plugins/facetapi';
   return array(
     'apachesolr_term' => array(
       'handler' => array(
         'class' => 'ApacheSolrFacetapiTerm',
+        'parent' => 'query_type',
+        'file' => 'query_type_term.inc',
+        'path' => $path,
         'adapter' => 'apachesolr',
       ),
     ),
     'apachesolr_date' => array(
       'handler' => array(
         'class' => 'ApacheSolrFacetapiDate',
+        'parent' => 'date',
+        'file' => 'query_type_date.inc',
+        'path' => $path,
         'adapter' => 'apachesolr',
       ),
     ),
     'apachesolr_numeric_range' => array(
       'handler' => array(
         'class' => 'ApacheSolrFacetapiNumericRange',
+        'parent' => 'range',
+        'file' => 'query_type_numeric_range.inc',
+        'path' => $path,
         'adapter' => 'apachesolr',
       ),
     ),
