@@ -333,8 +333,8 @@ function apachesolr_search_page_load($page_id, $reset = FALSE) {
     $pages = array();
   }
 
-  if (!isset($pages[$page_id])) {
-    $page = db_fetch_object(db_query("SELECT * FROM {apachesolr_search_page} s WHERE s.page_id = '%s'", array($page_id)));
+  if (!isset($pages[$page_id]) && db_table_exists('apachesolr_search_page')) {
+      $page = db_fetch_object(db_query("SELECT * FROM {apachesolr_search_page} s WHERE s.page_id = '%s'", array($page_id)));
     if ($page) {
       $page->settings = unserialize($page->settings);
       // Special case page - always uses the default environment.
@@ -355,7 +355,7 @@ function apachesolr_search_page_load($page_id, $reset = FALSE) {
 }
 
 function apachesolr_search_page_save($search_page) {
-  if (!empty($search_page)) {
+  if (!empty($search_page) && db_table_exists('apachesolr_search_page')) {
     $query = "INSERT INTO {apachesolr_search_page} (page_id, label, description, env_id, search_path, page_title, settings)
       VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s')
       ON DUPLICATE KEY UPDATE page_id = '%s', label = '%s', description = '%s', env_id = '%s', search_path = '%s', page_title = '%s', settings = '%s'";
@@ -514,23 +514,26 @@ function apachesolr_search_block_save($delta = '', $edit = array()) {
  */
 function apachesolr_search_load_all_search_pages() {
   // Get all search_pages and their id
-  $search_pages = array();
-  $result = db_query('SELECT * FROM {apachesolr_search_page}');
-  while($search_page = db_fetch_array($result)) {
-    $search_pages[$search_page['page_id']] = $search_page;
-  }
-  // If ctools module is enabled, add search pages from code, e.g. from a
-  // feature module.
-  if (module_exists('ctools')) {
-    ctools_include('export');
-    $defaults = ctools_export_load_object('apachesolr_search_page', 'all');
-    foreach ($defaults as $page_id => $default) {
-      if (!isset($search_pages[$page_id])) {
-        $search_pages[$page_id] = (array) $default;
+  if (db_table_exists('apachesolr_search_page')) {
+    $search_pages = array();
+    $result = db_query('SELECT * FROM {apachesolr_search_page}');
+    while($search_page = db_fetch_array($result)) {
+      $search_pages[$search_page['page_id']] = $search_page;
+    }
+    // If ctools module is enabled, add search pages from code, e.g. from a
+    // feature module.
+    if (module_exists('ctools')) {
+      ctools_include('export');
+      $defaults = ctools_export_load_object('apachesolr_search_page', 'all');
+      foreach ($defaults as $page_id => $default) {
+        if (!isset($search_pages[$page_id])) {
+          $search_pages[$page_id] = (array) $default;
+        }
       }
     }
+    return $search_pages;
   }
-  return $search_pages;
+  return array();
 }
 
 function apachesolr_search_load_all_mlt_blocks() {
@@ -1377,7 +1380,10 @@ function apachesolr_search_node_result($doc, &$result, &$extra) {
  * Returns whether a search page exists.
  */
 function apachesolr_search_page_exists($page_id) {
-  $page = db_result(db_query("SELECT 1 FROM {apachesolr_search_page} WHERE page_id = '%s'", array($page_id)));
+  if (db_table_exists('apachesolr_search_page')) {
+    $page = db_result(db_query("SELECT 1 FROM {apachesolr_search_page} WHERE page_id = '%s'", array($page_id)));
+  }
+  return 0;
 }
 
 /**
@@ -1438,12 +1444,14 @@ function apachesolr_search_preprocess_search_results(&$variables) {
  * Implements hook_apachesolr_environment_delete().
  */
 function apachesolr_search_apachesolr_environment_delete($server) {
-  $query = "UPDATE {apachesolr_search_page} SET env_id = '' WHERE env_id = '%s'";
-  db_query($query, array($server['env_id']));
+  if (db_table_exists('apachesolr_search_page')) {
+    $query = "UPDATE {apachesolr_search_page} SET env_id = '' WHERE env_id = '%s'";
+    db_query($query, array($server['env_id']));
 
-  apachesolr_environment_variable_del($server['env_id'], 'apachesolr_search_show_facets');
-  apachesolr_environment_variable_del($server['env_id'], 'apachesolr_search_facet_pages');
-  menu_rebuild();
+    apachesolr_environment_variable_del($server['env_id'], 'apachesolr_search_show_facets');
+    apachesolr_environment_variable_del($server['env_id'], 'apachesolr_search_facet_pages');
+    menu_rebuild();
+  }
 }
 
 

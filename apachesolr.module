@@ -818,6 +818,9 @@ function apachesolr_clear_last_index_position($env_id = NULL, $entity_type = NUL
  */
 function apachesolr_set_last_index_updated($env_id, $timestamp = 0) {
   $updated = variable_get('apachesolr_index_updated', array());
+  if (!is_array($updated)) {
+    $updated = array();
+  }
   if ($timestamp > 0) {
     $updated[$env_id] = $timestamp;
   }
@@ -857,7 +860,7 @@ function apachesolr_cron($env_id = NULL) {
 
   // If we're not checking any bundles of this entity type, just skip them all.
   if (empty($bundles)) {
-    continue;
+    return;
   }
 
   $callbacks = apachesolr_get_index_callbacks();
@@ -1085,12 +1088,15 @@ function apachesolr_load_all_environments($reset = FALSE) {
   if ($reset) {
     $environments = array();
   }
+  if (!db_table_exists('apachesolr_environment')) {
+    return array();
+  }
 
   if (isset($environments)) {
-   // return $environments;
+    return $environments;
   }
   // Use cache_get to avoid DB when using memcache, etc.
-  //$cache = cache_get('apachesolr:environments', 'cache_apachesolr');
+  $cache = cache_get('apachesolr:environments', 'cache_apachesolr');
 
   if (!empty($cache->data)) {
     $environments = $cache->data;
