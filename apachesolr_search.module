@@ -860,7 +860,9 @@ function apachesolr_search_search_results($keys = NULL, $conditions = NULL, $sea
     elseif (($keys || isset($conditions['f'])) || ($empty_search_behavior == 'results')) {
       $params['q'] = $keys;
       // Hardcoded apachesolr name since we rely on this for the facets
-      $results = apachesolr_search_run('apachesolr', $params, $solrsort, $search_page->search_path, pager_get_querystring(), $solr);
+      $page = isset($_GET['page']) ? $_GET['page'] : '';
+      $page = check_plain($page);
+      $results = apachesolr_search_run('apachesolr', $params, $solrsort, $search_page->search_path, $page, $solr);
     }
   }
   catch (Exception $e) {
