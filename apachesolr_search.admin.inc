@@ -708,8 +708,14 @@ function apachesolr_search_bias_form(&$form_state, $env_id, $fields) {
 
 function apachesolr_search_bias_form_submit(&$form, &$form_state) {
   // Exclude unnecessary elements.
-  form_state_values_clean($form_state);
+  unset($form_state['values']['form_id']);
+  unset($form_state['values']['form_build_id']);
+  unset($form_state['values']['form_token']);
+  unset($form_state['values']['reset']);
+  unset($form_state['values']['op']);
+  unset($form_state['values']['submit']);
   foreach ($form_state['values'] as $key => $value) {
+    dsm($key);
     if (is_array($value) && isset($form_state['values']['array_filter'])) {
       $value = array_keys(array_filter($value));
     }
@@ -732,9 +738,14 @@ function apachesolr_search_bias_form_submit(&$form, &$form_state) {
 
 function apachesolr_search_bias_form_reset($form, &$form_state) {
   // Exclude unnecessary elements.
-  form_state_values_clean($form_state);
-
+  unset($form_state['values']['form_id']);
+  unset($form_state['values']['form_build_id']);
+  unset($form_state['values']['form_token']);
+  unset($form_state['values']['reset']);
+  unset($form_state['values']['op']);
+  unset($form_state['values']['submit']);
   foreach ($form_state['values'] as $key => $value) {
+    dsm($key);
     apachesolr_environment_variable_del($form['#env_id'], $key);
   }
   drupal_set_message(t('The configuration options have been reset to their default values.'));
