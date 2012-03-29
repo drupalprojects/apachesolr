@@ -397,12 +397,14 @@ function apachesolr_settings($form, &$form_state) {
 
   $options = array('apachesolr:show_error' => t('Show error message'));
   $system_info = system_get_info('module');
-  foreach (search_get_info() as $module => $search_info) {
-    // Don't allow apachesolr to return results on failure of apachesolr.
-    if ($module == 'apachesolr_search') {
-      continue;
+  if (module_exists('search')) {
+    foreach (search_get_info() as $module => $search_info) {
+      // Don't allow apachesolr to return results on failure of apachesolr.
+      if ($module == 'apachesolr_search') {
+        continue;
+      }
+      $options[$module] = t('Show @name search results', array('@name' => $system_info[$module]['name']));
     }
-    $options[$module] = t('Show @name search results', array('@name' => $system_info[$module]['name']));
   }
 
   $options['apachesolr:show_no_results'] = t('Show no results');

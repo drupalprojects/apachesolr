@@ -1454,7 +1454,6 @@ function apachesolr_search_form_search_form_alter(&$form, $form_state) {
         '#default_value' => (int) isset($_GET['retain-filters']),
       );
     }
-    $search_page = apachesolr_search_page_load('core_search');
   }
 }
 

@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1502088 by Nick_vh | sanpi: Fixed Missing Search dependency for Apache Solr framework.
 #1498490 by Nick_vh, milesw: Fixed Menu paths for custom search pages are broken when exported as features.
 #1475010 by Nick_vh: Fixed Date filtering to minute returns faulty results.
 #1469484 by Nick_vh, Josh Waihi: Fixed Limit select queries when checking index node table to prevent memory overload.
