@@ -126,61 +126,46 @@ function apachesolr_search_menu() {
 }
 
 function apachesolr_search_menu_alter(&$items) {
-  try {
-    // Gets search pages directly from the index.
-    // In addition, do NOT load core_search since it is handled by
-    // hook_search_info
-    $result = db_select('apachesolr_search_page', 's')
-      ->fields('s', array('page_id'))
-      ->condition('env_id', '', '<>')
-      ->condition('page_id', 'core_search', '<>')
-      ->execute();
-  }
-  catch (Exception $e) {
-    watchdog_exception('apachesolr_search', $e);
-    $result = array();
-  }
-
   // Gets default search information.
   $default_info = search_get_default_module_info();
   $search_types = apachesolr_search_load_all_search_types();
+  $search_pages = apachesolr_search_load_all_search_pages();
 
   // Iterates over search pages, builds menu items.
-  foreach ($result as $record) {
-    $search_page = apachesolr_search_page_load($record->page_id);
+  foreach ($search_pages as $search_page) {
     // Validate the environemnt ID in case of import or missed deletion.
-    $environment = apachesolr_environment_load($search_page->env_id);
+    $environment = apachesolr_environment_load($search_page['env_id']);
     if (!$environment) {
       continue;
     }
 
     // Parses search path into it's various parts, builds menu items dependent
     // on whether %keys is in the path.
-    $parts = explode('/', $search_page->search_path);
+    $parts = explode('/', $search_page['search_path']);
     $keys_pos = count($parts);
     // Tests whether we are simulating a core search tab.
     $core_search = ($parts[0] == 'search');
-    $taxonomy_search = ($search_page->search_path == 'taxonomy/term/%');
+    $taxonomy_search = ($search_page['search_path'] == 'taxonomy/term/%');
     $position = array_search('%', $parts);
-    $page_title = isset($search_page->page_title) ? $search_page->page_title : 'Search Results';
+    $page_title = isset($search_page['page_title']) ? $search_page['page_title'] : 'Search Results';
 
     // Replace possible tokens [term:tid], [node:nid], [user:uid] with their
     // menu-specific variant
-    $items[$search_page->search_path] = array(
+    $items[$search_page['search_path']] = array(
       'title' => $page_title,
       'page callback' => 'apachesolr_search_custom_page',
-      'page arguments' => array($search_page->page_id, '', $position),
+      'page arguments' => array($search_page['page_id'], '', $position),
       'access arguments' => array('search content'),
       'type' => ($core_search) ? MENU_LOCAL_TASK : MENU_SUGGESTED_ITEM,
       'file' => 'apachesolr_search.pages.inc',
       'file path' => drupal_get_path('module', 'apachesolr_search'),
     );
 
-    $items[$search_page->search_path . '/%menu_tail'] = array(
+    $items[$search_page['search_path'] . '/%menu_tail'] = array(
       'title' => $page_title,
       'load arguments' => array('%map', '%index'),
       'page callback' => 'apachesolr_search_custom_page',
-      'page arguments' => array($search_page->page_id, $keys_pos, $position),
+      'page arguments' => array($search_page['page_id'], $keys_pos, $position),
       'access arguments' => array('search content'),
       'type' => ($taxonomy_search) ? MENU_DEFAULT_LOCAL_TASK : MENU_LOCAL_TASK,
       'file' => 'apachesolr_search.pages.inc',
@@ -188,20 +173,20 @@ function apachesolr_search_menu_alter(&$items) {
     );
 
     // If title has a certain callback for the selected type we use it
-    $search_type_id = !empty($search_page->settings['apachesolr_search_search_type']) ? $search_page->settings['apachesolr_search_search_type'] : FALSE;
+    $search_type_id = !empty($search_page['settings']['apachesolr_search_search_type']) ? $search_page['settings']['apachesolr_search_search_type'] : FALSE;
     $search_type = !empty($search_types[$search_type_id]) ? $search_types[$search_type_id] : FALSE;
 
     if ($search_type && !empty($position)) {
       $title_callback = $search_type['title callback'];
-      $items[$search_page->search_path]['title callback'] = $title_callback;
-      $items[$search_page->search_path]['title arguments'] = array($search_page->page_id, $position);
-      $items[$search_page->search_path . '/%menu_tail']['title callback'] = $title_callback;
-      $items[$search_page->search_path . '/%menu_tail']['title arguments'] = array($search_page->page_id, $position);
+      $items[$search_page['search_path']]['title callback'] = $title_callback;
+      $items[$search_page['search_path']]['title arguments'] = array($search_page['page_id'], $position);
+      $items[$search_page['search_path'] . '/%menu_tail']['title callback'] = $title_callback;
+      $items[$search_page['search_path'] . '/%menu_tail']['title arguments'] = array($search_page['page_id'], $position);
     }
     // If we have additional searches in the search/* path
     if ($core_search) {
-      $items[$search_page->search_path . '/%menu_tail']['tab_root'] = 'search/' . $default_info['path'] . '/%';
-      $items[$search_page->search_path . '/%menu_tail']['tab_parent'] = 'search/' . $default_info['path'];
+      $items[$search_page['search_path'] . '/%menu_tail']['tab_root'] = 'search/' . $default_info['path'] . '/%';
+      $items[$search_page['search_path'] . '/%menu_tail']['tab_parent'] = 'search/' . $default_info['path'];
     }
 
     if ($taxonomy_search) {
@@ -547,21 +532,30 @@ function apachesolr_search_block_save($delta = '', $edit = array()) {
  *   Array of all search pages
  */
 function apachesolr_search_load_all_search_pages() {
-  // Get all search_pages and their id
-  $search_pages = db_query('SELECT * FROM {apachesolr_search_page}')->fetchAllAssoc('page_id', PDO::FETCH_ASSOC);
-
+  $search_pages = array();
   // If ctools module is enabled, add search pages from code, e.g. from a
   // feature module.
   if (module_exists('ctools')) {
     ctools_include('export');
     $defaults = ctools_export_load_object('apachesolr_search_page', 'all');
     foreach ($defaults as $page_id => $default) {
-      if (!isset($search_pages[$page_id])) {
-        $search_pages[$page_id] = (array) $default;
-      }
+      $search_pages[$page_id] = (array) $default;
     }
   }
 
+  // Get all search_pages and their id
+  $search_pages_db = db_query('SELECT * FROM {apachesolr_search_page}')->fetchAllAssoc('page_id', PDO::FETCH_ASSOC);
+
+  $search_pages = $search_pages + $search_pages_db;
+
+  // convert settings to an array
+  foreach ($search_pages as $id => $search_page) {
+    if (is_string($search_pages[$id]['settings'])) {
+      $search_pages[$id]['settings'] = unserialize($search_pages[$id]['settings']);
+      // Prevent false outcomes for the following search page
+      $settings = 0;
+    }
+  }
   return $search_pages;
 }
 
