@@ -528,28 +528,28 @@ function apachesolr_mark_entity($entity_type, $entity_id) {
  * @see http://api.drupal.org/api/drupal/includes--database--database.inc/function/db_update/7#comment-15459
  *   To know why PDO in drupal does not support UPDATE and JOIN at once.
  */
- function apachesolr_user_update(&$edit, $account, $category) {
-   if (isset($account->name) && isset($account->original) && isset($account->original->name) && $account->name != $account->original->name) {
-     $table = apachesolr_get_indexer_table('node');
-     switch (db_driver()) {
-       case 'mysql' :
-         $table = db_escape_table($table);
-         $query = "UPDATE {{$table}} asn
-           INNER JOIN {node} n ON asn.entity_id = n.nid SET asn.changed = :changed
-           WHERE n.uid = :uid";
-         $result = db_query($query, array(':changed' => REQUEST_TIME,
-           ':uid' => $account->uid,
-         ));
-         break;
-       default :
-         $nids = db_select('node')
-           ->fields('node', array('nid'))
-           ->where("uid = :uid", array(':uid' => $account->uid));
-         $update = db_update($table)
-           ->condition('entity_id', $nids, 'IN')
-           ->fields(array('changed' => REQUEST_TIME))
-           ->execute();
-     }
+function apachesolr_user_update(&$edit, $account, $category) {
+  if (isset($account->name) && isset($account->original) && isset($account->original->name) && $account->name != $account->original->name) {
+    $table = apachesolr_get_indexer_table('node');
+    switch (db_driver()) {
+      case 'mysql' :
+        $table = db_escape_table($table);
+        $query = "UPDATE {{$table}} asn
+          INNER JOIN {node} n ON asn.entity_id = n.nid SET asn.changed = :changed
+          WHERE n.uid = :uid";
+        $result = db_query($query, array(':changed' => REQUEST_TIME,
+          ':uid' => $account->uid,
+        ));
+        break;
+      default :
+        $nids = db_select('node')
+          ->fields('node', array('nid'))
+          ->where("uid = :uid", array(':uid' => $account->uid));
+        $update = db_update($table)
+          ->condition('entity_id', $nids, 'IN')
+          ->fields(array('changed' => REQUEST_TIME))
+          ->execute();
+    }
   }
 }
 
