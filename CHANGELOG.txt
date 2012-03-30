@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1477732 by ygerasimov: Fixed apachesolr_index_entities() sets index position that leads to cycle.
 #1508434 by lazysoundsystem, Nick_vh: Fixed whitespace problem.
 #1481326 by Nick_vh | milesw: Fixed Queries run twice after submitting search forms on a custom search page.
 #1502088 by Nick_vh | sanpi: Fixed Missing Search dependency for Apache Solr framework.
