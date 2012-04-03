@@ -131,7 +131,6 @@ class DrupalSolrOfflineEnvironmentWebTestCase extends DrupalWebTestCase {
       $this->drupalPost($this->getUrl(), $edit, t('Save'));
       $this->assertResponse(200);
       apachesolr_load_all_environments(TRUE);
-      $solr = apachesolr_get_solr();
       $this->drupalGet('admin/settings/apachesolr/settings');
       $this->assertText($url, t('Search environment url was succesfully set to !url', array('!url' => $url)));
     }
@@ -187,7 +186,12 @@ class DrupalSolrOfflineEnvironmentWebTestCase extends DrupalWebTestCase {
     // Load it, to fill our cache.
     $environments = apachesolr_load_all_environments(TRUE);
     $mode = apachesolr_environment_variable_get('solr_test', 'apachesolr_read_only', APACHESOLR_READ_WRITE);
-    $this->assertEqual($mode, APACHESOLR_READ_ONLY, t('Environment succesfully changed to read only'));
+
+    // Verify the modus
+    $this->drupalGet('admin/settings/apachesolr/settings');
+    // Click on the second environment edit link
+    $this->clickLink(t('Edit'), 0);
+    $this->assertFieldChecked('edit-conf-apachesolr-read-only-1', t('Environment succesfully changed to read only'));
   }
 
   function tearDown() {

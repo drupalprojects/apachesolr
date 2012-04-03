@@ -1,6 +1,8 @@
 <?php
 
 class DrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
+  public $solr_core_name;
+
   /**
    * Implementation of setUp().
    */
@@ -15,11 +17,12 @@ class DrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
       // We will use a core named after the simpletest prefix.
       // Normal base URL will be http://localhost:8983/solr
       $base_url = $environment['url'];
-      $environment['url'] .= '/' . $this->databasePrefix;
+      $this->solr_core_name = $this->randomString(8);
+      $environment['url'] .= '/' . $this->solr_core_name;
       apachesolr_environment_save($environment);
       $solr_url = $environment['url'];
       $core_admin_url = "$base_url/admin/cores";
-      $filesdir = variable_get('file_public_path');
+      $filesdir = variable_get('file_public_path', 'sites/default/files/');
 
       // Create our 'solr core dir'
       mkdir("$filesdir/solr", 0777, TRUE);
@@ -45,7 +48,7 @@ class DrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
       // Change the autoCommit time down to 1 second.
       file_put_contents("$instancedir/conf/solrconfig.xml", preg_replace('@<maxTime>[0-9]+</maxTime>@', '<maxTime>1000</maxTime>', $contents));
       $query['action'] = 'CREATE';
-      $query['name'] = $this->databasePrefix;
+      $query['name'] = $this->solr_core_name;
       $query['instanceDir'] = $instancedir;
       $this->drupalGet($core_admin_url, array('query' => $query));
       $this->assertResponse(200);
@@ -72,7 +75,7 @@ class DrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
       $query['action'] = $action;
       $query['wt'] = 'json';
       $query['indent'] = '1';
-      $query['core'] = $this->databasePrefix;
+      $query['core'] = $this->solr_core_name;
       $this->drupalGet($this->core_admin_url, array('query' => $query));
       $this->assertResponse(200);
       if ($return_response) {
@@ -89,7 +92,7 @@ class DrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
    */
   protected function checkCoreStatus() {
     $response = $this->coreAdmin('STATUS', TRUE);
-    $this->assertTrue(isset($response['status'][$this->databasePrefix]['index']), 'Found Solr test core index status');
+    $this->assertTrue(isset($response['status'][$this->solr_core_name]['index']), 'Found Solr test core index status');
   }
 
   function tearDown() {
