@@ -66,7 +66,7 @@ function apachesolr_index_status($env_id) {
    WHERE (aie.status = 1)
    AND (aie.bundle IN (" . db_placeholders($bundles, 'varchar') . "))
    AND (aie.entity_type = '%s')
-   AND ((aie.changed > %d) OR ((aie.changed = %d) AND (aie.entity_id > %d)))";
+   AND ((aie.changed > %d) OR ((aie.changed <= %d) AND (aie.entity_id > %d)))";
   $arguments = array_merge($bundles, array($entity_type, $last_changed, $last_changed, $last_entity_id));
   if ($table == 'apachesolr_index_entities') {
     // Other, entity-specific tables don't need this condition.
@@ -347,7 +347,7 @@ function apachesolr_index_get_entities_to_index($env_id, $entity_type, $limit) {
    WHERE aie.status = 1
    AND (aie.bundle IN (" . db_placeholders($bundles, 'varchar') . "))
    AND (aie.entity_type = '%s')
-   AND ((aie.changed > %d) OR ((aie.changed = %d) AND (aie.entity_id > %d)))";
+   AND ((aie.changed > %d) OR ((aie.changed <= %d) AND (aie.entity_id > %d)))";
   $arguments = array_merge($bundles, array($type, $last_changed, $last_changed, $last_entity_id));
   if ($table == 'apachesolr_index_entities') {
     // Other, entity-specific tables don't need this condition.
