@@ -21,9 +21,19 @@ function apachesolr_index_entities($env_id, $limit) {
   $indexed = apachesolr_index_send_to_solr($env_id, $documents);
   if ($indexed !== FALSE) {
     $entities_processed += count($rows);
-    $last_row = end($rows);
-    apachesolr_set_last_index_position($env_id, $entity_type, $last_row->changed, $last_row->entity_id);
-    apachesolr_set_last_index_updated($env_id, APACHESOLR_REQUEST_TIME);
+    $index_position = apachesolr_get_last_index_position($env_id, $entity_type);
+      $max_changed = $index_position['last_changed'];
+      $max_entity_id = $index_position['last_entity_id'];
+      foreach ($rows as $row) {
+        if ($row->changed > $max_changed) {
+          $max_changed = $row->changed;
+        }
+        if ($row->entity_id > $max_entity_id) {
+          $max_entity_id = $row->entity_id;
+        }
+      }
+      apachesolr_set_last_index_position($env_id, $entity_type, $max_changed, $max_entity_id);
+      apachesolr_set_last_index_updated($env_id, APACHESOLR_REQUEST_TIME);
   }
 
   return $entities_processed;
