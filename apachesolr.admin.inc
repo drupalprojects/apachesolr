@@ -405,7 +405,6 @@ function apachesolr_settings(&$form_state) {
   );
 
   $options = array('apachesolr:show_error' => t('Show error message'));
-
   foreach (module_implements('search_info') as $module) {
     // Don't allow apachesolr to return results on failure of apachesolr.
     if ($module == 'apachesolr_search') {

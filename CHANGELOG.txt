@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1502088 by Nick_vh | sanpi: Fixed Missing Search dependency for Apache Solr framework.
 #1491564 by alekas: Fixed Doesn't exist query in table apachesolr_index_entities_node().
 #1494448 by Nick_vh: Fixed Some troubles while upgrading apachesolr 6.x-1.x to 6.x-3.x.
 #1423580 by rjbrown99: Fixed Class 'ApacheSolrDocument' not found.
