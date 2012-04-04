@@ -1902,7 +1902,7 @@ function apachesolr_entity_delete($entity_id, $entity_type) {
    module_load_include('inc', 'apachesolr', 'apachesolr.index');
   if (apachesolr_index_delete_entity_from_index($env_id, $entity_type, $entity_id)) {
     // There was no exception, so delete from the table.
-    $indexer_table = apachesolr_get_indexer_table($type);
+    $indexer_table = apachesolr_get_indexer_table($entity_type);
     $query = "DELETE FROM {{$indexer_table}} WHERE entity_type = '%s' AND entity_id = %d";
     db_query($query, array($entity_type, $entity_id));
   }
