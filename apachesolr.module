@@ -1773,7 +1773,7 @@ function apachesolr_entity_update($entity, $type) {
 
     // Delete the entity from our index if the status callback returns FALSE
     if ($status == FALSE) {
-      return apachesolr_entity_delete($entity, $type);
+      return apachesolr_entity_delete($id, $type);
     }
 
     $indexer_table = apachesolr_get_indexer_table($type);
@@ -1813,15 +1813,15 @@ function apachesolr_get_indexer_table($type) {
  *
  * @see apachesolr_node_delete().
  */
-function apachesolr_entity_delete($entity, $entity_type) {
+function apachesolr_entity_delete($entity_id, $entity_type) {
   $env_id = apachesolr_default_environment();
    module_load_include('inc', 'apachesolr', 'apachesolr.index');
-  if (apachesolr_index_delete_entity_from_index($env_id, $entity_type, $entity->entity_id)) {
+  if (apachesolr_index_delete_entity_from_index($env_id, $entity_type, $entity_id)) {
     // There was no exception, so delete from the table.
     $indexer_table = apachesolr_get_indexer_table($entity_type);
     db_delete($indexer_table)
       ->condition('entity_type', $entity_type)
-      ->condition('entity_id', $entity->entity_id)
+      ->condition('entity_id', $entity_id)
       ->execute();
   }
 }
