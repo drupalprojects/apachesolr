@@ -1833,7 +1833,7 @@ function apachesolr_entity_should_index($entity, $type) {
 function apachesolr_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
   switch ($op) {
     case 'delete':
-      apachesolr_entity_delete($node, 'node');
+      apachesolr_entity_delete($node->nid, 'node');
       break;
     case 'insert':
     case 'update':
