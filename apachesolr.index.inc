@@ -374,7 +374,7 @@ function apachesolr_index_get_entities_to_index($env_id, $entity_type, $limit) {
     }
 
     // Delete the entity from our index if the status callback returns 0
-    if ($status == 1) {
+    if ($status == TRUE) {
       $rows[] = $record;
     }
     else {
