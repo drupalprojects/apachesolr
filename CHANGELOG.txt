@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1514314 by Nick_vh, Georgique: Fixed Error in apachesolr_entity_update().
 #1509790 by Nick_vh: Fixed Status is not checked when a reindex is initiated.
 #1476228 by ygerasimov: Fixed Items to index determined not correct.
 #1477732 by ygerasimov: Fixed apachesolr_index_entities() sets index position that leads to cycle.
