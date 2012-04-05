@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+Issue #1515580 by Nick_vh | yannou: Fixed Deleting node is impossible, stdClass problem.
 
 Apache Solr integration 7.x-1.0-beta18, 2012-04-04
 ------------------------------

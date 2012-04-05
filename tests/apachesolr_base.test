@@ -337,6 +337,54 @@ class DrupalSolrOfflineSearchPagesWebTestCase extends DrupalWebTestCase {
   }
 }
 
+class DrupalSolrNodeTestCase extends DrupalWebTestCase {
+
+  public static function getInfo() {
+    return array(
+      'name' => 'Solr Node add and deletion tests',
+      'description' => 'Tests if we can succesfully add and delete nodes',
+      'group' => 'ApacheSolr',
+    );
+  }
+  /**
+   * Implementation of setUp().
+   */
+  function setUp() {
+    parent::setUp('apachesolr', 'apachesolr_search', 'search', 'apachesolr_test');
+  }
+
+  function testApacheSolrNodeAddDelete() {
+    // Login as basic user to perform initial content creation.
+    // Create an admin user that can bypass revision moderation.
+    $permissions = array(
+      'access content',
+      'search content',
+      'administer nodes',
+      'administer search',
+      'access content overview',
+      'bypass node access',
+    );
+    $admin_user = $this->drupalCreateUser($permissions);
+
+    $this->drupalLogin($admin_user);
+
+    //Create 2 nodes
+    $edit = array();
+    $edit['uid'] = $admin_user->uid;
+    $node = $this->drupalCreateNode($edit);
+
+    $this->drupalGet('admin/content/node');
+    // Remove the same node
+    $this->clickLink(t('delete'));
+    $this->assertText(t('Are you sure you want to delete'), t('Delete confirmation page was succesfully loaded'));
+    $this->drupalPost($this->getUrl(), array(), t('Delete'));
+    $this->assertResponse(200);
+  }
+  function tearDown() {
+    parent::tearDown();
+  }
+}
+
 class DrupalSolrOfflineUnitTestCase extends DrupalUnitTestCase {
   public static function getInfo() {
     return array(

@@ -374,7 +374,15 @@ function apachesolr_index_get_entities_to_index($env_id, $entity_type, $limit) {
     else {
       // Discard this entry
       $rows[] = NULL;
-      apachesolr_entity_delete($record->entity_id, $record->entity_type);
+      // Delete if from the index - Do not use apachesolr_entity_delete because
+      // the module does not want to load a complete entity
+      if (apachesolr_index_delete_entity_from_index($env_id, $record->entity_type, $record->entity_id)) {
+        // There was no exception, so delete from the table.
+        db_delete($table)
+          ->condition('entity_type', $entity_type)
+          ->condition('entity_id', $id)
+          ->execute();
+      }
     }
   }
   return $rows;
