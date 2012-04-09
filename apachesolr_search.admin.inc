@@ -597,7 +597,7 @@ function apachesolr_search_delete_search_page_confirm_submit($form, &$form_state
       'The %label search page configuration has been deleted.',
       array('%label' => $form_state['values']['label'])
     ));
-    watchdog('apachesolr_search', 'Deleted search page configuration "@page_id".', array('@page_id' => $form_state['values']['page_id']), WATCHDOG_NOTICE);
+    watchdog('Apache Solr', 'Deleted search page configuration "@page_id".', array('@page_id' => $form_state['values']['page_id']), WATCHDOG_NOTICE);
 
     // Rebuilds the menu cache.
     menu_rebuild();
