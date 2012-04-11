@@ -325,12 +325,14 @@ function hook_apachesolr_index_document_build(ApacheSolrDocument $document, $ent
  * @param $entity_type
  */
 function hook_apachesolr_index_document_build_ENTITY_TYPE(ApacheSolrDocument $document, $entity, $env_id) {
-  // Index book module data.
-  if (!empty($entity->book['bid'])) {
-    // Hard-coded - must change if apachesolr_index_key() changes.
-    $document->is_book_bid = (int) $entity->book['bid'];
+  // Index field_main_image as a separate field
+  if ($entity->type == 'profile') {
+    $user = user_load(array('uid' => $entity->uid));
+    // Hard coded field, not recommended for inexperienced users.
+    $document->setMultiValue('sm_field_main_image', $user->picture);
   }
 }
+
 /**
  * Alter the prepared documents from one entity before sending them to Solr.
  *
