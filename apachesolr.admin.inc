@@ -927,6 +927,7 @@ function apachesolr_index_batch_index_entities($env_id, &$context) {
 
     $status = apachesolr_index_status($env_id);
     $context['sandbox']['progress'] = 0;
+    $context['sandbox']['submitted'] = 0;
     $context['sandbox']['max'] = $status['remaining'];
   }
 
@@ -934,8 +935,20 @@ function apachesolr_index_batch_index_entities($env_id, &$context) {
   // timeout or out of memory error.
   $limit = variable_get('apachesolr_cron_limit', 50);
 
-  $context['sandbox']['progress'] += apachesolr_index_entities($env_id, $limit);
-  $context['message'] = t('Indexed @current of @total nodes', array('@current' => $context['sandbox']['progress'], '@total' => $context['sandbox']['max']));
+  if ($context['sandbox']['max'] >= $context['sandbox']['progress'] + $limit) {
+    $context['sandbox']['progress'] += $limit;
+  }
+  else {
+    $context['sandbox']['progress'] = $context['sandbox']['max'];
+  }
+  $context['sandbox']['submitted'] += apachesolr_index_entities($env_id, $limit);
+
+  $arguments = array(
+    '@current' => $context['sandbox']['progress'],
+    '@total' => $context['sandbox']['max'],
+    '@submitted' => $context['sandbox']['submitted'],
+    );
+  $context['message'] = t('Indexed @current of @total nodes. Submitted @submitted documents to Solr', $arguments);
 
   // Inform the batch engine that we are not finished, and provide an
   // estimation of the completion level we reached.
@@ -945,6 +958,7 @@ function apachesolr_index_batch_index_entities($env_id, &$context) {
   // show it to the admin.
   if ($context['finished']) {
     $context['results']['count'] = $context['sandbox']['progress'];
+    $context['results']['submitted'] = $context['sandbox']['submitted'];
   }
 }
 
@@ -955,7 +969,10 @@ function apachesolr_index_batch_index_finished($success, $results, $operations) 
   $message = '';
   // $results['count'] will not be set if Solr is unavailable.
   if (isset($results['count'])) {
-    $message .= format_plural($results['count'], '1 item processed successfully.', '@count items successfully processed.');
+    $message .= format_plural($results['count'], '1 item processed successfully. ', '@count items successfully processed. ');
+  }
+  if (isset($results['submitted'])) {
+    $message .= format_plural($results['submitted'], '1 document successfully sent to Solr.', '@count documents successfully sent to Solr.');
   }
   if ($success) {
     $type = 'status';

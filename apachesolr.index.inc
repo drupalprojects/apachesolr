@@ -16,8 +16,12 @@ function apachesolr_index_entities($env_id, $limit) {
     $rows = apachesolr_index_get_entities_to_index($env_id, $entity_type, $limit);
     $documents = array();
     foreach ($rows as $row) {
-      if (!empty($row)) {
+      if (!empty($row->status)) {
         $documents = array_merge($documents, apachesolr_index_entity_to_documents($row, $env_id));
+      }
+      else {
+        // Delete the entity from our index if the status callback returned 0
+        apachesolr_remove_entity($env_id, $row->entity_type, $row->entity_id);
       }
     }
 
@@ -28,7 +32,7 @@ function apachesolr_index_entities($env_id, $limit) {
       $max_changed = $index_position['last_changed'];
       $max_entity_id = $index_position['last_entity_id'];
       foreach ($rows as $row) {
-        if (!empty($row)) {
+        if (!empty($row->status)) {
           if ($row->changed > $max_changed) {
             $max_changed = $row->changed;
           }
@@ -41,7 +45,6 @@ function apachesolr_index_entities($env_id, $limit) {
       apachesolr_set_last_index_updated($env_id, REQUEST_TIME);
     }
   }
-
   return $entities_processed;
 }
 
@@ -68,7 +71,6 @@ function apachesolr_index_status($env_id) {
     // for ordering we're grabbing the oldest first and then ordering by ID so
     // that we get a definitive order.
     $query = db_select($table, 'aie')
-      ->condition('aie.status', 1)
       ->condition('aie.bundle', $bundles)
       ->condition(db_or()
         ->condition('aie.changed', $last_changed, '>')
@@ -338,8 +340,7 @@ function apachesolr_index_get_entities_to_index($env_id, $entity_type, $limit) {
   // for ordering we're grabbing the oldest first and then ordering by ID so
   // that we get a definitive order.
   $query = db_select($table, 'aie')
-    ->fields('aie', array('entity_type', 'entity_id', 'changed'))
-    ->condition('aie.status', 1)
+    ->fields('aie', array('entity_type', 'entity_id', 'changed', 'status'))
     ->condition('aie.bundle', $bundles)
     ->condition(db_or()
       ->condition('aie.changed', $last_changed, '>')
@@ -357,33 +358,15 @@ function apachesolr_index_get_entities_to_index($env_id, $entity_type, $limit) {
 
   $status_callbacks = apachesolr_entity_get_callback($entity_type, 'status callback');
   foreach ($records as $record) {
-    // Check status callback before sending to the index
-    $status = TRUE;
+    // Check status and status callbacks before sending to the index
     foreach($status_callbacks as $status_callback) {
       if (is_callable($status_callback)) {
         // by placing $status in front we prevent calling any other callback
         // after one status callback returned false
-        $status = $status && $status_callback($record->entity_id, $record->entity_type);
+        $record->status = $record->status && $status_callback($record->entity_id, $record->entity_type);
       }
     }
-
-    // Delete the entity from our index if the status callback returns 0
-    if ($status == TRUE) {
-      $rows[] = $record;
-    }
-    else {
-      // Discard this entry
-      $rows[] = NULL;
-      // Delete if from the index - Do not use apachesolr_entity_delete because
-      // the module does not want to load a complete entity
-      if (apachesolr_index_delete_entity_from_index($env_id, $record->entity_type, $record->entity_id)) {
-        // There was no exception, so delete from the table.
-        db_delete($table)
-          ->condition('entity_type', $entity_type)
-          ->condition('entity_id', $id)
-          ->execute();
-      }
-    }
+    $rows[] = $record;
   }
   return $rows;
 }
@@ -405,7 +388,7 @@ function apachesolr_index_delete_index($env_id) {
     drupal_alter('apachesolr_delete_by_query', $query);
     $solr->deleteByQuery($query);
     $solr->commit();
-    apachesolr_clear_last_index_position($env_id);
+    apachesolr_index_mark_for_reindex($env_id);
     apachesolr_set_last_index_updated($env_id, REQUEST_TIME);
   }
   catch (Exception $e) {
@@ -458,7 +441,7 @@ function apachesolr_index_delete_entity_from_index($env_id, $entity_type, $entit
 }
 
 /**
- * @param $entity_id
+ * @param $entity_type
  *
  * @throws Exception
  */
@@ -688,36 +671,7 @@ function apachesolr_index_node_solr_document(ApacheSolrDocument $document, $node
 
 
 function apachesolr_index_node_bundles_changed($env_id, $existing_bundles, $new_bundles) {
-  $removed_bundles = array_diff($existing_bundles, $new_bundles);
-  $added_bundles = array_diff($new_bundles, $existing_bundles);
-  $indexer_table = apachesolr_get_indexer_table('node');
-  $transaction = db_transaction();
-  try {
-    if ($removed_bundles) {
-      db_delete($indexer_table)
-        ->condition('entity_type', 'node')
-        ->condition('bundle', $removed_bundles)
-        ->execute();
-    }
-    if ($added_bundles) {
-      $select = db_select('node', 'n');
-      $select->addExpression("'node'", 'entity_type');
-      $select->condition('type', $added_bundles);
-      $select->addField('n', 'nid', 'entity_id');
-      $select->addField('n', 'type', 'bundle');
-      $select->addField('n', 'status', 'status');
-      $select->addExpression(REQUEST_TIME, 'changed');
-
-      $insert = db_insert($indexer_table)
-        ->fields(array('entity_id', 'bundle', 'status', 'entity_type', 'changed'))
-        ->from($select)
-        ->execute();
-    }
-  }
-  catch (Exception $e) {
-    $transaction->rollback();
-    throw $e;
-  }
+  // Nothing to do for now.
 }
 
 /**
@@ -731,10 +685,13 @@ function apachesolr_index_node_solr_reindex($env_id) {
   $indexer_table = apachesolr_get_indexer_table('node');
   $transaction = db_transaction();
   try {
+    // Leave status 0 rows - those need to be
+    // removed from the index later.
     db_delete($indexer_table)
-      ->condition('entity_type', 'node')
+      ->condition('status', 1)
       ->execute();
     $select = db_select('node', 'n');
+    $select->condition('status', 1);
     $select->addExpression("'node'", 'entity_type');
     $select->addField('n', 'nid', 'entity_id');
     $select->addField('n', 'type', 'bundle');
