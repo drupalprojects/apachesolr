@@ -1,6 +1,7 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
-Issue #1514314 by Nick_vh, Georgique: Fixed Error in apachesolr_entity_update().
+#1536936 by pwolanin: Fix for Use json.nl=map for Luke and other json data.
+#1514314 by Nick_vh, Georgique: Fixed Error in apachesolr_entity_update().
 
 Apache Solr integration 6.x-3.0-alpha1, 2012-04-03
 ------------------------------
