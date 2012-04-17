@@ -449,7 +449,7 @@ function apachesolr_index_delete_entity_from_index($env_id, $entity_type, $entit
   try {
     $solr = apachesolr_get_solr($env_id);
     $document_id = apachesolr_document_id($entity_id, $entity_type);
-    $query = "id:$id OR sm_parent_document_id:$document_id";
+    $query = "id:$document_id OR sm_parent_document_id:$document_id";
     $solr->deleteByQuery($query);
     $solr->commit();
     apachesolr_set_last_index_updated($env_id, REQUEST_TIME);

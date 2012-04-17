@@ -948,7 +948,7 @@ function apachesolr_index_batch_index_entities($env_id, &$context) {
     '@total' => $context['sandbox']['max'],
     '@submitted' => $context['sandbox']['submitted'],
     );
-  $context['message'] = t('Indexed @current of @total nodes. Submitted @submitted documents to Solr', $arguments);
+  $context['message'] = t('Indexed @current of @total entities. Submitted @submitted documents to Solr', $arguments);
 
   // Inform the batch engine that we are not finished, and provide an
   // estimation of the completion level we reached.
