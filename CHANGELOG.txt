@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1536600 by Nick_vh: Fixed Performance optimizations when doing hundreds of deletes.
 #1515822 by pwolanin, Nick_vh: Added Support notion of parent entity for derived documents. Follow-Up
 #1515822 by pwolanin, Nick_vh: Added Support notion of parent entity for derived documents.
 #1519900 by pwolanin, Nick_vh, Georgique: Fixed Error in apachesolr_index_get_entities_to_index() function.
