@@ -10,14 +10,32 @@
  * Send up to $limit entities of each type into the index.
  */
 function apachesolr_index_entities($env_id, $limit) {
-  $entities_processed = 0;
+  $documents_submitted = 0;
   foreach (entity_get_info() as $entity_type => $info) {
     // With each pass through the callback, retrieve the next group of nids.
     $rows = apachesolr_index_get_entities_to_index($env_id, $entity_type, $limit);
     $documents = array();
     foreach ($rows as $row) {
       if (!empty($row->status)) {
-        $documents = array_merge($documents, apachesolr_index_entity_to_documents($row, $env_id));
+        // Let any module exclude this entity from the index.
+        $build_document = TRUE;
+        foreach (module_implements('apachesolr_exclude') as $module) {
+          $exclude = module_invoke($module, 'apachesolr_exclude', $row->entity_id, $entity_type, $row, $env_id);
+          // If the hook returns TRUE we should exclude the entity
+          if (!empty($exclude)) {
+            $build_document = FALSE;
+          }
+        }
+        foreach (module_implements('apachesolr_' . $entity_type . '_exclude') as $module) {
+          $exclude = module_invoke($module, 'apachesolr_' . $entity_type . '_exclude', $row->entity_id, $row, $env_id);
+          // If the hook returns TRUE we should exclude the entity
+          if (!empty($exclude)) {
+            $build_document = FALSE;
+          }
+        }
+        if ($build_document) {
+          $documents = array_merge($documents, apachesolr_index_entity_to_documents($row, $env_id));
+        }
       }
       else {
         // Delete the entity from our index if the status callback returned 0
@@ -27,7 +45,7 @@ function apachesolr_index_entities($env_id, $limit) {
 
     $indexed = apachesolr_index_send_to_solr($env_id, $documents);
     if ($indexed !== FALSE) {
-      $entities_processed += count($rows);
+      $documents_submitted += count($documents);
       $index_position = apachesolr_get_last_index_position($env_id, $entity_type);
       $max_changed = $index_position['last_changed'];
       $max_entity_id = $index_position['last_entity_id'];
@@ -45,7 +63,7 @@ function apachesolr_index_entities($env_id, $limit) {
       apachesolr_set_last_index_updated($env_id, REQUEST_TIME);
     }
   }
-  return $entities_processed;
+  return $documents_submitted;
 }
 
 /**
@@ -184,11 +202,6 @@ function apachesolr_index_entity_to_documents($item, $env_id) {
  * @return number indexed, or FALSE on failure.
  */
 function apachesolr_index_send_to_solr($env_id, $documents) {
-  // Do not index when we do not have any documents to send
-  if (empty($documents)) {
-    return FALSE;
-  }
-
   try {
     // Get the $solr object
     $solr = apachesolr_get_solr($env_id);
@@ -201,7 +214,11 @@ function apachesolr_index_send_to_solr($env_id, $documents) {
     watchdog('Apache Solr', nl2br(check_plain($e->getMessage())), NULL, WATCHDOG_ERROR);
     return FALSE;
   }
-
+  // Do not index when we do not have any documents to send
+  // Send TRUE because this is not an error
+  if (empty($documents)) {
+    return TRUE;
+  }
   // Send the document off to Solr.
   watchdog('Apache Solr', 'Adding @count documents.', array('@count' => count($documents)));
   try {
@@ -339,8 +356,9 @@ function apachesolr_index_get_entities_to_index($env_id, $entity_type, $limit) {
   // Find the next batch of entities to index for this entity type.  Note that
   // for ordering we're grabbing the oldest first and then ordering by ID so
   // that we get a definitive order.
+  // Also note that we fetch ALL fields from the indexer table
   $query = db_select($table, 'aie')
-    ->fields('aie', array('entity_type', 'entity_id', 'changed', 'status'))
+    ->fields('aie')
     ->condition('aie.bundle', $bundles)
     ->condition(db_or()
       ->condition('aie.changed', $last_changed, '>')
