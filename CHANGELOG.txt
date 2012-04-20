@@ -1,3 +1,5 @@
+test
+
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
 #1536936 by pwolanin: Fix for Use json.nl=map for Luke and other json data.
