@@ -194,7 +194,8 @@ function hook_apachesolr_delete_by_query_alter($query) {
     $query .= ' AND hash:' . apachesolr_site_hash();
   }
 }
-/*
+
+/**
  * This is the place to look for the replacement to hook_apachesolr_node_exclude
  * You should define a replacement for the status callback and return
  * FALSE for entities which you do not want to appear in the index and TRUE for
