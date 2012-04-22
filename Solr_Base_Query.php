@@ -572,7 +572,12 @@ class SolrBaseQuery extends SolrFilterSubQuery implements DrupalSolrQueryInterfa
     if (isset($new_keywords)) {
       return $this->base_path . '/' . $new_keywords;
     }
-    return $this->base_path . '/' . $this->getParam('q');
+    elseif ($this->getParam('q')) {
+      return $this->base_path . '/' . $this->getParam('q');
+    }
+    else {
+      return $this->base_path;
+    }
   }
 
   public function getSolrsortUrlQuery() {
