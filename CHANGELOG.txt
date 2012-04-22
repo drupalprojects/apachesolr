@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1532214 by setvik, pwolanin: Fox for mergePolicy syntax has changed and throws error in Apache Solr 3.6, update config versions.
 #1536936 by pwolanin: Fix for Use json.nl=map for Luke and other json data.
 #1514314 by Nick_vh, Georgique: Fixed Error in apachesolr_entity_update().
 
