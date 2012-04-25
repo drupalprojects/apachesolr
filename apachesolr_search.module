@@ -24,7 +24,7 @@ function apachesolr_search_init() {
   if ($show_facets && module_exists('facetapi')) {
 
     // Converts current path to lowercase for case insensitive matching.
-    $path = drupal_strtolower(drupal_get_path_alias(current_path()));
+    $path = drupal_strtolower(drupal_get_path_alias($_GET['q']));
     $facet_pages = apachesolr_environment_variable_get($search_page->env_id, 'apachesolr_search_facet_pages', '');
 
     // Iterates over each environment to check if an empty query should be run.

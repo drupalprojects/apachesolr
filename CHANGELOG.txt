@@ -1,8 +1,10 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
 #1538244 by by julianmancera: Fix for Solr base query adds an extra slasj in getPath() when there is no 'q' param.
-#1532214 by setvik, pwolanin: Fox for mergePolicy syntax has changed and throws error in Apache Solr 3.6, update config versions.
+#1532214 by setvik, pwolanin: Fix for mergePolicy syntax has changed and throws error in Apache Solr 3.6, update config versions.
 #1536936 by pwolanin: Fix for Use json.nl=map for Luke and other json data.
+#1514314 by Nick_vh, Georgique: Fixed Error in apachesolr_entity_update().
+#1547672 by xeconsulting: Fixed apachesolr_search().module - line 27 - current_path() should be replaced with $_GET['q'].
 #1514314 by Nick_vh, Georgique: Fixed Error in apachesolr_entity_update().
 
 Apache Solr integration 6.x-3.0-alpha1, 2012-04-03
