@@ -59,7 +59,7 @@ function apachesolr_menu() {
     'weight'             => -10,
     'access arguments'   => array('administer search'),
     'file'               => 'apachesolr.admin.inc',
-    'type'               => MENU_LOCAL_TASK,
+    'type'               => MENU_DEFAULT_LOCAL_TASK,
   );
   $items['admin/settings/apachesolr/enabled-filters'] = array(
     'title'              => 'Enabled filters',
