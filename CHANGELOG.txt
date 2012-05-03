@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1558626 by pwolanin: fix for broken OR facet when value has spaces (committed in 16ef187).
 #1538244 by by julianmancera: Fix for Solr base query adds an extra slasj in getPath() when there is no 'q' param.
 #1532214 by setvik, pwolanin: Fox for mergePolicy syntax has changed and throws error in Apache Solr 3.6, update config versions.
 #1536936 by pwolanin: Fix for Use json.nl=map for Luke and other json data.
