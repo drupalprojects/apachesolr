@@ -1,12 +1,12 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1559880 by pwolanin: fix for 'retain filters' checkbox does not work.
 #1558626 by pwolanin: fix for broken OR facet when value has spaces (committed in 16ef187).
-#1538244 by by julianmancera: Fix for Solr base query adds an extra slasj in getPath() when there is no 'q' param.
+#1538244 by by julianmancera: Fix for Solr base query adds an extra slash in getPath() when there is no 'q' param.
 #1532214 by setvik, pwolanin: Fox for mergePolicy syntax has changed and throws error in Apache Solr 3.6, update config versions.
 #1536936 by pwolanin: Fix for Use json.nl=map for Luke and other json data.
 #1536628 by Nick_vh: Added exclude hook that allows to skip content without removing it from the table.
 #1536600 by Nick_vh: Fixed Performance optimizations when doing hundreds of deletes.
-#1515822 by pwolanin, Nick_vh: Added Support notion of parent entity for derived documents. Follow-Up
 #1515822 by pwolanin, Nick_vh: Added Support notion of parent entity for derived documents.
 #1519900 by pwolanin, Nick_vh, Georgique: Fixed Error in apachesolr_index_get_entities_to_index() function.
 

@@ -63,30 +63,27 @@ function apachesolr_search_custom_page_search_form($form, &$form_state, $search_
     '#value' => t('Search'),
   );
 
-  $apachesolr_has_searched = apachesolr_has_searched($search_page->env_id);
-  $query = apachesolr_current_query($search_page->env_id);
+  $form['basic']['get'] = array(
+    '#type' => 'hidden',
+    '#default_value' => json_encode(array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1))),
+  );
 
-  if ($apachesolr_has_searched) {
+  $fq = NULL;
+
+  if (apachesolr_has_searched($search_page->env_id)) {
     $query = apachesolr_current_query($search_page->env_id);
-    $searcher = $query->getSearcher();
     // We use the presence of filter query params as a flag for the retain filters checkbox.
     $fq = $query->getParam('fq');
   }
 
-  if ($apachesolr_has_searched && ($response = apachesolr_static_response_cache($searcher))) {
-    $form['basic']['get'] = array(
-      '#type' => 'hidden',
-      '#default_value' => json_encode(array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1))),
+  if ($fq || isset($form_state['input']['retain-filters'])) {
+    $form['basic']['retain-filters'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Retain current filters'),
+      '#default_value' => (int) !empty($_GET['retain-filters']),
     );
+  }
 
-    if ($fq) {
-      $form['basic']['retain-filters'] = array(
-        '#type' => 'checkbox',
-        '#title' => t('Retain current filters'),
-        '#default_value' => (int) isset($_GET['retain-filters']),
-      );
-    }
-        }
   return $form;
 }
 
@@ -103,13 +100,12 @@ function apachesolr_search_custom_page_search_form_submit(&$form, &$form_state) 
     $get = json_decode($form_state['values']['get'], TRUE);
   }
   if (!empty($form_state['values']['retain-filters'])) {
-    // Add our saved value
+    // Add our saved values
     $get['retain-filters'] = '1';
-    // Add the query values into the redirect.
-    $form_state['redirect'] = array($redirect, array('query' => $get));
   }
   else {
-    // Redirects to path set in configuration.
-    $form_state['redirect'] = $redirect;
+    $get = array();
   }
+  // Add the query values into the redirect.
+  $form_state['redirect'] = array($redirect, array('query' => $get));
 }
