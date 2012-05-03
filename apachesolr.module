@@ -85,7 +85,7 @@ function apachesolr_menu() {
     'access arguments'   => array('administer search'),
     'weight'             => 0,
     'file'               => 'apachesolr.admin.inc',
-    'type'               => MENU_DEFAULT_LOCAL_TASK,
+    'type'               => MENU_LOCAL_TASK,
   );
   $items[$settings_path . '%apachesolr_environment/index/remaining'] = array(
     'title'              => 'Remaining',
