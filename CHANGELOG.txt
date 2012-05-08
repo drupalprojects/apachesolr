@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1567614 by pwolanin: fix for Uninstall is not complete.
 #1559880 by pwolanin: fix for 'retain filters' checkbox does not work.
 #1558626 by pwolanin: fix for broken OR facet when value has spaces (committed in 16ef187).
 #1538244 by by julianmancera: Fix for Solr base query adds an extra slash in getPath() when there is no 'q' param.

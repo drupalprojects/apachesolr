@@ -164,6 +164,10 @@ function apachesolr_search_uninstall() {
   }
   // Remove variables.
   variable_del('apachesolr_search_spellcheck');
+  variable_del('apachesolr_search_mlt_blocks');
+  variable_del('apachesolr_search_default_search_page');
+  // Remove blocks.
+  db_delete('block')->condition('module', 'apachesolr_search')->execute();
 }
 
 /**
