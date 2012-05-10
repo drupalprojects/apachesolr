@@ -731,20 +731,26 @@ function apachesolr_index_node_status_callback($entity_id, $entity_type) {
   return $status;
 }
 
-
 /**
- * Callback that converts term_reference field into an array
+ * Callback that converts term field into an array
  */
-function apachesolr_term_reference_indexing_callback($node, $field_name, $index_key, $field_info) {
+function apachesolr_term_indexing_callback($node, $field_name, $index_key, $field_info) {
   // Keep ancestors cached
   static $ancestors = array();
 
   $fields = array();
   $vocab_names = array();
-  if (!empty($node->{$field_name}) && function_exists('taxonomy_get_parents_all')) {
-    $field = $node->$field_name;
-    list($lang, $items) = each($field);
-    foreach ($items as $item) {
+  $field_terms = array();
+
+  $vid = $field_info['field']['vid'];
+  foreach($node->taxonomy as $tid => $term) {
+    if($term->vid == $vid) {
+      $field_terms[$tid] = $term;
+    }
+  }
+
+  if (!empty($field_terms) && function_exists('taxonomy_get_parents_all')) {
+    foreach ($field_terms as $term) {
       // Triple indexing of tids lets us do effecient searches (on tid)
       // and do accurate per field or per-vocabulary faceting.
 
@@ -752,10 +758,10 @@ function apachesolr_term_reference_indexing_callback($node, $field_name, $index_
       // sure that searches for general categories match specific
       // categories, e.g. Fruit -> apple, a search for fruit will find
       // content categorized with apple.
-      if (!isset($ancestors[$item['tid']])) {
-        $ancestors[$item['tid']] = taxonomy_get_parents_all($item['tid']);
+      if (!isset($ancestors[$term->tid])) {
+        $ancestors[$term->tid] = taxonomy_get_parents_all($term->tid);
       }
-      foreach ($ancestors[$item['tid']] as $ancestor) {
+      foreach ($ancestors[$term->tid] as $ancestor) {
         // Index parent term against the field. Note that this happens
         // regardless of whether the facet is set to show as a hierarchy or not.
         // We would need a separate field if we were to index terms without any

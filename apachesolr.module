@@ -1987,12 +1987,33 @@ function apachesolr_entity_fields($entity_type = 'node') {
         }
       }
     }
+    // Construct pseudo-fields for taxonomy
+    if(module_exists('taxonomy')) {
+      foreach(taxonomy_get_vocabularies() as $vid => $vocabulary) {
+        //@todo: think $row should be renamed to $field and $field to $field_info, $row is confusing, but this should be done in d7 and back-ported
+        //@todo: remove this and the above comment before commit
+        $field = $mappings['taxonomy_term'];
+        $field['name'] = 'taxonomy_vid_' . $vid;
+        $field['module_name'] = $vocabulary->module;
+        $field['display_name'] = $vocabulary->name;
+        $field['bundles'] = $vocabulary->nodes;
+        $field['multiple'] = $vocabulary->multiple;
+        // Faux field-info
+        $field['field'] = array();
+        $field['field']['field_name'] = 'taxonomy';
+        $field['field']['vid'] = $vid;
+        $field['field']['type'] = 'taxonomy_term';
+        if(!empty($field['bundles'])) {
+          $fields[$entity_type][apachesolr_index_key($field)] = $field;
+        }
+      }
+    }
   }
   return $fields[$entity_type];
 }
 
 /**
- * Implements hook_apachesolr_index_document_build().
+ * Implements hook_apachesolr_index_document_build() on behalf of content module.
  */
 function content_apachesolr_index_document_build(ApacheSolrDocument $document, $entity, $entity_type) {
   $indexed_fields = apachesolr_entity_fields($entity_type);
@@ -2249,7 +2270,7 @@ function apachesolr_hook_info() {
 }
 
 /**
- * Implements hook_apachesolr_field_mappings().
+ * Implements hook_apachesolr_field_mappings() on behalf of content module.
  */
 function content_apachesolr_field_mappings() {
   $mappings = array(
@@ -2283,6 +2304,23 @@ function content_apachesolr_field_mappings() {
       'facets' => TRUE,
       'query types' => array('term'),
       'query type' => 'term',
+      'facet mincount allowed' => TRUE,
+    ),
+  );
+  return $mappings;
+}
+
+/**
+ * Implements hook_apachesolr_field_mappings() on behalf of taxonomy module.
+ */
+function taxonomy_apachesolr_field_mappings() {
+  $mappings = array(
+    'taxonomy_term' => array(
+      'map callback' => 'facetapi_map_taxonomy_terms',
+      'hierarchy callback' => 'facetapi_get_taxonomy_hierarchy',
+      'indexing_callback' => 'apachesolr_term_indexing_callback',
+      'index_type' => 'integer',
+      'facets' => TRUE,
       'facet mincount allowed' => TRUE,
     ),
   );
