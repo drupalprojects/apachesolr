@@ -554,7 +554,7 @@ function apachesolr_user_update(&$edit, $account, $category) {
 }
 
 /**
- * Implements hook_taxonomy().
+ * Implements hook_term_update().
  *
  * Mark nodes as needing re-indexing if a term name changes.
  *
