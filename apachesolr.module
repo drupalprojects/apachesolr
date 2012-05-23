@@ -2078,6 +2078,28 @@ function apachesolr_userreference_map_callback($facets, $options) {
 }
 
 /**
+ * Mapping callback for entity references.
+ */
+function apachesolr_entityreference_facet_map_callback(array $values, array $options) {
+  $map = array();
+  // Gathers entity ids so we can load multiple entities at a time.
+  $entity_ids = array();
+  foreach ($values as $value) {
+    list($entity_type, $id) = explode(':', $value);
+    $entity_ids[$entity_type][] = $id;
+  }
+  // Loads and maps entities.
+  foreach ($entity_ids as $entity_type => $ids) {
+    $entities = entity_load($entity_type, $ids);
+    foreach ($entities as $id => $entity) {
+      $key = $entity_type . ':' . $id;
+      $map[$key] = entity_label($entity_type, $entity);
+    }
+  }
+  return $map;
+}
+
+/**
  * Returns the callback function appropriate for a given entity type/bundle.
  *
  * @param string $entity_type
@@ -2384,6 +2406,24 @@ function user_reference_apachesolr_field_mappings() {
       'index_type' => 'integer',
       'map callback' => 'apachesolr_userreference_map_callback',
       'facets' => TRUE,
+    ),
+  );
+
+  return $mappings;
+}
+/**
+ * Implements hook_apachesolr_field_mappings() on behalf of EntityReferences (entityreference)
+ * @see http://drupal.org/node/1572722
+ */
+function entityreference_apachesolr_field_mappings() {
+  $mappings = array(
+    'entityreference' => array(
+      'indexing_callback' => 'apachesolr_entityreference_indexing_callback',
+      'map callback' => 'apachesolr_entityreference_facet_map_callback',
+      'index_type' => 'string',
+      'facets' => TRUE,
+      'query types' => array('term'),
+      'facet missing allowed' => TRUE,
     ),
   );
 

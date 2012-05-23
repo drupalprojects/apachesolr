@@ -1015,6 +1015,33 @@ function apachesolr_userreference_indexing_callback($entity, $field_name, $index
 }
 
 /**
+ * Indexing callback for entityreference fields.
+ */
+function apachesolr_entityreference_indexing_callback($entity, $field_name, $index_key, $field_info) {
+  $fields = array();
+  if (!empty($entity->{$field_name})) {
+
+    // Gets entity type and index key. We need to prefix the ID with the entity
+    // type so we know what entity we are dealing with in the mapping callback.
+    $entity_type = $field_info['field']['settings']['target_type'];
+    $index_key = apachesolr_index_key($field_info);
+
+    // Iterates over all references and adds them to the fields.
+    foreach ($entity->$field_name as $entity_references) {
+      foreach ($entity_references as $reference) {
+        if ($id = (!empty($reference['target_id'])) ? $reference['target_id'] : FALSE) {
+          $fields[] = array(
+            'key' => $index_key,
+            'value' => $entity_type . ':' . $id,
+          );
+        }
+      }
+    }
+  }
+  return $fields;
+}
+
+/**
  * Extract HTML tag contents from $text and add to boost fields.
  *
  * $text must be stripped of control characters before hand.

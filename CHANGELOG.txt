@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1572722 by eporama, cpliakas, wonder95: Added integration with the Entity References module.
 #1567614 by pwolanin: fix for Uninstall is not complete.
 #1559880 by pwolanin: fix for 'retain filters' checkbox does not work.
 #1558626 by pwolanin: fix for broken OR facet when value has spaces (committed in 16ef187).
