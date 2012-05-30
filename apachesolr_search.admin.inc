@@ -385,7 +385,7 @@ function apachesolr_search_page_settings_form($form, &$form_state, $search_page 
   $form['advanced']['apachesolr_search_allow_user_input'] = array(
     '#type' => 'checkbox',
     '#title' => t('Allow user input using the URL'),
-    '#description' => t('Allow users to use the URL (mysite.com?q=test&fq=userinput) for manual facetting. This will only work after a search term is searched. Recommended is to leave this unchecked'),
+    '#description' => t('Allow users to use the URL for manual facetting via fq[] params (e.g. http://example.com/search/site/test?fq[]=uid:1&fq[]=tid:99). This will only work in combination with a keyword search. The recommended value is unchecked'),
     '#default_value' => $default_value,
   );
 
