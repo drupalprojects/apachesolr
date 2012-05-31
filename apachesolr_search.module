@@ -825,6 +825,7 @@ function apachesolr_search_search_results($keys = NULL, $conditions = NULL, $sea
       if (empty($search_page)) {
         // Something must have been really messed up.
         apachesolr_failure(t('Solr search'), $keys);
+        return array();
       }
     }
     if (empty($conditions)) {
