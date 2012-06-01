@@ -629,9 +629,8 @@ function apachesolr_search_mlt_suggestions($settings, $id, $solr = NULL) {
 
     $response = $query->search();
 
-    if ($response->response) {
-      $docs = (array) end($response->response);
-      return $docs;
+    if (isset($response->response->docs)) {
+      return (array) $response->response->docs;
     }
   }
   catch (Exception $e) {
