@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1568126 by fearlsgroove, pwolanin: Fixed Apachesolr causes all simpletests to fail.
 #1609030 by pwolanin: Fix for Missing search page still executes search.
 #1572722 by eporama, cpliakas, wonder95: Added integration with the Entity References module.
 #1567614 by pwolanin: fix for Uninstall is not complete.

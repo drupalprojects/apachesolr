@@ -2202,18 +2202,6 @@ function apachesolr_hook_info() {
 }
 
 /**
- * Implements hook_hook_info_alter().
- */
-function apachesolr_hook_info_alter(&$hooks) {
-  // we can't do this in apachesolr_hook_info() until http://drupal.org/node/1415278 is fixed
-  foreach (entity_get_info() as $entity_type => $info) {
-    $hooks['apachesolr_index_document_build_' . $entity_type] = array(
-        'group' => 'apachesolr',
-      );
-    }
-}
-
-/**
  * Implements hook_apachesolr_field_mappings().
  */
 function field_apachesolr_field_mappings() {
