@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1609184 by pwolanin: Minor code cleanup in MLT response handling.
 #1609030 by pwolanin: Fix for Missing search page still executes search.
 #1494576 by gnucifer: Added Taxonomy facets.
 #1558626 by pwolanin: fix for broken OR facet when value has spaces.
