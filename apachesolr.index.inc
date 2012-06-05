@@ -382,13 +382,21 @@ function apachesolr_index_get_entities_to_index($env_id, $entity_type, $limit) {
       $rows[] = NULL;
       // Delete it from the index if it would be there already
       apachesolr_entity_delete($record->entity_id, $record->entity_type);
+      // Delete if from the index - Do not use apachesolr_entity_delete because
+      // the module does not want to load a complete entity
+      if (apachesolr_index_delete_entity_from_index($env_id, $record->entity_type, $record->entity_id)) {
+        // There was no exception, so delete from the table.
+        $query = "DELETE FROM {{$table}} WHERE entity_type = '%s' AND entity_id = %d";
+        $arguments = array($entity_type, $entity_id);
+        db_query($query, $arguments);
+      }
     }
   }
   return $rows;
 }
 
 /**
- * Delete an index from an environment and/or a specific entity type
+ * Delete the whole index for an environment.
  * @param String $env_id
  * @param String $type
  */
@@ -412,12 +420,23 @@ function apachesolr_index_delete_index($env_id) {
   }
 }
 
-function apachesolr_index_delete_bundles($env_id, $entity_type, $excluded_bundles) {
+/**
+ * Delete from the index documents with the entity type and any of the excluded bundles.
+ *
+ * Also deletes all documents that have the entity type and bundle as a parent.
+ *
+ * @param string $env_id
+ * @param string $entity_type
+ * @param array $excluded_bundles
+ *
+ * @return TRUE on success, FALSE on failure.
+ */
+function apachesolr_index_delete_bundles($env_id, $entity_type, array $excluded_bundles) {
   // Remove newly omitted bundles.
   try {
     $solr = apachesolr_get_solr($env_id);
     foreach ($excluded_bundles as $bundle) {
-      $query = "bundle:$bundle AND entity_type:$entity_type";
+      $query = "(bundle:$bundle AND entity_type:$entity_type) OR sm_parent_entity_bundle:{$entity_type}-{$bundle}";
       // Allow other modules to modify the delete query.
       // For example, use the site hash so that you only delete this site's
       // content:  $query = 'hash:' . apachesolr_site_hash()
@@ -427,15 +446,24 @@ function apachesolr_index_delete_bundles($env_id, $entity_type, $excluded_bundle
     if ($excluded_bundles) {
       $solr->commit();
     }
+    return TRUE;
   }
   catch (Exception $e) {
     watchdog('Apache Solr', nl2br(check_plain($e->getMessage())), NULL, WATCHDOG_ERROR);
-    drupal_set_message(t('The Apache Solr search engine is not available. Please contact your site administrator.'), 'error');
+    return FALSE;
   }
 }
 
 /**
- * Delete an entity from the indexer.
+ * Delete an entity from the index.
+ *
+ * Also deletes all documents that have the deleted document as a parent.
+ *
+ * @param string $env_id
+ * @param string $entity_type
+ * @param string $entity_id
+ *
+ * @return TRUE on success, FALSE on failure.
  */
 function apachesolr_index_delete_entity_from_index($env_id, $entity_type, $entity_id) {
   static $failed = FALSE;
@@ -444,7 +472,10 @@ function apachesolr_index_delete_entity_from_index($env_id, $entity_type, $entit
   }
   try {
     $solr = apachesolr_get_solr($env_id);
-    $solr->deleteById(apachesolr_document_id($entity_id, $entity_type));
+    $document_id = apachesolr_document_id($entity_id, $entity_type);
+    $query = "id:$document_id OR sm_parent_document_id:$document_id";
+    $solr->deleteByQuery($query);
+    $solr->commit();
     apachesolr_set_last_index_updated($env_id, APACHESOLR_REQUEST_TIME);
     return TRUE;
   }

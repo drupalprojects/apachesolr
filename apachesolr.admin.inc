@@ -1067,10 +1067,14 @@ function apachesolr_index_config_form_submit($form, &$form_state) {
     // even if there is no change so the admin can remove
     // bundles if there was an error.
     $excluded_bundles = array_diff($all_bundles, $new_bundles);
-    apachesolr_index_delete_bundles($env_id, $entity_type, $excluded_bundles);
-    $callback = apachesolr_entity_get_callback($entity_type, 'bundles changed callback');
-    if (!empty($callback)) {
-      call_user_func($callback, $env_id, $existing_bundles, $new_bundles);
+    if (apachesolr_index_delete_bundles($env_id, $entity_type, $excluded_bundles)) {
+      $callback = apachesolr_entity_get_callback($entity_type, 'bundles changed callback');
+      if (!empty($callback)) {
+        call_user_func($callback, $env_id, $existing_bundles, $new_bundles);
+      }
+    }
+    else {
+      drupal_set_message(t('The Apache Solr search engine is not available. Please contact your site administrator.'), 'error');
     }
   }
 

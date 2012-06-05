@@ -1833,7 +1833,7 @@ function apachesolr_entity_should_index($entity, $type) {
 function apachesolr_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
   switch ($op) {
     case 'delete':
-      apachesolr_entity_delete($node->nid, 'node');
+      apachesolr_entity_delete($node, 'node');
       break;
     case 'insert':
     case 'update':
@@ -1865,7 +1865,7 @@ function apachesolr_entity_update($entity, $type) {
 
     // Delete the entity from our index if the status callback returns FALSE
     if ($status == FALSE) {
-      return apachesolr_entity_delete($id, $type);
+      return apachesolr_entity_delete($entity, $type);
     }
 
     $indexer_table = apachesolr_get_indexer_table($type);
@@ -1898,14 +1898,17 @@ function apachesolr_get_indexer_table($type) {
  *
  * @see apachesolr_node_delete().
  */
-function apachesolr_entity_delete($entity_id, $entity_type) {
+function apachesolr_entity_delete($entity, $entity_type) {
   $env_id = apachesolr_default_environment();
   module_load_include('inc', 'apachesolr', 'apachesolr.index');
-  if (apachesolr_index_delete_entity_from_index($env_id, $entity_type, $entity_id)) {
+
+  // Always nodes
+  $id = $entity->nid;
+  if (apachesolr_index_delete_entity_from_index($env_id, $entity_type, $id)) {
     // There was no exception, so delete from the table.
     $indexer_table = apachesolr_get_indexer_table($entity_type);
     $query = "DELETE FROM {{$indexer_table}} WHERE entity_type = '%s' AND entity_id = %d";
-    db_query($query, array($entity_type, $entity_id));
+    db_query($query, array($entity_type, $id));
   }
 }
 
