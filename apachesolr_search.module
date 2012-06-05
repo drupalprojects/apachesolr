@@ -125,19 +125,20 @@ function apachesolr_search_menu() {
 }
 
 function apachesolr_search_menu_alter(&$items) {
-  $search_pages = apachesolr_search_load_all_search_pages();
   // Gets default search information.
   $search_types = apachesolr_search_load_all_search_types();
+  $search_pages = apachesolr_search_load_all_search_pages();
+
   // Iterates over search pages, builds menu items.
   foreach ($search_pages as $search_page) {
-    $search_page = apachesolr_search_page_load($search_page['page_id']);
-    if (!$search_page) {
+    // Validate the environment ID in case of import or missed deletion.
+    $environment = apachesolr_environment_load($search_page['env_id']);
+    if (!$environment) {
       continue;
     }
 
-    // Validate the environment ID in case of import or missed deletion.
-    $environment = apachesolr_environment_load($search_page->env_id);
-    if (!$environment) {
+    $search_page = apachesolr_search_page_load($search_page['page_id']);
+    if (!$search_page) {
       continue;
     }
 
@@ -513,13 +514,9 @@ function apachesolr_search_block_save($delta = '', $edit = array()) {
  *   Array of all search pages
  */
 function apachesolr_search_load_all_search_pages() {
+  $search_pages = array();
   // Get all search_pages and their id
   if (db_table_exists('apachesolr_search_page')) {
-    $search_pages = array();
-    $result = db_query('SELECT * FROM {apachesolr_search_page}');
-    while($search_page = db_fetch_array($result)) {
-      $search_pages[$search_page['page_id']] = $search_page;
-    }
     // If ctools module is enabled, add search pages from code, e.g. from a
     // feature module.
     if (module_exists('ctools')) {
@@ -531,9 +528,19 @@ function apachesolr_search_load_all_search_pages() {
         }
       }
     }
-    return $search_pages;
+    // Get all search_pages and their id
+    $search_pages_db = db_query('SELECT * FROM {apachesolr_search_page}');
+    while($search_page = db_fetch_array($search_pages_db)) {
+      $search_pages[$search_page['page_id']] = $search_page;
+    }
+    // convert settings to an array
+    foreach ($search_pages as $id => $search_page) {
+      if (is_string($search_pages[$id]['settings'])) {
+        $search_pages[$id]['settings'] = unserialize($search_pages[$id]['settings']);
+      }
+    }
   }
-  return array();
+  return $search_pages;
 }
 
 function apachesolr_search_load_all_mlt_blocks() {

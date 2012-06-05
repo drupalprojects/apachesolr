@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1498490 by Nick_vh, milesw: Fixed Menu paths for custom search pages are broken when exported as features.
 #1609184 by pwolanin: Minor code cleanup in MLT response handling.
 #1609030 by pwolanin: Fix for Missing search page still executes search.
 #1494576 by gnucifer: Added Taxonomy facets.
