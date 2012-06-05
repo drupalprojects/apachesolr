@@ -507,12 +507,8 @@ function apachesolr_failure($search_name, $querystring) {
     default:
       // If we're failing over to another module make sure the search is available.
       if (module_exists('search')) {
-        $search_info = search_get_info();
-        if (isset($search_info[$fail_rule])) {
-          $search_info = $search_info[$fail_rule];
           drupal_set_message(t("%search_name is not available. Your search is being redirected.", array('%search_name' => $search_name)));
-          drupal_goto('search/' . $search_info['path'] . '/' . drupal_encode_path($querystring));
-        }
+          drupal_goto('search/node/' . drupal_encode_path($querystring));
       }
       // if search is not enabled, break and do nothing
       break;

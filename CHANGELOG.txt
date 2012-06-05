@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1554552 by Nick_vh | xeconsulting: Fixed Call to undefined function search_get_info() in apachesolr.module on line 508.
 #1611338 by remimikalsen: Added Allowing several bundles to share the same field name within a given entity type after field_mapping_alter().
 #1567614 by pwolanin, Nick_vh: Fixed Uninstall is not complete.
 #1536628 by Nick_vh: Added exclude hook that allows to skip content without removing it from the table.
