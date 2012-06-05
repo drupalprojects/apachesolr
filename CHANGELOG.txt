@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1536600 by Nick_vh: Fixed Performance optimizations when doing hundreds of deletes.
 #1515822 by pwolanin, Nick_vh, drasgardian: Added Support notion of parent entity for derived documents.
 #1515580 by Nick_vh | yannou: Fixed Deleting node is impossible, stdClass problem.
 #1498490 by Nick_vh, milesw: Fixed Menu paths for custom search pages are broken when exported as features.
