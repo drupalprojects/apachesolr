@@ -220,7 +220,7 @@ function apachesolr_schema() {
           'not null' => TRUE,
         ),
         'status' => array(
-          'description' => 'Boolean indicating whether the entity is visible to non-administrators (eg, published for nodes).',
+          'description' => 'Boolean indicating whether the entity should be in the index.',
           'type' => 'int',
           'not null' => TRUE,
           'default' => 1,
@@ -233,7 +233,7 @@ function apachesolr_schema() {
         ),
       ),
       'indexes' => array(
-        'changed' => array('bundle', 'status', 'changed'),
+        'bundle_changed' => array('bundle', 'changed'),
       ),
       'primary key' => array('entity_id'),
     );
@@ -290,4 +290,20 @@ function apachesolr_uninstall() {
   drupal_uninstall_schema('apachesolr');
   // Remove blocks.
   db_query('DELETE FROM {blocks} WHERE module = "apachesolr"');
+}
+
+/**
+ * Remove status from the key.
+ */
+function apachesolr_update_6301() {
+  $ret = array();
+  $types = array(
+    'other' => 'apachesolr_index_entities',
+    'node' => 'apachesolr_index_entities_node',
+  );
+  foreach ($types as $type => $table) {
+    db_drop_index($ret, $table, 'changed');
+    db_add_index($ret, $table, 'bundle_changed', array('bundle', 'changed'));
+  }
+  return $ret;
 }

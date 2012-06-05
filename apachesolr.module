@@ -1864,8 +1864,9 @@ function apachesolr_entity_update($entity, $type) {
     }
 
     // Delete the entity from our index if the status callback returns FALSE
-    if ($status == FALSE) {
-      return apachesolr_entity_delete($entity, $type);
+    if (!$status) {
+      apachesolr_entity_delete($entity, $type);
+      return;
     }
 
     $indexer_table = apachesolr_get_indexer_table($type);
@@ -1875,7 +1876,7 @@ function apachesolr_entity_update($entity, $type) {
     $query = "INSERT INTO {{$indexer_table}} (entity_type, entity_id, bundle, status, changed)
       VALUES ('%s', %d, '%s', %d, %d)
       ON DUPLICATE KEY UPDATE entity_type = '%s', entity_id = %d, bundle = '%s', status = %d, changed = %d";
-    db_query($query, array($type, $id, $bundle, $status, APACHESOLR_REQUEST_TIME, $type, $id, $bundle, $status, APACHESOLR_REQUEST_TIME));
+    db_query($query, array($type, $id, $bundle, 1, APACHESOLR_REQUEST_TIME, $type, $id, $bundle, 1, APACHESOLR_REQUEST_TIME));
   }
 }
 
@@ -1901,14 +1902,21 @@ function apachesolr_get_indexer_table($type) {
 function apachesolr_entity_delete($entity, $entity_type) {
   $env_id = apachesolr_default_environment();
   module_load_include('inc', 'apachesolr', 'apachesolr.index');
+  apachesolr_remove_entity($env_id, $entity_type, $entity->nid);
+}
 
-  // Always nodes
-  $id = $entity->nid;
-  if (apachesolr_index_delete_entity_from_index($env_id, $entity_type, $id)) {
+function apachesolr_remove_entity($env_id, $entity_type, $entity_id) {
+  module_load_include('inc', 'apachesolr', 'apachesolr.index');
+  $indexer_table = apachesolr_get_indexer_table($entity_type);
+  if (apachesolr_index_delete_entity_from_index($env_id, $entity_type, $entity_id)) {
     // There was no exception, so delete from the table.
-    $indexer_table = apachesolr_get_indexer_table($entity_type);
     $query = "DELETE FROM {{$indexer_table}} WHERE entity_type = '%s' AND entity_id = %d";
-    db_query($query, array($entity_type, $id));
+    db_query($query, array($entity_type, $entity_id));
+  }
+  else {
+    // Set status 0 so we try to delete from the index again in the future.
+    $query = "UPDATE {{$indexer_table}} asn SET asn.changed = '%s', status = 0 WHERE asn.entity_id = %d";
+    db_query($query, array(APACHESOLR_REQUEST_TIME, 0, $entity_id));
   }
 }
 
