@@ -193,16 +193,55 @@ function hook_apachesolr_delete_by_query_alter($query) {
     $query .= ' AND hash:' . apachesolr_site_hash();
   }
 }
+/*
+ * This is the place to look for the replacement to hook_apachesolr_node_exclude
+ * You should define a replacement for the status callback and return
+ * FALSE for entities which you do not want to appear in the index and TRUE for
+ * those that you want to include
+ */
+
+/**
+ * This is invoked for each entity that is being inspected to be added to the
+ * index. if any module returns TRUE, the entity is skipped for indexing.
+ *
+ * @param integer $entity_id
+ * @param string $entity_type
+ * @param integer $row
+ *   A complete set of data from the indexing table.
+ * @param string $env_id
+ * @return boolean
+ */
+function hook_apachesolr_exclude($entity_id, $entity_type, $row, $env_id) {
+  // Never index media entities to core_1
+  if ($entity_type == 'media' && $env_id == 'core_1') {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+/**
+ * This is invoked for each entity from the type of ENTITY_TYPE that is being
+ * inspected to be added to the index. if any module returns TRUE, 
+ * the entity is skipped for indexing.
+ *
+ * @param integer $entity_id
+ * @param integer $row
+ *   A complete set of data from the indexing table.
+ * @param string $env_id
+ * @return boolean
+ */
+function hook_apachesolr_ENTITY_TYPE_exclude($entity_id, $row, $env_id) {
+  // Never index ENTITY_TYPE to core_1
+  if ($env_id == 'core_1') {
+    return TRUE;
+  }
+  return FALSE;
+}
 
 /**
  * Add information to index other entities.
  * There are some modules in http://drupal.org that can give a good example of
  * custom entity indexing such as apachesolr_user_indexer, apachesolr_term
- *
- * This is the place to look for the replacement to hook_apachesolr_node_exclude
- * You should define a replacement for the status callback and return
- * 0 for nodes which you do not want to appear in the index and 1 for nodes
- * that you do. See http://drupal.org/node/1474906 for an example.
  *
  * @param array $entity_info
  */
