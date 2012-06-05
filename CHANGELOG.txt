@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1567614 by pwolanin, Nick_vh: Fixed Uninstall is not complete.
 #1536628 by Nick_vh: Added exclude hook that allows to skip content without removing it from the table.
 #1519900 by pwolanin, Nick_vh, Georgique: Fixed Error in apachesolr_index_get_entities_to_index() function.
 #1536600 by Nick_vh: Fixed Performance optimizations when doing hundreds of deletes.

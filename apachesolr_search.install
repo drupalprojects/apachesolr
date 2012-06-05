@@ -163,6 +163,11 @@ function apachesolr_search_uninstall() {
   }
   // Remove variables.
   variable_del('apachesolr_search_spellcheck');
+  variable_del('apachesolr_search_mlt_blocks');
+  variable_del('apachesolr_search_default_search_page');
+
+  // Remove blocks.
+  db_query('DELETE FROM {blocks} WHERE module = "apachesolr_search"');
 
   // Remove tables.
   drupal_uninstall_schema('apachesolr_search');
