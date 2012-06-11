@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1481564 by milesw: Added Allow other modules to react when there are no results.
 #1470794 by pwolanin: Added Show size of index on disk in index report.
 #1586320 by cpliakas, pwolanin: Added support for the ExternalFileField field type.
 #1613328 by cpliakas: Fixed The service_class() is not passed to apachesolr_server_status() when checking each server's status on the settings page.
