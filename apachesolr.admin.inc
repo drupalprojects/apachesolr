@@ -461,9 +461,11 @@ function apachesolr_status_page($environment = NULL) {
         drupal_set_message(t('Your schema.xml version is too old. You must update it and re-index your content.'), 'error');
       }
       $pending_msg = $stats_summary['@pending_docs'] ? t('(@pending_docs sent but not yet processed)', $stats_summary) : '';
-      $indexed_message = t('@num Items !pending', array(
+      $index_msg = $stats_summary['@index_size'] ? t('(@index_size on disk)', $stats_summary) : '';
+      $indexed_message = t('@num Items !pending !index_msg', array(
         '@num' => $data->index->numDocs,
         '!pending' => $pending_msg,
+        '!index_msg' => $index_msg,
       ));
       $messages[] = array('Indexed', $indexed_message);
 
@@ -490,7 +492,7 @@ function apachesolr_status_page($environment = NULL) {
   $output['apachesolr_index_action_status'] = array(
     '#prefix' => '<h3>' . t('@environment: Search Index Content', array('@environment' => $environment['name'])) . '</h3>',
     '#theme' => 'table',
-    '#header' => array('type', 'value'),
+    '#header' => array(t('Type'), t('Value')),
     '#rows' => $messages,
   );
 
