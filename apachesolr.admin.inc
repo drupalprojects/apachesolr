@@ -324,7 +324,7 @@ function apachesolr_settings($form, &$form_state) {
     // want to check the statusses of any environment
     $class = '';
     if (empty($form_state['input'])) {
-      $class = apachesolr_server_status($data['url']) ? 'ok' : 'error';
+      $class = apachesolr_server_status($data['url'], $data['service_class']) ? 'ok' : 'error';
     }
 
     $headers = array(
@@ -431,7 +431,7 @@ function apachesolr_status_page($environment = NULL) {
   }
 
   // Check for availability
-  if (!apachesolr_server_status($environment['url'])) {
+  if (!apachesolr_server_status($environment['url'], $environment['service_class'])) {
     drupal_set_message(t('The server seems to be unavailable. Please verify the server settings at the <a href="!settings_page">settings page</a>', array('!settings_page' => url("admin/config/search/apachesolr/settings/{$environment['env_id']}/edit", array('query' =>  drupal_get_destination())))), 'warning');
     return '';
   }
