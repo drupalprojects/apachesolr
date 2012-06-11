@@ -90,6 +90,14 @@
     <fieldType name="tlong" class="solr.TrieLongField" precisionStep="8" omitNorms="true" positionIncrementGap="0"/>
     <fieldType name="tdouble" class="solr.TrieDoubleField" precisionStep="8" omitNorms="true" positionIncrementGap="0"/>
 
+    <!--
+     The ExternalFileField type gets values from an external file instead of the
+     index. This is useful for data such as rankings that might change frequently
+     and require different update frequencies than the documents they are
+     associated with.
+    -->
+    <fieldType name="pfloat" class="solr.FloatField" omitNorms="true"/>
+    <fieldType name="file" keyField="id" defVal="1" stored="false" indexed="false" class="solr.ExternalFileField" valType="pfloat"/>
 
     <!-- The format for this date field is of the form 1995-12-31T23:59:59Z, and
          is a more restricted form of the canonical representation of dateTime
@@ -481,6 +489,9 @@
    <dynamicField name="locm_*" type="location" indexed="true"  stored="true" multiValued="true"/>
    <dynamicField name="geos_*" type="geohash" indexed="true"  stored="true" multiValued="false"/>
    <dynamicField name="geom_*" type="geohash" indexed="true"  stored="true" multiValued="true"/>
+
+   <!-- External file fields -->
+   <dynamicField name="eff_*" type="file"/>
    <!-- End added fields for Solr 3.4+ -->
 
    <!-- Sortable version of the dynamic string field -->

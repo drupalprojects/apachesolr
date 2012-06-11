@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1586320 by cpliakas, pwolanin: Added support for the ExternalFileField field type.
 #1613328 by cpliakas: Fixed The service_class() is not passed to apachesolr_server_status() when checking each server's status on the settings page.
 #1621142 by pwolanin: Fixed Broken logic in indexing of extra data.
 #1627484 by gnucifer: Fixed 'allowed operator" not transfered from field definitions.
