@@ -653,19 +653,6 @@ function apachesolr_index_node_solr_document(ApacheSolrDocument $document, $node
   }
   $document->is_comment_count = isset($node->comment_count) ? $node->comment_count : 0;
 
-  // Fetch extra data normally not visible, including comments.
-  // We do this manually (with module_implements instead of node_invoke_nodeapi)
-  // because we want a keyed array to come back. Only in this way can we decide
-  // whether to index comments or not.
-  $extra = array();
-  $exclude_comments = in_array($node->type, variable_get('apachesolr_exclude_comments_types', array()), TRUE);
-
-  if (!empty($extra)) {
-    // Use an omit-norms text field since this is generally going to be short; not
-    // really a full-text field.
-    $document->tos_content_extra = apachesolr_clean_text(implode(' ', $extra));
-  }
-
   $document->type_name = node_type_get_name($node);
   $document->created = apachesolr_date_iso($node->created);
   $document->changed = apachesolr_date_iso($node->changed);
@@ -682,6 +669,9 @@ function apachesolr_index_node_solr_document(ApacheSolrDocument $document, $node
   // because we want a keyed array to come back. Only in this way can we decide
   // whether to index comments or not.
   $extra = array();
+  $excludes = variable_get('apachesolr_exclude_nodeapi_types', array());
+  $exclude_nodeapi = isset($excludes[$node->type]) ? $excludes[$node->type] : array();
+
   foreach (module_implements('node_update_index') as $module) {
     // Invoke nodeapi if this module has not been excluded, for example,
     // exclude 'comment' for a type to skip indexing its comments.
@@ -690,7 +680,7 @@ function apachesolr_index_node_solr_document(ApacheSolrDocument $document, $node
       if ($output = $function($node)) {
         $extra[$module] = $output;
       }
-  }
+    }
   }
   if (isset($extra['comment'])) {
     $comments = $extra['comment'];
@@ -698,9 +688,11 @@ function apachesolr_index_node_solr_document(ApacheSolrDocument $document, $node
     $document->ts_comments = apachesolr_clean_text($comments);
     // @todo: do we want to reproduce apachesolr_add_tags_to_document() for comments?
   }
-  // Use an omit-norms text field since this is generally going to be short; not
-  // really a full-text field.
-  $document->tos_content_extra = apachesolr_clean_text(implode(' ', $extra));
+  if (!empty($extra)) {
+    // Use an omit-norms text field since this is generally going to be short; not
+    // really a full-text field.
+    $document->tos_content_extra = apachesolr_clean_text(implode(' ', $extra));
+  }
 
   //  Generic usecase for future reference. Callbacks can
   //  allow you to send back multiple documents
