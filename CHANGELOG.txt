@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1627484 by gnucifer: Fixed 'allowed operator" not transfered from field definitions.
 #1627604 by Nick_vh: Fixed Add query type for taxonomy_term_reference().
 #1609184 by pwolanin: Minor code cleanup in MLT response handling .
 #1611338 by remimikalsen: Added Allowing several bundles to share the same field name within a given entity type after field_mapping_alter().

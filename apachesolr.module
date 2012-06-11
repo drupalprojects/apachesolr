@@ -351,6 +351,9 @@ function apachesolr_default_node_facet_info($searcher_info) {
         if (!empty($field_info['query types'])) {
           $facets[$field]['query types'] = $field_info['query types'];
         }
+        if(!empty($field_info['allowed operators'])) {
+          $facets[$field]['allowed operators'] = $field_info['allowed operators'];
+        }
         // TODO : This is actually deprecated but we should still support
         // older versions of facetapi. We should remove once facetapi has RC1
         // For reference : http://drupal.org/node/1161444
