@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1522174 by pwolanin: Fixed hook_node_type_delete() is wrong.
 #1576710 by skwashd: Added Indexing with drush cron generates a lot of invalid cron notifications.
 #1543754 by iamEAP: Fixed Schema inconsistency introduced by apachesolr_update_7013.
 #1481564 by milesw: Added Allow other modules to react when there are no results.
