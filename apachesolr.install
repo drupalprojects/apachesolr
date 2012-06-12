@@ -815,3 +815,13 @@ function apachesolr_update_7014() {
     db_add_index($table, 'bundle_changed', array('bundle', 'changed'));
   }
 }
+
+
+/**
+ * Fix primary key schema mismatch for those who cleanly installed with beta16.
+ */
+function apachesolr_update_7015() {
+  // Brand new installations since update_7013 have the wrong primary key.
+  db_drop_primary_key('apachesolr_index_entities');
+  db_add_primary_key('apachesolr_index_entities', array('entity_id', 'entity_type'));
+}
