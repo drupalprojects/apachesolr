@@ -595,16 +595,19 @@ function apachesolr_index_node_solr_document(ApacheSolrDocument $document, $node
 
   // Build the node body.
   $build = node_view($node, 'search_index');
-  // Why do we need this?
+  // Remove useless html crap out of the render.
   unset($build['#theme']);
   $text = drupal_render($build);
   $document->content = apachesolr_clean_text($text);
+
+  // Adding the teaser
   if (isset($node->teaser)) {
     $document->teaser = apachesolr_clean_text($node->teaser);
   }
   else {
     $document->teaser = truncate_utf8($document->content, 300, TRUE);
   }
+
   // Path aliases can have important information about the content.
   // Add them to the index as well.
   if (function_exists('drupal_get_path_alias')) {
@@ -618,6 +621,7 @@ function apachesolr_index_node_solr_document(ApacheSolrDocument $document, $node
     }
   }
 
+  // Author information
   $document->ss_name = $node->name;
   // We want the name to be searchable for keywords.
   $document->tos_name = $node->name;
@@ -627,14 +631,14 @@ function apachesolr_index_node_solr_document(ApacheSolrDocument $document, $node
   $username = format_username($account);
   $document->ss_name_formatted = $username;
   $document->tos_name_formatted = $username;
-
-  // Everything else uses dynamic fields
   $document->is_uid = $node->uid;
   $document->bs_status = $node->status;
   $document->bs_sticky = $node->sticky;
   $document->bs_promote = $node->promote;
   $document->is_tnid = $node->tnid;
   $document->bs_translate = $node->translate;
+
+  // Language specific checks
   if (empty($node->language)) {
     // 'und' is the language-neutral code in Drupal 7.
     $document->ss_language = LANGUAGE_NONE;
@@ -642,27 +646,20 @@ function apachesolr_index_node_solr_document(ApacheSolrDocument $document, $node
   else {
     $document->ss_language = $node->language;
   }
+
+  // Timestamp of the node
   $document->ds_created = apachesolr_date_iso($node->created);
   $document->ds_changed = apachesolr_date_iso($node->changed);
+
+  // Comment counts + time
   if (isset($node->last_comment_timestamp) && !empty($node->comment_count)) {
     $document->ds_last_comment_timestamp = apachesolr_date_iso($node->last_comment_timestamp);
     $document->ds_last_comment_or_change = apachesolr_date_iso(max($node->last_comment_timestamp, $node->changed));
+    $document->is_comment_count = $node->comment_count;
   }
   else {
     $document->ds_last_comment_or_change = apachesolr_date_iso($node->changed);
   }
-  $document->is_comment_count = isset($node->comment_count) ? $node->comment_count : 0;
-
-  $document->type_name = node_type_get_name($node);
-  $document->created = apachesolr_date_iso($node->created);
-  $document->changed = apachesolr_date_iso($node->changed);
-  $last_change = (isset($node->last_comment_timestamp) && $node->last_comment_timestamp > $node->changed) ? $node->last_comment_timestamp : $node->changed;
-  $document->last_comment_or_change = apachesolr_date_iso($last_change);
-  $document->comment_count = isset($node->comment_count) ? $node->comment_count : 0;
-
-  // We need to get the real username here, since it needs a full user object.
-  // That means we can't do the format_username() call on the display side.
-  $document->name = format_username(user_load($node->uid));
 
   // Fetch extra data normally not visible, including comments.
   // We do this manually (with module_implements instead of node_invoke_nodeapi)
@@ -682,12 +679,16 @@ function apachesolr_index_node_solr_document(ApacheSolrDocument $document, $node
       }
     }
   }
+
+  // Adding the text of the comments
   if (isset($extra['comment'])) {
     $comments = $extra['comment'];
+    // Remove comments from the extra fields
     unset($extra['comment']);
     $document->ts_comments = apachesolr_clean_text($comments);
     // @todo: do we want to reproduce apachesolr_add_tags_to_document() for comments?
   }
+  // If there are other extra fields, add them to the document
   if (!empty($extra)) {
     // Use an omit-norms text field since this is generally going to be short; not
     // really a full-text field.
