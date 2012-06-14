@@ -377,11 +377,13 @@ function apachesolr_index_get_entities_to_index($env_id, $entity_type, $limit) {
   $status_callbacks = apachesolr_entity_get_callback($entity_type, 'status callback');
   foreach ($records as $record) {
     // Check status and status callbacks before sending to the index
-    foreach($status_callbacks as $status_callback) {
-      if (is_callable($status_callback)) {
-        // by placing $status in front we prevent calling any other callback
-        // after one status callback returned false
-        $record->status = $record->status && $status_callback($record->entity_id, $record->entity_type);
+    if (is_array($status_callbacks)) {
+      foreach($status_callbacks as $status_callback) {
+        if (is_callable($status_callback)) {
+          // by placing $status in front we prevent calling any other callback
+          // after one status callback returned false
+          $record->status = $record->status && $status_callback($record->entity_id, $record->entity_type);
+        }
       }
     }
     $rows[] = $record;

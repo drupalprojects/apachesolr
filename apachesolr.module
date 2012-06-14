@@ -1781,14 +1781,17 @@ function apachesolr_entity_update($entity, $type) {
     $info = entity_get_info($type);
     list($id, $vid, $bundle) = entity_extract_ids($type, $entity);
 
-    $status_callbacks = apachesolr_entity_get_callback($type, 'status callback');
     // Check status callback before sending to the index
+    $status_callbacks = apachesolr_entity_get_callback($type, 'status callback');
+
     $status = TRUE;
-    foreach($status_callbacks as $status_callback) {
-      if (is_callable($status_callback)) {
-        // by placing $status in front we prevent calling any other callback
-        // after one status callback returned false
-        $status = $status && $status_callback($id, $type);
+    if (is_array($status_callbacks)) {
+      foreach($status_callbacks as $status_callback) {
+        if (is_callable($status_callback)) {
+          // by placing $status in front we prevent calling any other callback
+          // after one status callback returned false
+          $status = $status && $status_callback($id, $type);
+        }
       }
     }
 
