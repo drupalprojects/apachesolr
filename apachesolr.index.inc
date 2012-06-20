@@ -398,14 +398,27 @@ function apachesolr_index_get_entities_to_index($env_id, $entity_type, $limit) {
 
 /**
  * Delete the whole index for an environment.
- * @param String $env_id
- * @param String $type
+ *
+ * @param string $env_id
+ *   The solr environment indentifier.
+ * @param string $entity_type
+ *   (optional) specify to remove just this entity_type from the index.
+ * @param string $bundle
+ *   (optional) also specify a bundle to remove just the bundle from
+ *   the index.
  */
-function apachesolr_index_delete_index($env_id) {
+function apachesolr_index_delete_index($env_id, $entity_type = NULL, $bundle = NULL) {
   // Instantiate a new Solr object.
   try {
     $solr = apachesolr_get_solr($env_id);
     $query = '*:*';
+
+    if (!empty($entity_type) && !empty($bundle)) {
+      $query = "(bundle:$bundle AND entity_type:$entity_type) OR sm_parent_entity_bundle:{$entity_type}-{$bundle}";
+    }
+    elseif (!empty($bundle)) {
+      $query = "(bundle:$bundle)";
+    }
 
     // Allow other modules to modify the delete query.
     // For example, use the site hash so that you only delete this site's
@@ -413,7 +426,17 @@ function apachesolr_index_delete_index($env_id) {
     drupal_alter('apachesolr_delete_by_query', $query);
     $solr->deleteByQuery($query);
     $solr->commit();
-    apachesolr_index_mark_for_reindex($env_id);
+
+    if (!empty($entity_type)) {
+      $rebuild_callback = apachesolr_entity_get_callback($entity_type, 'reindex callback');
+      if (is_callable($rebuild_callback)) {
+        $rebuild_callback($env_id, $bundle);
+      }
+    }
+    else {
+      apachesolr_index_mark_for_reindex($env_id);
+    }
+
     apachesolr_set_last_index_updated($env_id, APACHESOLR_REQUEST_TIME);
   }
   catch (Exception $e) {
@@ -438,6 +461,7 @@ function apachesolr_index_delete_bundles($env_id, $entity_type, array $excluded_
     $solr = apachesolr_get_solr($env_id);
     foreach ($excluded_bundles as $bundle) {
       $query = "(bundle:$bundle AND entity_type:$entity_type) OR sm_parent_entity_bundle:{$entity_type}-{$bundle}";
+
       // Allow other modules to modify the delete query.
       // For example, use the site hash so that you only delete this site's
       // content:  $query = 'hash:' . apachesolr_site_hash()
@@ -697,21 +721,49 @@ function apachesolr_index_node_bundles_changed($env_id, $existing_bundles, $new_
 /**
  * Reindexing callback for ApacheSolr, for nodes.
  *
- * @param String $env_id
+ * @param string $env_id
+ *   The solr environment
+ * @param string|null $bundle
+ *   (optional) The bundle type to reindex. If not used
+ *   all bundles will be reindexed.
  *
  * @throws Exception
  */
-function apachesolr_index_node_solr_reindex($env_id) {
+function apachesolr_index_node_solr_reindex($env_id, $bundle = NULL) {
   $indexer_table = apachesolr_get_indexer_table('node');
   try {
-    // Leave status 0 rows - those need to be
-    // removed from the index later.
-    db_query("DELETE FROM {{$indexer_table}} WHERE entity_type = 'node' AND status = 1");
+    $indexable_bundles = apachesolr_get_index_bundles($env_id, 'node');
+    if ($bundle && !empty($indexable_bundles) && !in_array($bundle, $indexable_bundles)) {
+      // The bundle specified is not in the indexable bundles list.
+      return;
+    }
 
-    $query = "INSERT INTO {{$indexer_table}} (entity_id, bundle, status, entity_type, changed) (
-      SELECT n.nid AS entity_id, n.type AS bundle, n.status AS status, 'node' AS entity_type, %d AS changed
-      FROM node n WHERE status = 1)";
-    db_query($query, array(APACHESOLR_REQUEST_TIME));
+    // in the 6.x-3.x version we are not very respective to what bundles we
+    // keep or remove in contrary to the 7.x-1.x version. db layer makes our
+    // life complicated
+    if ($bundle) {
+      // Leave status 0 rows - those need to be
+      // removed from the index later.
+      db_query("DELETE FROM {{$indexer_table}} WHERE entity_type = 'node' AND bundle = '%s' AND status = 1", array($bundle));
+      // Mark all nodes of the specified content type for reindexing.
+      $query = "INSERT INTO {{$indexer_table}} (entity_id, bundle, status, entity_type, changed) (
+        SELECT n.nid AS entity_id, n.type AS bundle, n.status AS status, 'node' AS entity_type, %d AS changed
+        FROM node n WHERE n.type = '%s' AND status = 1)";
+      db_query($query, array(APACHESOLR_REQUEST_TIME, $bundle));
+    }
+    else {
+      // Leave status 0 rows - those need to be
+      // removed from the index later.
+      db_query("DELETE FROM {{$indexer_table}} WHERE entity_type = 'node' AND status = 1");
+      $query = "INSERT INTO {{$indexer_table}} (entity_id, bundle, status, entity_type, changed) (
+        SELECT n.nid AS entity_id, n.type AS bundle, n.status AS status, 'node' AS entity_type, %d AS changed
+        FROM node n WHERE status = 1)";
+      db_query($query, array(APACHESOLR_REQUEST_TIME));
+    }
+
+
+
+
   }
   catch (Exception $e) {
     throw $e;

@@ -8,45 +8,33 @@
 /**
  * Implements hook_drush_command().
  *
- * In this hook, you specify which commands your
- * drush module makes available, what it does and
- * description.
- *
- * Notice how this structure closely resembles how
- * you define menu hooks.
- *
- * @see drush_parse_command()
- *   for a list of recognized keys.
- *
- * @return
+ * @return array
  *   An associative array describing your command(s).
  */
 function apachesolr_drush_command() {
   $items = array();
 
-  // the key in the $items array is the name of the command.
   $items['solr-delete-index'] = array(
-    // the name of the function implementing your command.
     'callback' => 'apachesolr_drush_solr_delete_index',
-    // a short description of your command
     'description' => dt('Deletes the content from the index. Can take content types as parameters.'),
     'arguments' => array(
       'types' => dt('Optional. A space delimited list of content types to be deleted from the index.'),
     ),
+    'examples' => array(
+      'drush solr-delete-index node' => 'Delete all node content from the index.',
+      'drush solr-delete-index node:article' => 'Delete all content of the article content type from the index.',
+      'drush solr-delete-index node:article node:blog' => 'Delete all content of the article and blog content types from the index.',
+    ),
   );
   $items['solr-mark-all'] = array(
-    // the name of the function implementing your command.
     'callback' => 'apachesolr_drush_solr_mark_for_reindex',
-    // a short description of your command
     'description' => dt('Marks content for reindexing. Can take content types as parameters.'),
     'arguments' => array(
       'types' => dt('Optional. A space delimited list of content types to be marked for reindexing.'),
     ),
   );
   $items['solr-index'] = array(
-    // the name of the function implementing your command.
     'callback' => 'apachesolr_drush_solr_index',
-    // a short description of your command
     'description' => dt('Reindexes content marked for (re)indexing.'),
   );
   $items['solr-search'] = array(
@@ -92,10 +80,10 @@ function apachesolr_drush_command() {
  * This function is called whenever a drush user calls
  * 'drush help <name-of-your-command>'
  *
- * @param
+ * @param string $section
  *   A string with the help section (prepend with 'drush:')
  *
- * @return
+ * @return string
  *   A string with the help text for your command.
  */
 function apachesolr_drush_help($section) {
@@ -112,21 +100,36 @@ function apachesolr_drush_help($section) {
 }
 
 /**
- * Example drush command callback.
+ * Selectively delete content from the apachesolr index.
  *
- * This is where the action takes place.
- *
- * In this function, all of Drupals API is (usually) available, including
- * any functions you have added in your own modules/themes.
- *
- * To print something to the terminal window, use drush_print().
- *
+ * Each argument is a filter on what to delete from the index.
+ * They are of the form entity (to delete all content of that
+ * entity) or entity:bundle (to delete all content of that
+ * bundle).
  */
 function apachesolr_drush_solr_delete_index() {
   module_load_include('inc', 'apachesolr', 'apachesolr.index');
   $args = func_get_args();
   $env_id = apachesolr_default_environment();
-  apachesolr_index_delete_index($env_id);
+
+  if (count($args) > 0) {
+    foreach ($args as $type) {
+      $parts = explode(':', $type);
+      if (count($parts) === 1) {
+        apachesolr_index_delete_index($env_id, $type);
+      }
+      elseif (count($parts) == 2) {
+        apachesolr_index_delete_index($env_id, $parts[0], $parts[1]);
+      }
+      else {
+        drush_set_error('The syntax for each type is either entity or entity:bundle');
+      }
+    }
+  }
+  else {
+    apachesolr_index_delete_index($env_id);
+  }
+
   drush_print(t('Deleted the Solr index'));
 }
 
