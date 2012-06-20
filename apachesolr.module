@@ -2432,9 +2432,9 @@ function apachesolr_get_max_date(array $facet) {
  * Implements hook_apachesolr_field_mappings() on behalf of References (node_reference).
  * @see http://drupal.org/node/1059372
  */
-function node_reference_apachesolr_field_mappings() {
+function nodereference_apachesolr_field_mappings() {
   $mappings = array(
-    'node_reference' => array(
+    'nodereference' => array(
       'indexing_callback' => 'apachesolr_nodereference_indexing_callback',
       'index_type' => 'integer',
       'map callback' => 'apachesolr_nodereference_map_callback',
@@ -2449,9 +2449,9 @@ function node_reference_apachesolr_field_mappings() {
  * Implements hook_apachesolr_field_mappings() on behalf of References (user_reference).
  * @see http://drupal.org/node/1059372
  */
-function user_reference_apachesolr_field_mappings() {
+function userreference_apachesolr_field_mappings() {
   $mappings = array(
-    'user_reference' => array(
+    'userreference' => array(
       'indexing_callback' => 'apachesolr_userreference_indexing_callback',
       'index_type' => 'integer',
       'map callback' => 'apachesolr_userreference_map_callback',

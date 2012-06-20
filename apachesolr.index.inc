@@ -1019,6 +1019,13 @@ function apachesolr_nodereference_indexing_callback($entity, $field_name, $index
     $index_key = apachesolr_index_key($field_info);
     foreach ($entity->$field_name as $field_references) {
       foreach ($field_references as $reference) {
+
+        // Validate that reference is an array
+        // If not, skip this element
+        if(!is_array($reference)){
+          continue;
+        }
+
         if ($index_value = (!empty($reference['nid'])) ? $reference['nid'] : FALSE) {
           $fields[] = array(
             'key' => $index_key,
@@ -1041,6 +1048,13 @@ function apachesolr_userreference_indexing_callback($entity, $field_name, $index
     $index_key = apachesolr_index_key($field_info);
     foreach ($entity->$field_name as $field_references) {
       foreach ($field_references as $reference) {
+
+        // Validate that reference is an array
+        // If not, skip this element
+        if(!is_array($reference)){
+          continue;
+        }
+
         if ($index_value = (isset($reference['uid']) && strlen($reference['uid'])) ? $reference['uid'] : FALSE) {
           $fields[] = array(
             'key' => $index_key,
