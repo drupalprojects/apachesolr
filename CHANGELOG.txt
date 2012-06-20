@@ -1,5 +1,8 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+
+Apache Solr integration 6.x-3.0-beta1, 06-20-2012
+------------------------------
 #1593580 by Nick_vh | jutulen: Fixed Testing connection erases form entries.
 #1547712 by Nick_vh | xeconsulting: Fixed fatal error: Call to undefined function taxonomy_term_load() in apachesolr_search().module line 258.
 #1631702 by Nick_vh, killua99 | khaled.zaidan: Fixed Report at admin/reports/apachesolr doesn't always display data from the current default solr server.
