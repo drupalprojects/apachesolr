@@ -262,6 +262,14 @@ function apachesolr_settings(&$form_state) {
   $default_environment = apachesolr_default_environment();
 
   apachesolr_check_facetapi();
+
+  // Check if core search is still running
+  if (variable_get('search_cron_limit', 0) != 0) {
+    drupal_set_message(t('It seems that Drupal core search is not disabled.
+      This can cause performance impact at cron runs.
+      Please !url the per cron value to 0', array('!url' => l('set', 'admin/settings/search'))), 'warning');
+  }
+
   // Reserve a row for the default one
   $rows[$default_environment] = array();
 

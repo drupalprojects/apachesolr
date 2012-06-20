@@ -1186,11 +1186,11 @@ function apachesolr_index_nodeapi_mass_update($nodes, $table = NULL) {
     apachesolr_set_last_index_updated($env_id, APACHESOLR_REQUEST_TIME);
 
     // There was no exception, so update the table.
-    if ($published_ids) {
+    if (count($published_ids)) {
       $query = "UPDATE {{$table}} asn SET asn.changed = '%s' WHERE asn.entity_id IN " . db_placeholders($published_ids);
       db_query($query, array_merge(array(APACHESOLR_REQUEST_TIME), $published_ids));
     }
-    if ($unpublished_ids) {
+    if (count($unpublished_ids)) {
       $query = "UPDATE {{$table}} asn SET asn.changed = '%s', asn.status = 0 WHERE asn.entity_id IN " . db_placeholders($unpublished_ids);
       db_query($query, array_merge(array(APACHESOLR_REQUEST_TIME), $unpublished_ids));
     }

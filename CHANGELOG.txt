@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1563520 by killua99 | xeconsulting: Fixed UPDATE unpublished nodes.
 #1559880 by pwolanin, Nick_vh: Fixed 'retain filters' checkbox does not work.
 #1512398 by webadpro: Fix Node Reference Fields.
 #1554552 by Nick_vh | xeconsulting: Fixed Call to undefined function search_get_info() in apachesolr.module on line 508.
