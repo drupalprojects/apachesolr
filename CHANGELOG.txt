@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1631702 by Nick_vh | khaled.zaidan: Fixed Report at admin/reports/apachesolr doesn't always display data from the current default solr server.
 #1647668 by paulmckibben: Fixed Error messages when indexing - Notice: Undefined property: stdClass::$nid in DatabaseStatementBase->fetchAllAssoc().
 #1475014 by ceng, Nick_vh: Fixed Drush command solr-delete-index ignores type arguments.
 #1588256 by InternetDevels.Com, Nick_vh | RaulMuroc: Fixed Warning: Invalid argument supplied for foreach() in apachesolr_entity_update() (line 1766 of /apachesolr/apachesolr.module).
