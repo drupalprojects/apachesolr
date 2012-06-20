@@ -1698,7 +1698,9 @@ function apachesolr_field_name_map($field_name) {
     }
     foreach (apachesolr_entity_fields('node') as $field_nm => $nodefields) {
       foreach ($nodefields as $field_info) {
-        $map[apachesolr_index_key($field_info)] = t('Field of type @type: %label', array('@type' => $field_info['field']['type'], '%label' => $field_info['display_name']));
+        if (is_array($field_info)) {
+          $map[apachesolr_index_key($field_info)] = t('Field of type @type: %label', array('@type' => $field_info['field']['type'], '%label' => $field_info['display_name']));
+        }
       }
     }
     drupal_alter('apachesolr_field_name_map', $map);
@@ -1855,14 +1857,17 @@ function apachesolr_entity_update($entity, $type) {
     $id = $entity->nid;
     $bundle = $entity->type;
 
-    $status_callbacks = apachesolr_entity_get_callback($type, 'status callback');
     // Check status callback before sending to the index
+    $status_callbacks = apachesolr_entity_get_callback($type, 'status callback');
+
     $status = TRUE;
-    foreach($status_callbacks as $status_callback) {
-      if (is_callable($status_callback)) {
-        // by placing $status in front we prevent calling any other callback
-        // after one status callback returned false
-        $status = $status && $status_callback($id, $type);
+    if (is_array($status_callbacks)) {
+      foreach($status_callbacks as $status_callback) {
+        if (is_callable($status_callback)) {
+          // by placing $status in front we prevent calling any other callback
+          // after one status callback returned false
+          $status = $status && $status_callback($id, $type);
+        }
       }
     }
 
@@ -2032,19 +2037,23 @@ function apachesolr_entity_fields($entity_type = 'node') {
 function content_apachesolr_index_document_build(ApacheSolrDocument $document, $entity, $entity_type) {
   $indexed_fields = apachesolr_entity_fields($entity_type);
   foreach ($indexed_fields as $index_key => $nodefields) {
-    foreach ($nodefields as $field_info) {
-      $field_name = $field_info['field']['field_name'];
-      // See if the node has fields that can be indexed
-      if (isset($entity->{$field_name})) {
-        // Got a field.
-        $function = $field_info['indexing_callback'];
-        if ($function && function_exists($function)) {
-          // NOTE: This function should always return an array.  One
-          // entity field may be indexed to multiple Solr fields.
-          $fields = $function($entity, $field_name, $index_key, $field_info);
-          foreach ($fields as $field) {
-            // It's fine to use this method also for single value fields.
-            $document->setMultiValue($field['key'], $field['value']);
+    if (!empty($nodefields)) {
+      foreach ($nodefields as $field_info) {
+        if (is_array($field_info['field'])) {
+          $field_name = $field_info['field']['field_name'];
+        }
+        // See if the node has fields that can be indexed
+        if (isset($entity->{$field_name})) {
+          // Got a field.
+          $function = $field_info['indexing_callback'];
+          if ($function && function_exists($function)) {
+            // NOTE: This function should always return an array.  One
+            // entity field may be indexed to multiple Solr fields.
+            $fields = $function($entity, $field_name, $index_key, $field_info);
+            foreach ($fields as $field) {
+              // It's fine to use this method also for single value fields.
+              $document->setMultiValue($field['key'], $field['value']);
+            }
           }
         }
       }
