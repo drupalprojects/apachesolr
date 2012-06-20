@@ -177,21 +177,28 @@ function apachesolr_menu() {
     'file'               => 'apachesolr.admin.inc',
     'type'               => MENU_CALLBACK,
   );
-  $env_id = apachesolr_default_environment();
-  $items['admin/reports/apachesolr'] = array(
+  $reports_path = 'admin/reports/apachesolr';
+  $items[$reports_path] = array(
     'title'              => 'Apache Solr search index',
     'description'        => 'Information about the contents of the index the server',
     'page callback'      => 'apachesolr_index_report',
-    'page arguments'     => array($env_id),
     'access arguments'   => array('access site reports'),
     'file'               => 'apachesolr.admin.inc',
   );
-  $items['admin/reports/apachesolr/index'] = array(
+  $items[$reports_path . '/%apachesolr_environment'] = array(
+    'title'              => 'Apache Solr search index',
+    'description'        => 'Information about the contents of the index the server',
+    'page callback'      => 'apachesolr_index_report',
+    'page arguments'     => array(3),
+    'access arguments'   => array('access site reports'),
+    'file'               => 'apachesolr.admin.inc',
+  );
+  $items[$reports_path . '/%apachesolr_environment/index'] = array(
     'title'              => 'Search index',
     'file'               => 'apachesolr.admin.inc',
     'type'               => MENU_DEFAULT_LOCAL_TASK,
   );
-  $items['admin/reports/apachesolr/conf'] = array(
+  $items[$reports_path . '/%apachesolr_environment/conf'] = array(
     'title'              => 'Configuration files',
     'page callback'      => 'apachesolr_config_files_overview',
     'access arguments'   => array('access site reports'),
@@ -199,10 +206,10 @@ function apachesolr_menu() {
     'weight'             => 5,
     'type'               => MENU_LOCAL_TASK,
   );
-  $items['admin/reports/apachesolr/conf/%'] = array(
+  $items[$reports_path . '/%apachesolr_environment/conf/%'] = array(
     'title'              => 'Configuration file',
     'page callback'      => 'apachesolr_config_file',
-    'page arguments'     => array(4),
+    'page arguments'     => array(5, 3),
     'access arguments'   => array('access site reports'),
     'file'               => 'apachesolr.admin.inc',
     'type'               => MENU_CALLBACK,

@@ -525,16 +525,30 @@ function apachesolr_status_page($environment = NULL) {
   return $output_print;
 }
 
-function apachesolr_index_report($env_id) {
+function apachesolr_index_report($environment = NULL) {
+  if (!$environment) {
+    $env_id = apachesolr_default_environment();
+    drupal_goto('admin/reports/apachesolr/' . $env_id);
+  }
+
+  $environments      = apachesolr_load_all_environments();
+  $environments_list = array();
+
+  foreach ($environments as $env) {
+    $var_status = array('@name' => $env['name']);
+    $environments_list[] = l(t('Statistics for @name', $var_status), 'admin/reports/apachesolr/' . $env['env_id']);
+  }
+  $output['environments_list'] = theme('item_list', $environments_list);
+
   try {
-    $solr = apachesolr_get_solr($env_id);
+    $solr = apachesolr_get_solr($environment['env_id']);
     $solr->clearCache();
     $data = $solr->getLuke();
   }
   catch (Exception $e) {
     watchdog('Apache Solr', nl2br(check_plain($e->getMessage())), NULL, WATCHDOG_ERROR);
     drupal_set_message(nl2br(check_plain($e->getMessage())), "warning");
-    return '';
+    return $output;
   }
 
   $messages = array();
@@ -548,7 +562,7 @@ function apachesolr_index_report($env_id) {
   elseif (isset($data->index->numDocs)) {
     $not_found = t('Not indexed');
     try {
-      $solr = apachesolr_get_solr($env_id);
+      $solr = apachesolr_get_solr($environment['env_id']);
       // Note: we use 2 since 1 fails on Ubuntu Hardy.
       $data = $solr->getLuke(2);
       $messages[] = array(t('# of terms in index'), $data->index->numTerms);
@@ -566,14 +580,14 @@ function apachesolr_index_report($env_id) {
   }
 
   // Output the messages we have for this page
-  $output['apachesolr_index_report'] = theme('table', array('type', 'value'), array_values($messages));
+  $output['apachesolr_index_report'] = theme('table', array(t('Type'), t('Value')), array_values($messages));
 
   if ($fields) {
     // Initializes table header.
     $header = array(
-      'name' => t('Field name'),
-      'type' => t('Index type'),
-      'terms' => t('Distinct terms'),
+      t('Field name'),
+      t('Index type'),
+      t('Distinct terms'),
     );
 
     // Builds table rows.
@@ -606,11 +620,18 @@ function apachesolr_index_report($env_id) {
 /**
  * Page callback to show available conf files.
  */
-function apachesolr_config_files_overview() {
+function apachesolr_config_files_overview($environment = NULL) {
+  if (!$environment) {
+    $env_id = apachesolr_default_environment();
+  }
+  else {
+    $env_id = $environment['env_id'];
+  }
+
   $xml = NULL;
   $output = NULL;
   try {
-    $solr = apachesolr_get_solr();
+    $solr = apachesolr_get_solr($env_id);
     $response = $solr->makeServletRequest('admin/file', array('wt' => 'xml'));
     $xml = simplexml_load_string($response->data);
   }
@@ -633,7 +654,7 @@ function apachesolr_config_files_overview() {
       // Get data from the files.
       $name =  $item->attributes();
       $name = ((string)$item->attributes()) ? (string)$item->attributes() : t('No name found');
-      $files[$item_id]['name'] = l($name, 'admin/reports/apachesolr/conf/' . $name);
+      $files[$item_id]['name'] = l($name, 'admin/reports/apachesolr/' . $env_id . '/conf/' . $name);
 
       // Retrieve the date attribute
       if (isset($item->date)) {
@@ -652,9 +673,9 @@ function apachesolr_config_files_overview() {
 
     // Initializes table header.
     $header = array(
-      'name' => t('File name'),
-      'date' => t('Modified'),
-      'size' => t('Size'),
+      t('File name'),
+      t('Modified'),
+      t('Size'),
     );
 
     // Display the table of field names, index types, and term counts.
@@ -670,10 +691,17 @@ function apachesolr_config_files_overview() {
 /**
  * Page callback to show one conf file.
  */
-function apachesolr_config_file($name) {
+function apachesolr_config_file($name, $environment = NULL) {
+  if (!$environment) {
+    $env_id = apachesolr_default_environment();
+  }
+  else {
+    $env_id = $environment['env_id'];
+  }
+
   $output = '';
   try {
-    $solr = apachesolr_get_solr();
+    $solr = apachesolr_get_solr($env_id);
     $response = $solr->makeServletRequest('admin/file', array('file' => $name));
     $raw_file = $response->data;
     $output = '<pre>' . check_plain($raw_file) . '</pre>';
