@@ -180,7 +180,7 @@ function apachesolr_environment_edit_test_submit($form, &$form_state) {
   else {
     drupal_set_message(t('Your site was unable to contact the Apache Solr server.'), 'error');
   }
-  $form_state['rebuild'] = TRUE;
+  //$form_state['rebuild'] = TRUE;
 }
 
 function apachesolr_environment_edit_validate($form, &$form_state) {
