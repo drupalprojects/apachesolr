@@ -639,7 +639,22 @@ function apachesolr_node_type($op, $info) {
   module_load_include('inc', 'apachesolr', 'apachesolr.index');
   $env_id = apachesolr_default_environment();
   if ($op == 'delete') {
-    apachesolr_index_mark_for_reindex($env_id, $info->type);
+    $env_id = apachesolr_default_environment();
+    $existing_bundles = apachesolr_get_index_bundles($env_id, 'node');
+    $new_bundles = $existing_bundles;
+    $index = array_search($info->type, $existing_bundles);
+
+    if ($index !== FALSE) {
+      unset($new_bundles[$index]);
+      $new_bundles = array_values($new_bundles);
+      apachesolr_index_set_bundles($env_id, 'node', $new_bundles);
+    }
+
+    apachesolr_index_delete_bundles($env_id, 'node', array($info->type));
+    $callback = apachesolr_entity_get_callback($entity_type, 'bundles changed callback');
+    if (!empty($callback)) {
+      call_user_func($callback, $env_id, $existing_bundles, $new_bundles);
+    }
   }
   elseif (!empty($info->old_type) && $info->old_type != $info->type) {
     // We cannot be sure we are going before or after node module.

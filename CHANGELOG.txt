@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1522174 by killua99, pwolanin: Fixed hook_node_type_delete() is wrong.
 #1588256 by killua99, InternetDevels.Com, Nick_vh | RaulMuroc: Follow-up : Fixed Warning: Invalid argument supplied for foreach() in apachesolr_entity_update() (line 1766 of /apachesolr/apachesolr.module).
 #1475014 by ceng, Nick_vh: Fixed Drush command solr-delete-index ignores type arguments.
 #1621142 by pwolanin, killua99: Fixed Broken logic in indexing of extra data.
