@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1627604 by Nick_vh: Fixed Add query type for taxonomy_term_reference().
 #1563520 by killua99 | xeconsulting: Fixed UPDATE unpublished nodes.
 #1559880 by pwolanin, Nick_vh: Fixed 'retain filters' checkbox does not work.
 #1512398 by webadpro: Fix Node Reference Fields.

@@ -2334,6 +2334,8 @@ function taxonomy_apachesolr_field_mappings() {
       'indexing_callback' => 'apachesolr_term_indexing_callback',
       'index_type' => 'integer',
       'facets' => TRUE,
+      'query types' => array('term'),
+      'query type' => 'term',
       'facet mincount allowed' => TRUE,
     ),
   );
