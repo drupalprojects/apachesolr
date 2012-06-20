@@ -1158,7 +1158,7 @@ function apachesolr_index_node_check_table() {
     ->isNull('n.nid')
     ->range(0, ($limit*2));
   $query->leftJoin('node', 'n', 'n.nid = aien.entity_id');
-  $nodes = $query->execute()->fetchAllAssoc('nid');
+  $nodes = $query->execute()->fetchAllAssoc('entity_id');
   $node_lists = array_chunk($nodes, $limit, TRUE);
 
   foreach ($node_lists as $nodes) {
