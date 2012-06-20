@@ -61,6 +61,7 @@ class ApacheSolrFacetapiDate extends FacetapiQueryTypeDate implements FacetapiQu
    */
   function getDateRange(DrupalSolrQueryInterface $query) {
     $return = NULL;
+
     // Attempts to get next gap from passed date filters.
     foreach ($this->adapter->getActiveItems($this->facet) as $value => $item) {
       if ($gap = facetapi_get_date_gap($item['start'], $item['end'])) {

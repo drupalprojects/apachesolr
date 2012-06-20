@@ -161,8 +161,7 @@ function apachesolr_search_menu_alter(&$items) {
       'file path' => drupal_get_path('module', 'apachesolr_search'),
     );
 
-    // Not using menu tail because of inflexibility with clean urls
-    $items[$search_page['search_path'] . '/%'] = array(
+    $items[$search_page['search_path'] . '/%menu_tail'] = array(
       'title' => $page_title,
       'load arguments' => array('%map', '%index'),
       'page callback' => 'apachesolr_search_custom_page',
@@ -181,13 +180,13 @@ function apachesolr_search_menu_alter(&$items) {
       $title_callback = $search_type['title callback'];
       $items[$search_page['search_path']]['title callback'] = $title_callback;
       $items[$search_page['search_path']]['title arguments'] = array($search_page['page_id'], $position);
-      $items[$search_page['search_path'] . '/%']['title callback'] = $title_callback;
-      $items[$search_page['search_path'] . '/%']['title arguments'] = array($search_page['page_id'], $position);
+      $items[$search_page['search_path'] . '/%menu_tail']['title callback'] = $title_callback;
+      $items[$search_page['search_path'] . '/%menu_tail']['title arguments'] = array($search_page['page_id'], $position);
     }
     // If we have additional searches in the search/* path
     if ($core_search) {
-      $items[$search_page['search_path'] . '/%']['tab_root'] = 'search/' . $default_info['path'] . '/%';
-      $items[$search_page['search_path'] . '/%']['tab_parent'] = 'search/' . $default_info['path'];
+      $items[$search_page['search_path'] . '/%menu_tail']['tab_root'] = 'search/' . $default_info['path'] . '/%';
+      $items[$search_page['search_path'] . '/%menu_tail']['tab_parent'] = 'search/' . $default_info['path'];
     }
 
     if ($taxonomy_search) {
@@ -1426,11 +1425,7 @@ function apachesolr_search_apachesolr_environment_delete($server) {
   menu_rebuild();
 }
 
-function apachesolr_search_form_search_block_form_alter(&$form, $form_state) {
-  if (variable_get('search_default_module') == 'apachesolr_search') {
-    $form['#submit'][] = 'apachesolr_search_form_search_submit';
-  }
-}
+
 /**
  * Implements hook_form_[form_id]_alter().
  *
@@ -1491,20 +1486,11 @@ function theme_apachesolr_search_suggestions($variables) {
  */
 function apachesolr_search_form_search_submit($form, &$form_state) {
   $fv = $form_state['values'];
-
-  if (isset($fv['apachesolr_search'])) {
-    $get = json_decode($fv['apachesolr_search']['get'], TRUE);
-    if (!empty($fv['apachesolr_search']['retain-filters'])) {
-      $get['retain-filters'] = '1';
-      // Add the query values into the redirect.
-      $form_state['redirect'] = array($form_state['redirect'], array('query' => $get));
-    }
-  }
-
-  // Replace keys with their rawurldecoded value
-  if (isset($fv['search_block_form'])) {
-    $raw_keys = rawurlencode($fv['search_block_form']);
-    $form_state['redirect'] = str_replace($fv['search_block_form'], $raw_keys, $form_state['redirect']);
+  $get = json_decode($fv['apachesolr_search']['get'], TRUE);
+  if (!empty($fv['apachesolr_search']['retain-filters'])) {
+    $get['retain-filters'] = '1';
+    // Add the query values into the redirect.
+    $form_state['redirect'] = array($form_state['redirect'], array('query' => $get));
   }
 }
 

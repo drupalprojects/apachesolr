@@ -278,7 +278,7 @@ class SolrBaseQuery extends SolrFilterSubQuery implements DrupalSolrQueryInterfa
   protected $solrsort = array('#name' => 'score', '#direction' => 'desc');
   // A flag to allow the search to be aborted.
   public $abort_search = FALSE;
-
+  
   // A flag to check if need to retrieve another page of the result set
   public $page = 0;
 
@@ -576,11 +576,7 @@ class SolrBaseQuery extends SolrFilterSubQuery implements DrupalSolrQueryInterfa
       return $this->base_path . '/' . $this->getParam('q');
     }
     else {
-      // Return with empty query (the slash). The path for a facet
-      // becomes $this->base_path . '//facetinfo';
-      // We do this so we can have a consistent way of retrieving the query +
-      // additional parameters
-      return $this->base_path . '/';
+      return $this->base_path;
     }
   }
 

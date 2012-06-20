@@ -124,7 +124,7 @@ function apachesolr_index_entity_to_documents($item, $env_id) {
   // Should indexing take place using anon ( default )
   // or as another user
   $uid = variable_get('apachesolr_index_user', 0);
-  if ($uid == 0) {
+  if($uid == 0) {
     $user = drupal_anonymous_user();
   }
   else {
