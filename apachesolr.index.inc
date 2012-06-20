@@ -587,6 +587,8 @@ function apachesolr_index_node_solr_document(ApacheSolrDocument $document, $node
   $node->body = drupal_render($node->content);
 
   $document->content = apachesolr_clean_text($node->body);
+
+  // Adding the teaser
   if (isset($node->teaser)) {
     $document->teaser = apachesolr_clean_text($node->teaser);
   }
@@ -606,6 +608,7 @@ function apachesolr_index_node_solr_document(ApacheSolrDocument $document, $node
     }
   }
 
+  // Author information
   $document->ss_name = $node->name;
   // We want the name to be searchable for keywords.
   $document->tos_name = $node->name;
@@ -617,14 +620,14 @@ function apachesolr_index_node_solr_document(ApacheSolrDocument $document, $node
 
   $document->ss_name_formatted = $username;
   $document->tos_name_formatted = $username;
-
-  // Everything else uses dynamic fields
   $document->is_uid = $node->uid;
   $document->bs_status = $node->status;
   $document->bs_sticky = $node->sticky;
   $document->bs_promote = $node->promote;
   $document->is_tnid = $node->tnid;
   $document->bs_translate = $node->translate;
+
+  // Language specific checks
   if (empty($node->language)) {
     // 'und' is the language-neutral code in Drupal 7.
     $document->ss_language = 'und';
@@ -632,16 +635,19 @@ function apachesolr_index_node_solr_document(ApacheSolrDocument $document, $node
   else {
     $document->ss_language = $node->language;
   }
+  // Timestamp of the node
   $document->ds_created = apachesolr_date_iso($node->created);
   $document->ds_changed = apachesolr_date_iso($node->changed);
+
+  // Comment counts + time
   if (isset($node->last_comment_timestamp) && !empty($node->comment_count)) {
     $document->ds_last_comment_timestamp = apachesolr_date_iso($node->last_comment_timestamp);
     $document->ds_last_comment_or_change = apachesolr_date_iso(max($node->last_comment_timestamp, $node->changed));
+    $document->is_comment_count = $node->comment_count;
   }
   else {
     $document->ds_last_comment_or_change = apachesolr_date_iso($node->changed);
   }
-  $document->is_comment_count = isset($node->comment_count) ? $node->comment_count : 0;
 
   // Fetch extra data normally not visible, including comments.
   // We do this manually (with module_implements instead of node_invoke_nodeapi)
@@ -656,17 +662,6 @@ function apachesolr_index_node_solr_document(ApacheSolrDocument $document, $node
     $document->tos_content_extra = apachesolr_clean_text(implode(' ', $extra));
   }
 
-  $document->type_name =  node_get_types('name', $node);
-  $document->created = apachesolr_date_iso($node->created);
-  $document->changed = apachesolr_date_iso($node->changed);
-  $last_change = (isset($node->last_comment_timestamp) && $node->last_comment_timestamp > $node->changed) ? $node->last_comment_timestamp : $node->changed;
-  $document->last_comment_or_change = apachesolr_date_iso($last_change);
-  $document->comment_count = isset($node->comment_count) ? $node->comment_count : 0;
-
-  // We need to get the real username here, since it needs a full user object.
-  // That means we can't do the format_username() call on the display side.
-  $document->name = $node->name;
-
   // Fetch extra data normally not visible, including comments.
   // We do this manually (with module_implements instead of node_invoke_nodeapi)
   // because we want a keyed array to come back. Only in this way can we decide
@@ -680,18 +675,23 @@ function apachesolr_index_node_solr_document(ApacheSolrDocument $document, $node
       if ($output = $function($node)) {
         $extra[$module] = $output;
       }
+    }
   }
-  }
+  // Adding the text of the comments
   if (isset($extra['comment'])) {
     $comments = $extra['comment'];
+    // Remove comments from the extra fields
     unset($extra['comment']);
     $document->ts_comments = apachesolr_clean_text($comments);
     // @todo: do we want to reproduce apachesolr_add_tags_to_document() for comments?
   }
-  // Use an omit-norms text field since this is generally going to be short; not
-  // really a full-text field.
-  $document->tos_content_extra = apachesolr_clean_text(implode(' ', $extra));
 
+  // If there are other extra fields, add them to the document
+  if (!empty($extra)) {
+    // Use an omit-norms text field since this is generally going to be short; not
+    // really a full-text field.
+    $document->tos_content_extra = apachesolr_clean_text(implode(' ', $extra));
+  }
   //  Generic usecase for future reference. Callbacks can
   //  allow you to send back multiple documents
   $documents = array();
@@ -699,33 +699,7 @@ function apachesolr_index_node_solr_document(ApacheSolrDocument $document, $node
   return $documents;
 }
 
-
 function apachesolr_index_node_bundles_changed($env_id, $existing_bundles, $new_bundles) {
-  /*$removed_bundles = array_diff($existing_bundles, $new_bundles);
-  $added_bundles = array_diff($new_bundles, $existing_bundles);
-  $indexer_table = apachesolr_get_indexer_table('node');
-  try {
-    if ($removed_bundles) {
-      $query = "DELETE FROM {{$indexer_table}}
-      WHERE entity_type = 'node'
-      AND bundle IN (". db_placeholders($removed_bundles, 'varchar') .")";
-      db_query($query, $removed_bundles);
-    }
-
-
-    if ($added_bundles) {
-      $query = "INSERT INTO {{$indexer_table}} (entity_id, bundle, status, entity_type, changed) (
-      SELECT n.nid AS entity_id, n.type AS bundle, n.status AS status, 'node' AS entity_type, %d AS changed
-      FROM node n
-      WHERE (n.type IN (". db_placeholders($added_bundles, 'varchar') .")))";
-      db_query($query, array_merge(array(APACHESOLR_REQUEST_TIME), $added_bundles));
-    }
-  }
-  catch (Exception $e) {
-    // Re-throw the exception so we are aware of the failure.
-    throw $e;
-  }
-  */
   // Nothing to do for now.
 }
 
