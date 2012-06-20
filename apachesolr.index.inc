@@ -1105,7 +1105,7 @@ function apachesolr_index_node_check_table() {
   $node_lists = array_chunk($nodes, $limit, TRUE);
 
   foreach ($node_lists as $nodes) {
-    watchdog('Apache Solr', 'On cron running apachesolr_nodeapi_mass_update() on nids @nids', array('@nids' => implode(',', array_keys($nodes))), WATCHDOG_WARNING);
+    watchdog('Apache Solr', 'On cron running apachesolr_nodeapi_mass_update() on nids @nids', array('@nids' => implode(',', array_keys($nodes))), WATCHDOG_NOTICE);
     if (!apachesolr_index_nodeapi_mass_update($nodes, $table)) {
       // Solr query failed - so stop trying.
       break;

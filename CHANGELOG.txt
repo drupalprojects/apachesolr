@@ -1,6 +1,9 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1576710 by killua99 | skwashd: Added Indexing with drush cron generates a lot of invalid cron notifications.
+#1586320 by killua99, cpliakas, pwolanin: Added support for the ExternalFileField field type.
 #1588256 by InternetDevels.Com, Nick_vh, killua99 | RaulMuroc: Fixed Warning: Invalid argument supplied for foreach() in apachesolr_entity_update() (line 1766 of /apachesolr/apachesolr.module).
+#1612530 by Nick_vh, willmoy: Added Results say '0 comments' when comment.module is disabled.
 #1481564 by milesw: Added Allow other modules to react when there are no results.
 #1470794 by pwolanin: Added Show size of index on disk in index report.
 #1491214 by gnucifer, Nick_vh: Fixed SQL errors on index page if no bundles.
