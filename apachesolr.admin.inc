@@ -475,9 +475,11 @@ function apachesolr_status_page($environment = NULL) {
         drupal_set_message(t('Your schema.xml version is too old. You must update it and re-index your content.'), 'error');
       }
       $pending_msg = $stats_summary['@pending_docs'] ? t('(@pending_docs sent but not yet processed)', $stats_summary) : '';
-      $indexed_message = t('@num Items !pending', array(
+      $index_msg = $stats_summary['@index_size'] ? t('(@index_size on disk)', $stats_summary) : '';
+      $indexed_message = t('@num Items !pending !index_msg', array(
         '@num' => $data->index->numDocs,
         '!pending' => $pending_msg,
+        '!index_msg' => $index_msg,
       ));
       $messages[] = array('Indexed', $indexed_message);
 
@@ -502,7 +504,7 @@ function apachesolr_status_page($environment = NULL) {
   // Initializes output with information about which server's setting we are
   // editing, as it is otherwise not transparent to the end user.
   $output['apachesolr_index_action_status_prefix'] = '<h3>' . t('@environment: Search Index Content', array('@environment' => $environment['name'])) . '</h3>';
-  $output['apachesolr_index_action_status'] = theme('table', array('type', 'value'), $messages);
+  $output['apachesolr_index_action_status'] = theme('table', array(t('Type'), t('Value')), $messages);
   $output['viewmore'] = l(t('View more details on the search index contents'), 'admin/reports/apachesolr');
 
   $write_status = apachesolr_environment_variable_get($env_id, 'apachesolr_read_only', APACHESOLR_READ_WRITE);
