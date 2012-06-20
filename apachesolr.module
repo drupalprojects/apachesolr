@@ -2023,7 +2023,7 @@ function apachesolr_entity_fields($entity_type = 'node') {
         $field['field']['vid'] = $vid;
         $field['field']['type'] = 'taxonomy_term';
         if(!empty($field['bundles'])) {
-          $fields[$entity_type][apachesolr_index_key($field)] = $field;
+          $fields[$entity_type][apachesolr_index_key($field)] = array($field);
         }
       }
     }
