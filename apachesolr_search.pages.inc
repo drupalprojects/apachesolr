@@ -22,6 +22,8 @@ function apachesolr_search_custom_page($page_id, $keys = '', $path_replacer = NU
   $search_page->search_path = str_replace('%', $path_replacer, $search_page->search_path);
   // Retrieve the conditions that apply to this page
   $conditions = apachesolr_search_conditions_default($search_page);
+  // Process our keys so they are clean
+  $keys = rawurldecode($keys);
   // Retrieve the results of the search
   $results = apachesolr_search_search_results($keys, $conditions, $search_page);
   // Initiate our build array
@@ -93,8 +95,14 @@ function apachesolr_search_custom_page_search_form($form, &$form_state, $search_
 function apachesolr_search_custom_page_search_form_submit(&$form, &$form_state) {
   $search_page = $form['#search_page'];
   $redirect = $search_page->search_path;
+
+  // Also encode slashes so we don't get akward situations when obtaining the
+  // search key. We can't use drupal_encode_path because for "aestetic" reasons
+  // they don't encode slashes...
+  $redirect_value = rawurlencode($form_state['values']['keys']);
+
   if (strlen($form_state['values']['keys'])) {
-    $redirect .= '/' . $form_state['values']['keys'];
+    $redirect .= '/' . $redirect_value;
   }
   if (isset($form_state['values']['get'])) {
     $get = json_decode($form_state['values']['get'], TRUE);
