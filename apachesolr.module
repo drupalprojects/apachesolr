@@ -1381,6 +1381,11 @@ function apachesolr_do_query(DrupalSolrQueryInterface $current_query) {
   // This hook allows modules to modify the query and params objects.
   drupal_alter('apachesolr_query', $query);
 
+  if ($response = apachesolr_static_response_cache($searcher)) {
+    // Return cached query object
+    return array($query, $response);
+  }
+
   if ($query->abort_search) {
     // A module implementing HOOK_apachesolr_query_alter() aborted the search.
     return array(NULL, array());
