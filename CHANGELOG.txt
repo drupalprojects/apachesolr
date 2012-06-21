@@ -1,6 +1,10 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
 
+Apache Solr integration 7.x-1.0-rc2, 06-21-2012
+------------------------------
+Renamed schema.xml and solrconfig.xml to rc2
+
 Apache Solr integration 7.x-1.0-rc1, 06-21-2012
 ------------------------------
 #1642140 by Nick_vh: Fixed Make the search query also escape the slash and move away from menu_tail() to just 1 argument.
