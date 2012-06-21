@@ -1097,3 +1097,23 @@ function apachesolr_index_config_form_submit($form, &$form_state) {
 
   drupal_set_message(t('Your settings have been saved.'));
 }
+
+/**
+ * Page callback for node/%node/devel/apachesolr.
+ */
+function apachesolr_devel($node) {
+  $item = new stdClass();
+  $item->entity_type = 'node';
+  $item->entity_id = $node->nid;
+  module_load_include('inc', 'apachesolr', 'apachesolr.index');
+  $documents = apachesolr_index_entity_to_documents($item, apachesolr_default_environment());
+  $output = ' ';
+  foreach ($documents as $document) {
+    $debug_data = array();
+    foreach ($document as $key => $value) {
+      $debug_data[$key] = $value;
+    }
+    $output .= kdevel_print_object($debug_data);
+  }
+  return $output;
+}

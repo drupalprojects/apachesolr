@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1518108 by grendzy: Added Devel interface for inspecting solr documents.
 #1402748 by Nick_vh: Fixed Check in apachesolr_do_query() if the static of the query with that name already exists, and if so return it.
 #1631702 by Nick_vh | khaled.zaidan: Fixed Report at admin/reports/apachesolr doesn't always display data from the current default solr server.
 #1647668 by paulmckibben: Fixed Error messages when indexing - Notice: Undefined property: stdClass::$nid in DatabaseStatementBase->fetchAllAssoc().
