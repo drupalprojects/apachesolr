@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1658252 by pwolanin: Sync rc2 configs.
 
 Apache Solr integration 6.x-3.0-beta1, 06-20-2012
 ------------------------------
