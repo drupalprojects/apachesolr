@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1473722 by levialliance: Added Bundle specific overrides.
 #1408844 by Nick_vh, jrbeeman: Added As a site builder I want to override the environment settings in settings.php.
 #1668202 by killua99: Fixed wrong redirect on admin/settings/apachesolr.
 #1665790 by snowfox: Fixed Nodes not indexed, Taxonomy needs to be set to be a multiple.

@@ -1252,6 +1252,10 @@ function apachesolr_search_process_response($response, DrupalSolrQueryInterface 
       }
 
       $hook = 'apachesolr_search_snippets';
+      $bundle = !empty($doc->bundle) ? $doc->bundle : NULL;
+      if ($bundle) {
+         $hook .= '__' . $bundle;
+      }
       $snippet = theme($hook, array('doc' => $doc, 'snippets' => $snippets));
 
       if (!isset($doc->content)) {
@@ -1309,11 +1313,11 @@ function apachesolr_search_process_response($response, DrupalSolrQueryInterface 
         'snippet' => $snippet,
         'fields' => $fields,
         'entity_type' => $doc->entity_type,
-        'bundle' => $doc->bundle,
+        'bundle' => $bundle,
       );
 
       // Call entity-type-specific callbacks for extra handling.
-      $function = apachesolr_entity_get_callback($doc->entity_type, 'result callback');
+      $function = apachesolr_entity_get_callback($doc->entity_type, 'result callback', $bundle);
       if (is_callable($function)) {
         $function($doc, $result, $extra);
       }

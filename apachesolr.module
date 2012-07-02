@@ -1904,7 +1904,7 @@ function apachesolr_entity_update($entity, $type) {
     $bundle = $entity->type;
 
     // Check status callback before sending to the index
-    $status_callbacks = apachesolr_entity_get_callback($type, 'status callback');
+    $status_callbacks = apachesolr_entity_get_callback($type, 'status callback', $bundle);
 
     $status = TRUE;
     if (is_array($status_callbacks)) {
