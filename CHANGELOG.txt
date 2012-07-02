@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1652746 by chrisssi: Fixed Notice: Undefined offset: 3 in _menu_translate() (Zeile 775 von /var/www/includes/menu.inc).
 #1402748 by Nick_vh, killua99: Fixed Check in apachesolr_do_query() if the static of the query with that name already exists, and if so return it.
 
 Apache Solr integration 7.x-1.0-rc2, 06-21-2012

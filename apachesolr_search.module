@@ -168,7 +168,7 @@ function apachesolr_search_menu_alter(&$items) {
       'page callback' => 'apachesolr_search_custom_page',
       'page arguments' => array($search_page['page_id'], $keys_pos, $position),
       'access arguments' => array('search content'),
-      'type' => ($taxonomy_search) ? MENU_DEFAULT_LOCAL_TASK : MENU_LOCAL_TASK,
+      'type' => ($taxonomy_search) ? MENU_CALLBACK : MENU_LOCAL_TASK,
       'file' => 'apachesolr_search.pages.inc',
       'file path' => drupal_get_path('module', 'apachesolr_search'),
     );
