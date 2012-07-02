@@ -1077,6 +1077,7 @@ function apachesolr_load_all_environments() {
   if (isset($environments)) {
     return $environments;
   }
+
   // Use cache_get to avoid DB when using memcache, etc.
   $cache = cache_get('apachesolr:environments', 'cache_apachesolr');
   if (isset($cache->data)) {
@@ -1100,6 +1101,12 @@ function apachesolr_load_all_environments() {
           $environments[$env_id] = (array) $default;
         }
       }
+    }
+
+    // Allow overrides of environments from settings.php
+    $conf_environments = variable_get('apachesolr_environments', array());
+    if (!empty($conf_environments)) {
+      $environments = drupal_array_merge_deep($environments, $conf_environments);
     }
 
     cache_set('apachesolr:environments', $environments, 'cache_apachesolr');
