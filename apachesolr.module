@@ -215,6 +215,18 @@ function apachesolr_menu() {
     'type'               => MENU_CALLBACK,
   );
 
+  // securing the path
+  if (module_exists('devel')) {
+    $items['node/%node/devel/apachesolr'] = array(
+      'title'            => 'Apache Solr',
+      'page callback'    => 'apachesolr_devel',
+      'page arguments'   => array(1),
+      'access arguments' => array('access devel information'),
+      'file'             => 'apachesolr.admin.inc',
+      'type'             => MENU_LOCAL_TASK,
+    );
+  }
+
   // We handle our own menu paths for facets
   if (module_exists('facetapi')) {
     $file_path = drupal_get_path('module', 'facetapi');
