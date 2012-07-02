@@ -814,7 +814,7 @@ function apachesolr_index_action_form_delete_submit($form, &$form_state) {
   // $form_state['rebuild'] is automatically set and this form will be
   // rebuilt.
   unset($form_state['storage']);
-  $form_state['redirect'] = url('admin/settings/apachesolr/settings/' . $env_id . '/index/delete', array('query' => $destination));
+  $form_state['redirect'] = array('admin/settings/apachesolr/settings/' . $env_id . '/index/delete', array('query' => $destination));
 }
 
 /**
@@ -831,7 +831,7 @@ function apachesolr_index_action_form_reset_submit($form, &$form_state) {
   // $form_state['rebuild'] is automatically set and this form will be
   // rebuilt.
   unset($form_state['storage']);
-  $form_state['redirect'] = url('admin/settings/apachesolr/settings/' . $env_id . '/index/reset', array('query' => $destination));
+  $form_state['redirect'] = array('admin/settings/apachesolr/settings/' . $env_id . '/index/reset', array('query' => $destination));
 }
 
 
