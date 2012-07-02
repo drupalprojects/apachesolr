@@ -1388,13 +1388,14 @@ function apachesolr_do_query(DrupalSolrQueryInterface $current_query) {
 
   $query = apachesolr_current_query($env_id, $current_query);
 
-  // This hook allows modules to modify the query and params objects.
-  drupal_alter('apachesolr_query', $query);
-
+  // Verify if this query was already executed in the same page load
   if ($response = apachesolr_static_response_cache($searcher)) {
     // Return cached query object
     return array($query, $response);
   }
+
+  // This hook allows modules to modify the query and params objects.
+  drupal_alter('apachesolr_query', $query);
 
   if ($query->abort_search) {
     // A module implementing HOOK_apachesolr_query_alter() aborted the search.
