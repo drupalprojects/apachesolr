@@ -1,7 +1,8 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
-#1658252 by pwolanin: Sync rc2 configs.
+#1661004 by killua99: Fixed warning: table <db>.taxonomy_index() doesn't exist.
 #1518108 by killua99, grendzy: Added Devel interface for inspecting solr documents.
+#1658252 by pwolanin: Sync rc2 configs.
 
 Apache Solr integration 6.x-3.0-beta1, 06-20-2012
 ------------------------------

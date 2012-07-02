@@ -615,8 +615,8 @@ function apachesolr_taxonomy($op, $type, $edit) {
   if ($type == 'term' && ($op == 'update')) {
     $table = apachesolr_get_indexer_table('node');
     $query = "UPDATE {{$table}} asn
-      INNER JOIN {taxonomy_index} ti ON asn.entity_id = ti.nid SET asn.changed = '%s'
-      WHERE ti.tid = '%s'";
+      INNER JOIN {term_node} tn ON asn.entity_id = tn.nid SET asn.changed = '%s'
+      WHERE tn.tid ='%s'";
     $result = db_query($query, array(APACHESOLR_REQUEST_TIME, $term->tid));
   }
   // TODO: the rest, such as term deletion.
