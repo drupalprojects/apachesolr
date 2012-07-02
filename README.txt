@@ -98,7 +98,7 @@ Settings.php
 You can override environment settings using the following syntax in your
 settings.php
 
-$conf['apachesolr_environment']['my_env_id']['url'] = 'http://localhost:8983';
+$conf['apachesolr_environments']['my_env_id']['url'] = 'http://localhost:8983';
 
 Configuration variables
 -----------------------
