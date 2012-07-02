@@ -148,7 +148,7 @@ function apachesolr_index_entity_to_documents($item, $env_id) {
   $document = _apachesolr_index_process_entity_get_document($entity, $entity_type);
 
   //Get the callback array to add stuff to the document
-  $callbacks = apachesolr_entity_get_callback($entity_type, 'document callback');
+  $callbacks = apachesolr_entity_get_callback($entity_type, 'document callback', $bundle);
   $documents = array();
   foreach ($callbacks as $callback) {
     // Call a type-specific callback to add stuff to the document.

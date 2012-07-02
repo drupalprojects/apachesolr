@@ -1813,7 +1813,7 @@ function apachesolr_entity_update($entity, $type) {
     list($id, $vid, $bundle) = entity_extract_ids($type, $entity);
 
     // Check status callback before sending to the index
-    $status_callbacks = apachesolr_entity_get_callback($type, 'status callback');
+    $status_callbacks = apachesolr_entity_get_callback($type, 'status callback', $bundle);
 
     $status = TRUE;
     if (is_array($status_callbacks)) {
