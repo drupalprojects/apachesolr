@@ -1159,6 +1159,12 @@ function apachesolr_load_all_environments($reset = FALSE) {
         }
       }
     }
+
+    // Allow overrides of environments from settings.php
+    $conf_environments = variable_get('apachesolr_environments', array());
+    if (!empty($conf_environments)) {
+      $environments = drupal_array_merge_deep($environments, $conf_environments);
+    }
     cache_set('apachesolr:environments', $environments, 'cache_apachesolr');
   }
 

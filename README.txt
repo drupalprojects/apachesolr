@@ -92,8 +92,16 @@ Once this module is enabled, enable blocks for facets first at
 Administer > Site configuration > Apache Solr > Enabled filters
 then position them as you like at Administer > Site building > Blocks.
 
+Settings.php
+------------
+You can override environment settings using the following syntax in your
+settings.php
+
+$conf['apachesolr_environments']['my_env_id']['url'] = 'http://localhost:8983';
+
+
 Configuration variables
---------------
+-----------------------
 
 The module provides some (hidden) variables that can be used to tweak its
 behavior:
@@ -128,6 +136,9 @@ behavior:
  - apachesolr_cron_mass_limit: update or delete at most this many documents in
    each Solr request, such as when making {apachesolr_search_node} consistent
    with {node}.
+
+ - apachesolr_index_user: Define with which user you want the index process to
+   happen.
 
 Troubleshooting
 --------------
