@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1665790 by snowfox: Fixed Nodes not indexed, Taxonomy needs to be set to be a multiple.
 #1402748 by Nick_vh, killua99: Fixed Check in apachesolr_do_query() if the static of the query with that name already exists, and if so return it.
 #1661004 by killua99: Fixed warning: table <db>.taxonomy_index() doesn't exist.
 #1518108 by killua99, grendzy: Added Devel interface for inspecting solr documents.

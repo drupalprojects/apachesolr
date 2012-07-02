@@ -2056,7 +2056,7 @@ function apachesolr_entity_fields($entity_type = 'node') {
         $field['module_name'] = $vocabulary->module;
         $field['display_name'] = $vocabulary->name;
         $field['bundles'] = $vocabulary->nodes;
-        $field['multiple'] = $vocabulary->multiple;
+        $field['multiple'] = true;
         // Faux field-info
         $field['field'] = array();
         $field['field']['field_name'] = 'taxonomy';
