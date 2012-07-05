@@ -1031,7 +1031,7 @@ function apachesolr_search_run($name, array $params = array(), $solrsort = '', $
   $solr_id = $query->solr('getId');
   apachesolr_has_searched($solr_id, TRUE);
   $process_response_callback = variable_get('apachesolr_search_process_response_callback', 'apachesolr_search_process_response');
-  return call_user_func($callback, $response, $final_query);
+  return call_user_func($process_response_callback, $response, $final_query);
 }
 
 function apachesolr_search_basic_params(DrupalSolrQueryInterface $query = NULL) {
