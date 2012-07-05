@@ -1251,12 +1251,18 @@ function apachesolr_search_process_response($response, DrupalSolrQueryInterface 
         }
       }
 
-      $hook = 'apachesolr_search_snippets';
+      $hooks = array();
+
       $bundle = !empty($doc->bundle) ? $doc->bundle : NULL;
       if ($bundle) {
-         $hook .= '__' . $bundle;
+        // Add a bundle specific theming hook if it has been defined
+        // in hook_theme
+        $hooks[] = 'apachesolr_search_snippets__' . $bundle;
       }
-      $snippet = theme($hook, array('doc' => $doc, 'snippets' => $snippets));
+      // Add a general theming hook for snippets
+      $hooks[] = 'apachesolr_search_snippets';
+
+      $snippet = theme($hooks, array('doc' => $doc, 'snippets' => $snippets));
 
       if (!isset($doc->content)) {
         $doc->content = $snippet;
@@ -1484,8 +1490,6 @@ function apachesolr_search_apachesolr_environment_delete($server) {
  * This adds the retain filters to the search form.
  */
 function apachesolr_search_form_search_form_alter(&$form, $form_state) {
-  dsm($form_state);
-  dsm($form);
   if (!empty($form['module']['#value']) && $form['module']['#value'] == 'apachesolr_search') {
     $form['#submit'][] = 'apachesolr_search_form_search_submit';
     // No other modification make sense unless a query is active.
