@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1672738 by Nick_vh: Added Allow a dynamic apachesolr_process_results() function.
 #1670834 by killua99, Nick_vh: Fixed Bundle specific overrides do not work as expected in drupal 6.
 #1473722 by levialliance: Added Bundle specific overrides.
 #1408844 by Nick_vh, jrbeeman: Added As a site builder I want to override the environment settings in settings.php.
