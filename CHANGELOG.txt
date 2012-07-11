@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1677050 by cpliakas: Fix for Cancel link when creating a new environment.
 #1673086 by pwolanin: Add drush commands to get, set, del environment variables.
 #1672738 by Nick_vh: Added Allow a dynamic apachesolr_process_results() function.
 #1473722 by levialliance: Added Bundle specific overrides.

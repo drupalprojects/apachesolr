@@ -168,7 +168,7 @@ function apachesolr_environment_edit_form($form, &$form_state, $environment = NU
     $destination = $_GET['destination'];
   }
   else {
-    $destination = 'admin/config/search/apachesolr';
+    $destination = 'admin/config/search/apachesolr/settings';
   }
   $form['actions']['cancel'] = array(
     '#type' => 'link',
