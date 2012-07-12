@@ -1088,23 +1088,17 @@ function apachesolr_get_solr($env_id = NULL, $reset = FALSE) {
     $env_id = apachesolr_default_environment();
   }
 
-  // @Todo
-  // Extra service classes should include their file on their own responsability
   if (isset($environments[$env_id])) {
-    $class = $environments[$env_id]['service_class'];
+    $class_info = array();
+    $class = NULL;
 
+    if ($environments[$env_id]['service_class']) {
+      $class_info = isset($environments[$env_id]['conf']['service_class_info']) ? $environments[$env_id]['conf']['service_class_info'] : NULL;
+      $class = $environments[$env_id]['service_class'];
+    }
+    $class = apachesolr_load_service_class($class, $class_info);
+    
     if (empty($solr_cache[$env_id])) {
-      // Use the default class if none is specified.
-      $class_info = variable_get('apachesolr_service_class', array(
-        'file' => 'Drupal_Apache_Solr_Service',
-        'module' => 'apachesolr',
-        'class' => 'DrupalApacheSolrService'));
-
-      if (!class_exists($class) && isset($class_info['file']) && isset($class_info['module'])) {
-        module_load_include('php', $class_info['module'], $class_info['file']);
-        $class = $class_info['class'];
-      }
-      // Takes advantage of auto-loading.
       $solr = new $class($environments[$env_id]['url'], $env_id);
       $solr_cache[$env_id] = $solr;
     }
@@ -1115,6 +1109,29 @@ function apachesolr_get_solr($env_id = NULL, $reset = FALSE) {
   }
 }
 
+function apachesolr_load_service_class($class = NULL, $class_info = NULL) {
+  // If class is already loaded, do nothing
+  if (class_exists($class)) {
+    return $class;
+  }
+
+  // Use the default class if none is specified.
+  if (!is_array($class_info) || !isset($class)) {
+    $class_info = variable_get('apachesolr_service_class', array(
+      'file' => 'Drupal_Apache_Solr_Service',
+      'module' => 'apachesolr',
+      'class' => 'DrupalApacheSolrService'));
+    $class = $class_info['class'];
+  }
+
+  if (isset($class_info['file']) && isset($class_info['module'])) {
+    $loaded = module_load_include('php', $class_info['module'], $class_info['file']);
+    if ($loaded === FALSE) {
+      throw new Exception('Could not load defined service class: ' . $class);
+    }
+  }
+  return $class;
+}
 /**
  * Function that loads all the environments
  *
@@ -1296,7 +1313,7 @@ function apachesolr_create_unique_id($existing, $id) {
 function apachesolr_environment_save($environment) {
   static $environments;
   static $solr_cache;
-  $default = array('env_id' => NULL, 'name' => '', 'url' => '', 'service_class' => '', 'conf' => array());
+  $default = array('env_id' => NULL, 'name' => '', 'url' => '', 'service_class' => '', 'conf' => array('service_class_info' => array()));
 
   $old_environment = apachesolr_environment_load($environment['env_id']);
   $is_new = FALSE;
@@ -1376,21 +1393,9 @@ function apachesolr_environment_variable_del($env_id, $name) {
  *
  * @return boolean TRUE if the server can be pinged, FALSE otherwise.
  */
-function apachesolr_server_status($url, $class = NULL) {
+function apachesolr_server_status($url, $class = NULL, $class_info = NULL) {
   static $status = array();
-  // @Todo
-  // Extra service classes should include their file on their own responsability
-
-  // Use the default class if none is specified.
-  $class_info = variable_get('apachesolr_service_class', array(
-    'file' => 'Drupal_Apache_Solr_Service',
-    'module' => 'apachesolr',
-    'class' => 'DrupalApacheSolrService'));
-  if (!class_exists($class) && isset($class_info['file']) && isset($class_info['module'])) {
-    $class = $class_info['class'];
-    module_load_include('php', $class_info['module'], $class_info['file']);
-  }
-
+  $class = apachesolr_load_service_class($class, $class_info);
   $key = $url . '|' . $class;
   // Static store insures we don't ping the server more than once per page load.
   if (!isset($status[$key])) {

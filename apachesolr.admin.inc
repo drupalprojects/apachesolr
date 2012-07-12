@@ -97,7 +97,7 @@ function apachesolr_environment_edit_form(&$form_state, $environment = NULL) {
   if (empty($environment)) {
     $environment = array();
   }
-  $environment += array('env_id' => '', 'name' => '', 'url' => '', 'service_class' => '', 'conf' => array());
+  $environment += array('env_id' => '', 'name' => '', 'url' => '', 'service_class' => '', 'conf' => array('service_class_conf' => ''));
 
   $form['url'] = array(
     '#type' => 'textfield',
@@ -129,9 +129,16 @@ function apachesolr_environment_edit_form(&$form_state, $environment = NULL) {
     '#default_value' => !empty($environment['env_id']) ? $environment['env_id'] : '',
     '#description' => t('A unique machine-readable identifier for the search page configuration. It must only contain lowercase letters, numbers, and underscores.'),
   );
+
   $form['service_class'] = array(
     '#type' => 'value',
     '#value' => $environment['service_class'],
+  );
+  // D6 needs more info to load the class
+  $service_class_info = isset($environment['conf']['service_class_info']) ? $environment['conf']['service_class_info'] : NULL;
+  $form['service_class_info'] = array(
+    '#type' => 'value',
+    '#value' => $service_class_info,
   );
   $form['conf'] = array(
     '#tree' => TRUE,
@@ -173,7 +180,7 @@ function apachesolr_environment_edit_form(&$form_state, $environment = NULL) {
 }
 
 function apachesolr_environment_edit_test_submit($form, &$form_state) {
-  $ping = apachesolr_server_status($form_state['values']['url'], $form_state['values']['service_class']);
+  $ping = apachesolr_server_status($form_state['values']['url'], $form_state['values']['service_class'], $form_state['values']['service_class_info']);
   if ($ping) {
     drupal_set_message(t('Your site has contacted the Apache Solr server.'));
   }
@@ -340,7 +347,8 @@ function apachesolr_settings(&$form_state) {
     // want to check the statusses of any environment
     $class = '';
     if (empty($form_state['input'])) {
-      $class = apachesolr_server_status($data['url'], $data['service_class']) ? 'ok' : 'error';
+      $service_class_info = isset($data['conf']['service_class_info']) ? $data['conf']['service_class_info'] : NULL;
+      $class = apachesolr_server_status($data['url'], $data['service_class'], $service_class_info) ? 'ok' : 'error';
     }
 
     $headers = array(
@@ -446,7 +454,9 @@ function apachesolr_status_page($environment = NULL) {
   }
 
   // Check for availability
-  if (!apachesolr_server_status($environment['url'], $environment['service_class'])) {
+  $service_class_info = isset($environment['conf']['service_class_info']) ? $environment['conf']['service_class_info'] : NULL;
+  $service_class = isset($environment['service_class']) ? $environment['service_class'] : NULL;
+  if (!apachesolr_server_status($environment['url'], $service_class, $service_class_info)) {
     drupal_set_message(t('The server seems to be unavailable. Please verify the server settings at the <a href="!settings_page">settings page</a>', array('!settings_page' => url("admin/settings/apachesolr/settings/{$environment['env_id']}/edit", array('query' =>  drupal_get_destination())))), 'warning');
     return '';
   }

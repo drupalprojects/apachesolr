@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1679346 by Nick_vh: Fixed Service Class is badly defined in 6.x-3.x.
 #1673086 by pwolanin: Add drush commands to get, set, del environment variables.
 #1672738 by Nick_vh: Added Allow a dynamic apachesolr_process_results() function.
 #1670834 by killua99, Nick_vh: Fixed Bundle specific overrides do not work as expected in drupal 6.
