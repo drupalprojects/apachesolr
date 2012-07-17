@@ -1,5 +1,8 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+
+Apache Solr integration 6.x-3.0-beta2, 2012-07-17
+------------------------------
 #1679346 by Nick_vh: Fixed Service Class is badly defined in 6.x-3.x.
 #1673086 by pwolanin: Add drush commands to get, set, del environment variables.
 #1672738 by Nick_vh: Added Allow a dynamic apachesolr_process_results() function.
@@ -13,7 +16,7 @@ Apache Solr integration 6.x-3.x, xxxx-xx-xx
 #1518108 by killua99, grendzy: Added Devel interface for inspecting solr documents.
 #1658252 by pwolanin: Sync rc2 configs.
 
-Apache Solr integration 6.x-3.0-beta1, 06-20-2012
+Apache Solr integration 6.x-3.0-beta1, 2012-06-20
 ------------------------------
 #1593580 by Nick_vh | jutulen: Fixed Testing connection erases form entries.
 #1547712 by Nick_vh | xeconsulting: Fixed fatal error: Call to undefined function taxonomy_term_load() in apachesolr_search().module line 258.
