@@ -999,9 +999,6 @@ function apachesolr_search_run($name, array $params = array(), $solrsort = '', $
     apachesolr_search_add_spellcheck_params($query);
   }
 
-  // Add custom params after we add the default params
-  $query->addParams($params);
-
   // Add the paging parameters
   $query->page = $page;
 
