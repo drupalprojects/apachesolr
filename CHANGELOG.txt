@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1681946 by Josh Waihi: Fixed apachesolr_index_nodeapi_mass_delete() doesn't work.
 #1650096 by Nick_vh | cappadona: Fixed addParam() creates duplicate filters when dealing with fq.
 #1677050 by cpliakas: Fix for Cancel link when creating a new environment.
 #1673086 by pwolanin: Add drush commands to get, set, del environment variables.

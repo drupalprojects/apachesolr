@@ -1154,11 +1154,11 @@ function apachesolr_index_node_check_table() {
 
   // Check for deleted content that wasn't deleted from the index.
   $query = db_select($table, 'aien')
-    ->fields('aien', array('entity_id'))
     ->isNull('n.nid')
     ->range(0, ($limit*2));
+  $query->addExpression('aien.entity_id', 'nid');
   $query->leftJoin('node', 'n', 'n.nid = aien.entity_id');
-  $nodes = $query->execute()->fetchAllAssoc('entity_id');
+  $nodes = $query->execute()->fetchAllAssoc('nid');
   $node_lists = array_chunk($nodes, $limit, TRUE);
 
   foreach ($node_lists as $nodes) {
