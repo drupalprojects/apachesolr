@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1652746 by martins.bertins | chrisssi: Fixed Notice: Undefined offset: 3 in _menu_translate() (Zeile 775 von /var/www/includes/menu.inc).
 #1670198 by alanmackenzie | ruedu: Fixed Unable to export/import settings using features module.
 #1681946 by Josh Waihi: Fixed apachesolr_index_nodeapi_mass_delete() doesn't work.
 #1650096 by Nick_vh | cappadona: Fixed addParam() creates duplicate filters when dealing with fq.
