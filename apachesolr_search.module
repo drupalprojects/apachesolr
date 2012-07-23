@@ -1410,6 +1410,10 @@ function apachesolr_search_preprocess_search_results(&$variables) {
     // Redefine the pager if it was missing
     pager_default_initialize($total, $params['rows']);
     $variables['pager'] = theme('pager', array('tags' => NULL));
+
+    // Add template hints for search pages.
+    $page_id = $variables['search_page']->page_id;
+    $variables['theme_hook_suggestions'][] = 'search_results__' . $variables['module'] . '__' . $page_id;
   }
 }
 
