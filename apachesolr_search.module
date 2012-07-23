@@ -1503,8 +1503,7 @@ function apachesolr_search_form_search_submit($form, &$form_state) {
       $form_state['redirect'] = array($form_state['redirect'], array('query' => $get));
     }
   }
-
-  // Replace keys with their rawurldecoded value
+  // Replace keys with their rawurlencoded value
   if (isset($fv['search_block_form'])) {
     $raw_keys = rawurlencode($fv['search_block_form']);
     $form_state['redirect'] = str_replace($fv['search_block_form'], $raw_keys, $form_state['redirect']);
