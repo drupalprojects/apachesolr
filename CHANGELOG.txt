@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1698668 by Nick_vh: Fixed Caching issues in Drupal 6 apachesolr.
 
 Apache Solr integration 6.x-3.0-beta2, 2012-07-17
 ------------------------------

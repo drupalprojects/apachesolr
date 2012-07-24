@@ -1142,12 +1142,13 @@ function apachesolr_load_all_environments($reset = FALSE) {
   static $environments;
   if ($reset) {
     $environments = array();
+    cache_clear_all('apachesolr:environments', 'cache_apachesolr');
   }
   if (!db_table_exists('apachesolr_environment')) {
     return array();
   }
 
-  if (isset($environments)) {
+  if (!empty($environments)) {
     return $environments;
   }
   // Use cache_get to avoid DB when using memcache, etc.
@@ -1197,8 +1198,8 @@ function apachesolr_load_all_environments($reset = FALSE) {
  * @return $environment
  *   The environment that was requested or FALSE if non-existent
  */
-function apachesolr_environment_load($env_id) {
-  $environments = apachesolr_load_all_environments();
+function apachesolr_environment_load($env_id, $reset = FALSE) {
+  $environments = apachesolr_load_all_environments($reset);
   return isset($environments[$env_id]) ? $environments[$env_id] : FALSE;
 }
 
@@ -1315,7 +1316,7 @@ function apachesolr_environment_save($environment) {
   static $solr_cache;
   $default = array('env_id' => NULL, 'name' => '', 'url' => '', 'service_class' => '', 'conf' => array('service_class_info' => array()));
 
-  $old_environment = apachesolr_environment_load($environment['env_id']);
+  $old_environment = apachesolr_environment_load($environment['env_id'], $reset = TRUE);
   $is_new = FALSE;
   if (!$old_environment || isset($old_environment['in_code_only'])) {
     $is_new = TRUE;
