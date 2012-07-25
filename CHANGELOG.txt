@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1439564 by recidive, neochief, Nick_vh, dawehner, jhedstrom: Added Index bundles Export/Import.
 #1652746 by martins.bertins | chrisssi: Fixed Notice: Undefined offset: 3 in _menu_translate().
 #1670198 by alanmackenzie | ruedu: Fixed Unable to export/import settings using features module.
 #1681946 by Josh Waihi: Fixed apachesolr_index_nodeapi_mass_delete() doesn't work.

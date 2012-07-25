@@ -305,20 +305,34 @@ function apachesolr_settings($form, &$form_state) {
       ),
     );
     $env_name = l($data['name'], 'admin/config/search/apachesolr/settings/' . $data['env_id'] . '/edit', array('query' => array('destination' => $_GET['q'])));
+
     // Is this row our default environment?
     if ($environment_id == $default_environment) {
       $env_name = t('!environment <em>(Default)</em>', array('!environment' => $env_name));
       $env_class_row = 'default-environment';
-      $ops['delete'] = '';
     }
     else {
       $env_class_row = '';
-      // For every non-default we add a delete link
-      $ops['delete'] = array(
-        'class' => 'operation',
-        'data' => l(t('Delete'), 'admin/config/search/apachesolr/settings/' . $data['env_id'] . '/delete'),
-      );
     }
+    // For every non-default we add a delete link
+    // Allow to revert a search environment or to delete it
+    $delete_value = '';
+    if (!isset($data['in_code_only'])) {
+      if ((isset($data['type']) && $data['type'] == 'Overridden')) {
+        $delete_value = array(
+          'class' => 'operation',
+          'data' => l(t('Revert'), 'admin/config/search/apachesolr/settings/' . $data['env_id'] . '/delete'),
+        );
+      }
+      // don't allow the deletion of the default environment
+      elseif ($environment_id != $default_environment) {
+        $delete_value = array(
+          'class' => 'operation',
+          'data' => l(t('Delete'), 'admin/config/search/apachesolr/settings/' . $data['env_id'] . '/delete'),
+        );
+      }
+    }
+    $ops['delete'] = $delete_value;
 
     // When we are receiving a http POST (so the page does not show) we do not
     // want to check the statusses of any environment
@@ -1094,6 +1108,7 @@ function apachesolr_index_config_form_submit($form, &$form_state) {
 
   // Clear the entity cache, since we will be changing its data.
   entity_info_cache_clear();
+  cache_clear_all('apachesolr:environments', 'cache_apachesolr');
 
   drupal_set_message(t('Your settings have been saved.'));
 }
