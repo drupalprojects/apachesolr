@@ -2312,39 +2312,6 @@ function apachesolr_theme() {
   );
 }
 
-/**
- * Implements hook_hook_info().
- */
-function apachesolr_hook_info() {
-  $hooks = array(
-    'apachesolr_field_mappings' => array(
-      'group' => 'apachesolr',
-    ),
-    'apachesolr_field_mappings_alter' => array(
-      'group' => 'apachesolr',
-    ),
-    'apachesolr_query_prepare' => array(
-      'group' => 'apachesolr',
-    ),
-    'apachesolr_query_alter' => array(
-      'group' => 'apachesolr',
-    ),
-    'apachesolr_search_result_alter' => array(
-      'group' => 'apachesolr',
-    ),
-    'apachesolr_environment_delete' => array(
-      'group' => 'apachesolr',
-    )
-  );
-
-  $hooks['apachesolr_index_document_build'] = array(
-    'group' => 'apachesolr',
-  );
-  $hooks['apachesolr_index_document_node_build'] = array(
-    'group' => 'apachesolr',
-  );
-  return $hooks;
-}
 
 /**
  * Implements hook_apachesolr_field_mappings() on behalf of content module.
