@@ -16,12 +16,18 @@ function apachesolr_environment_delete_form(&$form_state, $environment) {
     '#type' => 'value',
     '#value' => $environment['env_id'],
   );
+  if (isset($environment['export_type']) && $environment['export_type'] == 3) {
+    $verb = t('Revert');
+  }
+  else {
+    $verb = t('Delete');
+  }
   return confirm_form(
     $form,
-    t('Are you sure you want to delete search environment %name?', array('%name' => $environment['name'])),
+    t('Are you sure you want to !verb search environment %name?', array('%name' => $environment['name'], '!verb' => strtolower($verb))),
     'admin/settings/apachesolr',
     t('This action cannot be undone.'),
-    t('Delete'),
+    $verb,
     t('Cancel')
   );
 }
@@ -332,15 +338,28 @@ function apachesolr_settings(&$form_state) {
     if ($environment_id == $default_environment) {
       $env_name = t('!environment <em>(Default)</em>', array('!environment' => $env_name));
       $env_class_row = 'default-environment';
-      $ops['delete'] = '';
     }
     else {
       $env_class_row = '';
       // For every non-default we add a delete link
-      $ops['delete'] = array(
-        'class' => 'operation',
-        'data' => l(t('Delete'), 'admin/settings/apachesolr/settings/' . $data['env_id'] . '/delete'),
-      );
+      // Allow to revert a search environment or to delete it
+      $delete_value = '';
+      if (!isset($data['in_code_only'])) {
+        if ((isset($data['type']) && $data['type'] == 'Overridden')) {
+         $delete_value = array(
+            'class' => 'operation',
+            'data' => l(t('Revert'), 'admin/settings/apachesolr/settings/' . $data['env_id'] . '/delete'),
+          );
+        }
+        // don't allow the deletion of the default environment
+        elseif ($environment_id != $default_environment) {
+          $delete_value = array(
+            'class' => 'operation',
+            'data' => l(t('Delete'), 'admin/settings/apachesolr/settings/' . $data['env_id'] . '/delete'),
+          );
+        }
+      }
+      $ops['delete'] = $delete_value;
     }
 
     // When we are receiving a http POST (so the page does not show) we do not
@@ -1146,6 +1165,7 @@ function apachesolr_index_config_form_submit($form, &$form_state) {
 
   // Clear the content type cache, since we will be changing its data.
   content_clear_type_cache();
+  cache_clear_all('apachesolr:environments', 'cache_apachesolr');
   drupal_set_message(t('Your settings have been saved.'));
 }
 

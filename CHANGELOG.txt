@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1439564 by recidive, Nick_vh, neochief, dawehner, jhedstrom: Added Index bundles Export/Import.
 #1670198 by alanmackenzie, killua99 | ruedu: Fixed Unable to export/import settings using features module.
 #1568126 by fearlsgroove, pwolanin, basvredeling: Fixed Apachesolr causes all simpletests to fail.
 #1700472 by pwolanin: Make 'apachesolr_search_process_response_callback' a search environment variable.

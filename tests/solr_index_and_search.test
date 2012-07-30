@@ -2,6 +2,7 @@
 
 class DrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
   public $solr_core_name;
+  public $environment = array();
 
   /**
    * Implementation of setUp().
@@ -11,18 +12,21 @@ class DrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
     parent::setUp('content', 'search', 'apachesolr', 'apachesolr_search');
     // Load the default server.
     $env_id = apachesolr_default_environment();
-    $environment = apachesolr_environment_load($env_id);
+    $environment = apachesolr_environment_load($env_id, TRUE);
+    $this->environment = $environment;
 
     if (apachesolr_server_status($environment['url'])) {
       // We will use a core named after the simpletest prefix.
       // Normal base URL will be http://localhost:8983/solr
-      $base_url = $environment['url'];
+      $base_url = 'http://localhost:8983/solr';
       $this->solr_core_name = $this->randomString(8);
       $environment['url'] .= '/' . $this->solr_core_name;
       apachesolr_environment_save($environment);
+      // Update the environment with new values
+      $this->environment = $environment;
       $solr_url = $environment['url'];
       $core_admin_url = "$base_url/admin/cores";
-      $filesdir = variable_get('file_public_path', 'sites/default/files/');
+      $filesdir = file_directory_path();
 
       // Create our 'solr core dir'
       mkdir("$filesdir/solr", 0777, TRUE);
@@ -67,9 +71,7 @@ class DrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
    */
   protected function coreAdmin($action, $return_response = FALSE) {
     // Load the default server.
-    $env_id = apachesolr_default_environment();
-    $environment = apachesolr_environment_load($env_id);
-
+    $environment = $this->environment;
     if (apachesolr_server_status($environment['url'])) {
       $query = array();
       $query['action'] = $action;
@@ -117,7 +119,7 @@ class DrupalSolrMatchTestCase extends DrupalSolrOnlineWebTestCase {
   function testMatching() {
     // Load the default server.
     $env_id = apachesolr_default_environment();
-    $environment = apachesolr_environment_load($env_id);
+    $environment = apachesolr_environment_load($env_id, TRUE);
     if (apachesolr_server_status($environment['url'])) {
       $solr = apachesolr_get_solr($env_id);
       $this->assertTrue($solr->ping(), "The Server could be Pinged");

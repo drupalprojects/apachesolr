@@ -31,14 +31,14 @@ function apachesolr_search_enable() {
       'apachesolr_search_not_removable' => TRUE,
       'apachesolr_search_search_box' => TRUE,
     );
-    $search_page = new stdClass();
-    $search_page->page_id = 'core_search';
-    $search_page->label = 'Core Search';
-    $search_page->description = 'Core Search';
-    $search_page->search_path = 'search/site';
-    $search_page->env_id = 'solr';
-    $search_page->page_title = 'Site';
-    $search_page->settings = $settings;
+    $search_page = array();
+    $search_page['page_id'] = 'core_search';
+    $search_page['label'] = 'Core Search';
+    $search_page['description'] = 'Core Search';
+    $search_page['search_path'] = 'search/site';
+    $search_page['env_id'] = 'solr';
+    $search_page['page_title'] = 'Site';
+    $search_page['settings'] = $settings;
     apachesolr_search_page_save($search_page);
   }
 
@@ -52,14 +52,14 @@ function apachesolr_search_enable() {
       'apachesolr_search_spellcheck' => FALSE,
       'apachesolr_search_search_box' => FALSE,
     );
-    $search_page = new stdClass();
-    $search_page->page_id = 'taxonomy_search';
-    $search_page->label = 'Taxonomy Search';
-    $search_page->description = 'Search all items with given term';
-    $search_page->search_path = 'taxonomy/term/%';
-    $search_page->env_id = '';
-    $search_page->page_title = '%value';
-    $search_page->settings = $settings;
+    $search_page = array();
+    $search_page['page_id'] = 'taxonomy_search';
+    $search_page['label'] = 'Taxonomy Search';
+    $search_page['description'] = 'Search all items with given term';
+    $search_page['search_path'] = 'taxonomy/term/%';
+    $search_page['env_id'] = '';
+    $search_page['page_title'] = '%value';
+    $search_page['settings'] = $settings;
     apachesolr_search_page_save($search_page);
   }
 
@@ -77,16 +77,23 @@ function apachesolr_search_schema() {
   $schema['apachesolr_search_page'] = array(
     'description' => 'Apache Solr Search search page settings.',
     'export' => array(
+      // Environment machine name.
       'key' => 'page_id',
+      // Description of key.
+      'key name' => 'search page machine name',
+      // Variable name to use in exported code.
       'identifier' => 'searcher',
+      // Use the same hook as the API name below.
       'default hook' => 'apachesolr_search_default_searchers',
       'status' => 'apachesolr_search_page_status',
+      // CTools API implementation.
       'api' => array(
         'owner' => 'apachesolr_search',
         'api' => 'apachesolr_search_defaults',
         'minimum_version' => 3,
         'current_version' => 3,
       ),
+      // Includes all search page specific configurations.
       'export callback' => 'apachesolr_search_page_settings_export',
     ),
     'fields' => array(
