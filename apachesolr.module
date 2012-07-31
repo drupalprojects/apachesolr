@@ -1185,12 +1185,42 @@ function apachesolr_load_all_environments($reset = FALSE) {
     // Allow overrides of environments from settings.php
     $conf_environments = variable_get('apachesolr_environments', array());
     if (!empty($conf_environments)) {
-      $environments = drupal_array_merge_deep($environments, $conf_environments);
+      $environments = apachesolr_array_merge_deep_array(array($environments, $conf_environments));
     }
     cache_set('apachesolr:environments', $environments, 'cache_apachesolr');
   }
 
   return $environments;
+}
+
+/**
+ * Backport of http://api.drupal.org/api/drupal/includes%21bootstrap.inc/function/drupal_array_merge_deep_array/7
+ * @param type $arrays
+ * @return array
+ */
+function apachesolr_array_merge_deep_array($arrays) {
+  $result = array();
+
+  foreach ($arrays as $array) {
+    foreach ($array as $key => $value) {
+      // Renumber integer keys as array_merge_recursive() does. Note that PHP
+      // automatically converts array keys that are integer strings (e.g., '1')
+      // to integers.
+      if (is_integer($key)) {
+        $result[] = $value;
+      }
+      // Recurse when both values are arrays.
+      elseif (isset($result[$key]) && is_array($result[$key]) && is_array($value)) {
+        $result[$key] = apachesolr_array_merge_deep_array(array($result[$key], $value));
+      }
+      // Otherwise, use the latter value, overriding any previous value.
+      else {
+        $result[$key] = $value;
+      }
+    }
+  }
+
+  return $result;
 }
 
 /**
