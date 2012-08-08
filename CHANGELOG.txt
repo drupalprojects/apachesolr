@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1702788 by mkalkbrenner: Fixed content and teaser are empty if node->language is not default.
 #1708166 by ianmthomasuk: Fixed Thow exception if asked for invalid solr environment.
 #1717628 by Nick_vh | cpliakas: Added 'Save and Edit" functionality for configuration pages.
 #1718172 by Nick_vh, pwolanin: Fixed Move search result alter hook earlier, and make sure needed data is set.

@@ -620,7 +620,7 @@ function apachesolr_index_node_solr_document(ApacheSolrDocument $document, $node
   $document->label = apachesolr_clean_text($node->title);
 
   // Build the node body.
-  $build = node_view($node, 'search_index');
+  $build = node_view($node, 'search_index', !empty($node->language) ? $node->language : LANGUAGE_NONE);
   // Remove useless html crap out of the render.
   unset($build['#theme']);
   $text = drupal_render($build);
