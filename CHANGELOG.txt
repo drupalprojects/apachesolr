@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1718172 by Nick_vh, pwolanin: Fixed Move search result alter hook earlier, and make sure needed data is set.
 #1717958 by pwolanin: Fix for text_und fields should be exposed for searching in the admin section.
 #1706322 by Nick_vh: Fixed Override from settings.php in 6.x-3.x fails due to drupal_array_merge_deep_array() not being available.
 #1439564 by recidive, Nick_vh, neochief, dawehner, jhedstrom: Added Index bundles Export/Import.
