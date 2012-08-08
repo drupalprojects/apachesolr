@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1717958 by pwolanin: Fix for text_und fields should be exposed for searching in the admin section.
 #1708538 by Nick_vh: Fixed Move the start param above the query alter.
 #1700472 by pwolanin: Make 'apachesolr_search_process_response_callback' a search environment variable.
 #1439564 by recidive, neochief, Nick_vh, dawehner, jhedstrom: Added Index bundles Export/Import.
