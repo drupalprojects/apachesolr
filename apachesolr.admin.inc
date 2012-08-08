@@ -15,12 +15,18 @@ function apachesolr_environment_delete_form($form, &$form_state, $environment) {
     '#type' => 'value',
     '#value' => $environment['env_id'],
   );
+  if (isset($environment['export_type']) && $environment['export_type'] == 3) {
+    $verb = t('Revert');
+  }
+  else {
+    $verb = t('Delete');
+  }
   return confirm_form(
     $form,
-    t('Are you sure you want to delete search environment %name?', array('%name' => $environment['name'])),
+    t('Are you sure you want to !verb search environment %name?', array('%name' => $environment['name'], '!verb' => strtolower($verb))),
     'admin/config/search/apachesolr',
     t('This action cannot be undone.'),
-    t('Delete'),
+    $verb,
     t('Cancel')
   );
 }
@@ -1109,7 +1115,6 @@ function apachesolr_index_config_form_submit($form, &$form_state) {
   // Clear the entity cache, since we will be changing its data.
   entity_info_cache_clear();
   cache_clear_all('apachesolr:environments', 'cache_apachesolr');
-
   drupal_set_message(t('Your settings have been saved.'));
 }
 

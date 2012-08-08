@@ -1079,11 +1079,12 @@ function apachesolr_load_all_environments() {
   if (!db_table_exists('apachesolr_index_bundles')) {
     return array();
   }
-
+  if (!db_table_exists('apachesolr_environment')) {
+    return array();
+  }
   if (isset($environments)) {
     return $environments;
   }
-
   // Use cache_get to avoid DB when using memcache, etc.
   $cache = cache_get('apachesolr:environments', 'cache_apachesolr');
   if (isset($cache->data)) {
@@ -1248,6 +1249,11 @@ function apachesolr_environment_save($environment) {
   $is_new = FALSE;
   if (!$old_environment || isset($old_environment['in_code_only'])) {
     $is_new = TRUE;
+  }
+  // No need to save if there are no changes
+  if ($old_environment == $environment) {
+    // No need to do anything
+    return;
   }
 
   $conf = isset($environment['conf']) ? $environment['conf'] : array();
