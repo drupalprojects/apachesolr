@@ -1084,8 +1084,11 @@ function apachesolr_get_solr($env_id = NULL, $reset = FALSE) {
   }
   $environments = apachesolr_load_all_environments();
 
-  if (empty($env_id) || empty($environments[$env_id])) {
+  if (empty($env_id)) {
     $env_id = apachesolr_default_environment();
+  }
+  elseif (empty($environments[$env_id])) {
+    throw new Exception(t('Invalid Apache Solr environment: @env_id.', array('@env_id' => $env_id)));
   }
 
   if (isset($environments[$env_id])) {
