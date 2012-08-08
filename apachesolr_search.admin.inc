@@ -402,6 +402,10 @@ function apachesolr_search_page_settings_form($form, &$form_state, $search_page 
     '#type' => 'submit',
     '#value' => t('Save configuration'),
   );
+  $form['actions']['submit_edit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save and edit'),
+  );
 
   $form['actions']['cancel'] = array(
     '#type' => 'link',
@@ -507,8 +511,16 @@ function apachesolr_search_page_settings_form_submit($form, &$form_state) {
 
   // Saves our values in the database, sets redirect path on success.
   drupal_set_message(t('The configuration options have been saved for %page.', array('%page' => $form_state['values']['label'])));
-  $form_state['redirect'] = 'admin/config/search/apachesolr/search-pages';
-
+  if ($form_state['values']['op'] == t('Save')) {
+    $form_state['redirect'] = 'admin/config/search/apachesolr/search-pages';
+  }
+  else {
+    $form_state['redirect'] = current_path();
+  }
+  // Regardlessly of the destination parameter we want to go to another page
+  unset($_GET['destination']);
+  drupal_static_reset('drupal_get_destination');
+  drupal_get_destination();
   // Menu rebuild needed to pick up search path.
   menu_rebuild();
 }

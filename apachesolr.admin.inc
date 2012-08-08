@@ -155,6 +155,12 @@ function apachesolr_environment_edit_form($form, &$form_state, $environment = NU
     '#submit' => array('apachesolr_environment_edit_submit'),
     '#value' => t('Save'),
   );
+  $form['actions']['save_edit'] = array(
+    '#type' => 'submit',
+    '#validate' => array('apachesolr_environment_edit_validate'),
+    '#submit' => array('apachesolr_environment_edit_submit'),
+    '#value' => t('Save and edit'),
+  );
   $form['actions']['test'] = array(
     '#type' => 'submit',
     '#validate' => array('apachesolr_environment_edit_validate'),
@@ -225,7 +231,16 @@ function apachesolr_environment_edit_submit($form, &$form_state) {
   }
   cache_clear_all('apachesolr:environments', 'cache_apachesolr');
   drupal_set_message(t('The %name search environment has been saved.', array('%name' => $form_state['values']['name'])));
-  $form_state['redirect'] = 'admin/config/search/apachesolr/settings';
+  if ($form_state['values']['op'] == t('Save')) {
+    $form_state['redirect'] = 'admin/config/search/apachesolr/settings';
+  }
+  else {
+    $form_state['redirect'] = current_path();
+  }
+  // Regardlessly of the destination parameter we want to go to another page
+  unset($_GET['destination']);
+  drupal_static_reset('drupal_get_destination');
+  drupal_get_destination();
 }
 
 /**
