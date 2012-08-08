@@ -876,7 +876,7 @@ function apachesolr_search_field_bias_form($fields, $env_id) {
         // By default we only show text fields.  Use hook_form_alter to change.
         // We use filter_xss to make sure links are allowed
         $form['field_bias'][$field_name] = array(
-          '#access' => $field->type == 'text',
+          '#access' => ($field->type == 'text' || $field->type == 'text_und'),
           '#type' => 'select',
           '#options' => $weights,
           '#title' => filter_xss(apachesolr_field_name_map($field_name)),
