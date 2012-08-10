@@ -1,5 +1,8 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+
+Apache Solr integration 7.x-1.0-rc3, 08-10-2012
+------------------------------
 #1682004 by Nick_vh: Add template hints for search results based on search page.
 #1722012 by mkalkbrenner, Nick_vh: fix for Missing argument 4 for apachesolr_multilingual_apachesolr_index_documents_alter().
 #1717490 by pwolanin: fix for Search result template suggestions relies on non-required fields.
