@@ -1354,7 +1354,12 @@ function apachesolr_search_preprocess_search_result(&$variables) {
   // template potential to make life easier for themers.
   if ($variables['module'] == 'apachesolr_search') {
     $result = $variables['result'];
-    $variables['theme_hook_suggestions'][] = 'search_result__' . $variables['module'] . '__' . $result['entity_type'] . '__' . $result['bundle'];
+    if (!empty($result['entity_type'])) {
+      $variables['theme_hook_suggestions'][] = 'search_result__' . $variables['module'] . '__' . $result['entity_type'];
+      if (!empty($result['bundle'])) {
+        $variables['theme_hook_suggestions'][] = 'search_result__' . $variables['module'] . '__' . $result['entity_type'] . '__' . $result['bundle'];
+      }
+    }
   }
 }
 
