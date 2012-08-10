@@ -1370,8 +1370,8 @@ function apachesolr_search_preprocess_search_results(&$variables) {
   // If this is a solr search, expose more data to themes to play with.
   if ($variables['module'] == 'apachesolr_search') {
     // Fetch our current query
-    if (!empty($variables['search_page']->env_id)) {
-      $env_id = $variables['search_page']->env_id;
+    if (!empty($variables['search_page']['env_id'])) {
+      $env_id = $variables['search_page']['env_id'];
     }
     $query = apachesolr_current_query($env_id);
 
@@ -1395,9 +1395,16 @@ function apachesolr_search_preprocess_search_results(&$variables) {
     pager_default_initialize($total, $params['rows']);
     $variables['pager'] = theme('pager', array('tags' => NULL));
 
-    // Add template hints for search pages.
-    $page_id = $variables['search_page']->page_id;
-    $variables['theme_hook_suggestions'][] = 'search_results__' . $variables['module'] . '__' . $page_id;
+    // Add template hints for environments
+    if (!empty($env_id)) {
+      $variables['theme_hook_suggestions'][] = 'search_results__' . $variables['module'] . '__' . $env_id;
+      // Add template hints for search pages
+      if (!empty($variables['search_page']['page_id'])) {
+        $variables['theme_hook_suggestions'][] = 'search_results__' . $variables['module'] . '__' . $variables['search_page']['page_id'];
+        // Add template hints for both
+        $variables['theme_hook_suggestions'][] = 'search_results__' . $variables['module'] . '__' . $env_id . '__' . $variables['search_page']['page_id'];
+      }
+    }
   }
 }
 
