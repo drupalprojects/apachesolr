@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1722012 by mkalkbrenner, Nick_vh: fix for Missing argument 4 for apachesolr_multilingual_apachesolr_index_documents_alter().
 #1717490 by pwolanin: fix for Search result template suggestions relies on non-required fields.
 #1708212 by ianmthomasuk, Nick_vh: Fixed Duplicate field error when indexing single value fields.
 #1702788 by mkalkbrenner: Fixed content and teaser are empty if node->language is not default.

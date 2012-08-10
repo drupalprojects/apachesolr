@@ -187,7 +187,12 @@ function apachesolr_index_entity_to_documents($item, $env_id) {
   }
 
   // Now allow modules to alter each other's additions for maximum flexibility.
-  drupal_alter('apachesolr_index_documents', $documents, $entity, $entity_type, $env_id);
+
+  // Hook to allow modifications of the retrieved results
+  foreach (module_implements('apachesolr_index_documents_alter') as $module) {
+    $function = $module . '_apachesolr_index_documents_alter';
+    $function($documents, $entity, $entity_type, $env_id);
+  }
 
   // Restore the user.
   $user = $saved_user;
