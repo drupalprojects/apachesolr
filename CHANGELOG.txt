@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1722966 by greggles: Fixed make apachesolr_index_batch_index_finished() message more translateable.
 #1717628 by Nick_vh | cpliakas: Added 'Save and Edit" functionality for configuration pages - Follow up.
 
 Apache Solr integration 7.x-1.0-rc3, 08-10-2012
