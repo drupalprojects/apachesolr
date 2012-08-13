@@ -400,7 +400,7 @@ function apachesolr_search_page_settings_form($form, &$form_state, $search_page 
 
   $form['actions']['submit'] = array(
     '#type' => 'submit',
-    '#value' => t('Save configuration'),
+    '#value' => t('Save'),
   );
   $form['actions']['submit_edit'] = array(
     '#type' => 'submit',
