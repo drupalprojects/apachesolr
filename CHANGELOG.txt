@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1729836 by pwolanin: fix for 'Results per page' option for a search page is broken.
 #1708166 by ianmthomasuk: Fixed Thow exception if asked for invalid solr environment.
 #1708538 by Nick_vh: Fixed Move the start param above the query alter.
 #1718172 by Nick_vh, pwolanin: Fixed Move search result alter hook earlier, and make sure needed data is set.

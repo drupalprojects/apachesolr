@@ -1009,9 +1009,10 @@ function apachesolr_search_run_empty($name, array $params = array(), $base_path 
  * @throws Exception
  */
 function apachesolr_search_run($name, array $params = array(), $solrsort = '', $base_path = '', $page = 0, $solr = NULL) {
+  // Merge the default params into the params sent in.
+  $params += apachesolr_search_basic_params();
   // This is the object that knows about the query coming from the user.
   $query = apachesolr_drupal_query($name, $params, $solrsort, $base_path, $solr);
-  apachesolr_search_basic_params($query);
 
   if ($query->getParam('q')) {
     apachesolr_search_add_spellcheck_params($query);
