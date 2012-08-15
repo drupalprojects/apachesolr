@@ -444,7 +444,7 @@ class SolrBaseQuery extends SolrFilterSubQuery implements DrupalSolrQueryInterfa
       if (is_array($value)) {
         $value = end($value);
       }
-      $this->params[$name] = trim($value);
+      $this->params[$name] = $this->normalizeParamValue($value);
       return $this;
     }
     // We never actually populate $this->params['fq'].  Instead
@@ -463,13 +463,26 @@ class SolrBaseQuery extends SolrFilterSubQuery implements DrupalSolrQueryInterfa
       $this->params[$name] = array();
     }
 
-    if (is_array($value)) {
-      $this->params[$name] = array_merge($this->params[$name], array_values($value));
+    if (!is_array($value)) {
+      // Convert to array for array_map.
+      $param_values = array($value);
     }
     else {
-      $this->params[$name][] = $value;
+      // Convert to a numerically keyed array.
+      $param_values = array_values($value);
     }
+    $this->params[$name] = array_merge($this->params[$name], array_map(array($this, 'normalizeParamValue'), $param_values));
+
     return $this;
+  }
+
+  protected function normalizeParamValue($value) {
+    // Convert boolean to string.
+    if (is_bool($value)) {
+      return $value ? 'true' : 'false';
+    }
+    // Convert to trimmed string.
+    return trim($value);
   }
 
   public function addParams(Array $params) {

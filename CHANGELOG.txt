@@ -1,6 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
-
+#1730840 by pwolanin: Normalize boolean and other values for parameters like hl.
 #1729836 by pwolanin: fix for "Results per page" option for a search page is broken.
 #1722966 by greggles: Fixed make apachesolr_index_batch_index_finished() message more translateable.
 #1717628 by Nick_vh, pwolanin: Added 'Save and Edit" functionality for configuration pages - Follow ups.
