@@ -330,11 +330,16 @@ class DrupalSolrOfflineSearchPagesWebTestCase extends DrupalWebTestCase {
     drupal_static_reset('apachesolr_search_page_load');
     $this->drupalGet('admin/config/search/apachesolr/search-pages');
     $this->assertNoText(t('Test Search Page'), t('Search Environment was succesfully deleted'));
+    apachesolr_environment_save(array('env_id' => 'DummySolr', 'service_class' => 'DummySolr', 'name' => 'dummy server', 'url' => 'http://localhost:8983/solr'));
+    $solr = new DummySolr();
+    $params = array(
+      'rows' => 5,
+    );
+    $results = apachesolr_search_run('apachesolr_test', $params, '', '', 0, $solr);
+    $query = apachesolr_current_query('DummySolr');
+    $this->assertEqual($query->getParam('rows'), 5, 'Passed in rows param overrode default');
   }
 
-  function tearDown() {
-    parent::tearDown();
-  }
 }
 
 class DrupalSolrNodeTestCase extends DrupalWebTestCase {
