@@ -229,8 +229,10 @@ class DummySolr {
   public function search($query = '', $params = array(), $method = 'GET') {
     $this->last_search = array('query' => $query, 'params' => $params, 'method' => $method);
     $response = new stdClass();
-    $response->response = array();
-    $response->data = '';
+    $response->response = new stdClass();
+    $response->response->numFound = 0;
+    $response->response->docs = array();
+
     return $response;
   }
 
