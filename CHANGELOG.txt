@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1741066 by Nick_vh: Added geo query type to make contrib's modules life easier.
 #1730840 by pwolanin: Normalize boolean and other values for parameters like hl.
 #1729836 by pwolanin: fix for "Results per page" option for a search page is broken.
 #1719302 by Nick_vh, msti: Fixed Running an empty facet query so the facet blocks can be displayed.

@@ -318,6 +318,12 @@ function apachesolr_facetapi_query_types() {
         'adapter' => 'apachesolr',
       ),
     ),
+    'apachesolr_geo' => array(
+      'handler' => array(
+        'class' => 'ApacheSolrFacetapiGeo',
+        'adapter' => 'apachesolr',
+      ),
+    ),
   );
 }
 
