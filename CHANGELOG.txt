@@ -1,5 +1,7 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1708150 by ianmthomasuk, Nick_vh: Added additional typing to function definitions.
+#1759110 by Nick_vh: Fixed process response fails if variable was set but never removed.
 #1741066 by Nick_vh: Added geo query type to make contrib's modules life easier.
 #1730840 by pwolanin: Normalize boolean and other values for parameters like hl.
 #1729836 by pwolanin: fix for "Results per page" option for a search page is broken.
