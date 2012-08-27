@@ -994,13 +994,14 @@ function apachesolr_search_run_empty($name, array $params = array(), $base_path 
  *   other than the base path of the current request.
  * @param integer $page
  *   For pagination.
- * @param $caller
+ * @param DrupalApacheSolrServiceInterface $solr
+ *   The solr server resource to execute the search on.
  *
  * @return stdClass $response
  *
  * @throws Exception
  */
-function apachesolr_search_run($name, array $params = array(), $solrsort = '', $base_path = '', $page = 0, $solr = NULL) {
+function apachesolr_search_run($name, array $params = array(), $solrsort = '', $base_path = '', $page = 0, DrupalApacheSolrServiceInterface $solr = NULL) {
   // Merge the default params into the params sent in.
   $params += apachesolr_search_basic_params();
   // This is the object that knows about the query coming from the user.

@@ -331,7 +331,7 @@ class DrupalSolrOfflineSearchPagesWebTestCase extends DrupalWebTestCase {
     $this->drupalGet('admin/config/search/apachesolr/search-pages');
     $this->assertNoText(t('Test Search Page'), t('Search Environment was succesfully deleted'));
     apachesolr_environment_save(array('env_id' => 'DummySolr', 'service_class' => 'DummySolr', 'name' => 'dummy server', 'url' => 'http://localhost:8983/solr'));
-    $solr = new DummySolr();
+    $solr = new DummySolr($url = NULL, $env_id = 'DummySolr');
     $params = array(
       'rows' => 5,
     );

@@ -5,12 +5,13 @@
  *   Dummy object to simulate a Solr Service
  *
  */
-class DummySolr {
+class DummySolr extends DrupalApacheSolrService implements DrupalApacheSolrServiceInterface {
+
   function getId() {
     return __CLASS__;
   }
 
-  function getFields() {
+  function getFields($num_terms = 0) {
     return (object) array(
        'is_uid' =>
       (object) array(
@@ -226,7 +227,7 @@ class DummySolr {
 
   protected $last_search = array();
 
-  public function search($query = '', $params = array(), $method = 'GET') {
+  public function search($query = '', array $params = array(), $method = 'GET') {
     $this->last_search = array('query' => $query, 'params' => $params, 'method' => $method);
     $response = new stdClass();
     $response->response = new stdClass();
