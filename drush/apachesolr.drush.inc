@@ -111,13 +111,8 @@ function apachesolr_drush_command() {
       'drush solr-vget user' => 'List all variables containing the string "user".',
     ),
     'options' => array(
-      'id' => array(
-         'description' => 'Apache Solr environment ID to use (uses the default environment if not specified)',
-      ),
-      'format' => array(
-        'description' => 'Format to output the object. Use "print_r" for print_r (default), "export" for var_export, and "json" for JSON.',
-        'example-value' => 'export',
-      ),
+      'id' => 'Apache Solr environment ID to use (uses the default environment if not specified)',
+      'format' => 'Format to output the object. Use "print_r" for print_r (default), "export" for var_export, and "json" for JSON.',
       'pipe' => 'A synonym for --format=export. Useful for pasting into code.',
     ),
     'aliases' => array('solr-vget'),
@@ -130,15 +125,10 @@ function apachesolr_drush_command() {
     ),
     'required-arguments' => TRUE,
     'options' => array(
-      'id' => array(
-         'description' => 'Apache Solr environment ID to use (uses the default environment if not specified)',
-      ),
+      'id' => 'Apache Solr environment ID to use (uses the default environment if not specified)',
       'yes' => 'Skip confirmation if only one variable name matches.',
       'always-set' => 'Always skip confirmation.',
-      'format' => array(
-        'description' => 'Format to parse the object. Use "auto" to detect format from value (default), "string", "integer" or "boolean" for corresponding primitive type, and "json" for JSON.',
-        'example-value' => 'boolean',
-      ),
+      'format' => 'Format to parse the object. Use "auto" to detect format from value (default), "string", "integer" or "boolean" for corresponding primitive type, and "json" for JSON.',
     ),
     'examples' => array(
       'drush solr-vset --yes apachesolr_read_only 1' => 'Set the apachesolr_read_only variable to 1. Skip confirmation if variable already exists.',
