@@ -143,7 +143,7 @@ class DrupalApacheSolrService implements DrupalApacheSolrServiceInterface {
    * @return
    *   (array) With all the system info
    */
-  public function setSystemInfo() {
+  protected function setSystemInfo() {
     $url = $this->_constructUrl(self::SYSTEM_SERVLET, array('wt' => 'json'));
     if ($this->env_id) {
       $this->system_info_cid = $this->env_id . ":system:" . drupal_hash_base64($url);
@@ -734,7 +734,7 @@ class DrupalApacheSolrService implements DrupalApacheSolrServiceInterface {
   /**
    * Like PHP's built in http_build_query(), but uses rawurlencode() and no [] for repeated params.
    */
-  public function httpBuildQuery(array $query, $parent = '') {
+  protected function httpBuildQuery(array $query, $parent = '') {
     $params = array();
 
     foreach ($query as $key => $value) {

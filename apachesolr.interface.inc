@@ -326,14 +326,6 @@ interface DrupalApacheSolrServiceInterface {
   function ping($timeout = 2);
 
   /**
-   * Call the /admin/system servlet
-   *
-   * @return
-   *   (array) With all the system info
-   */
-  function setSystemInfo();
-
-  /**
    * Get information about the Solr Core.
    *
    * @return
@@ -400,32 +392,6 @@ interface DrupalApacheSolrServiceInterface {
    * @thows Exception
    */
   function makeServletRequest($servlet, $params = array(), $options = array());
-
-  /**
-   * Escape a value for special query characters such as ':', '(', ')', '*', '?', etc.
-   *
-   * NOTE: inside a phrase fewer characters need escaped, use {@link DrupalApacheSolrService::escapePhrase()} instead
-   *
-   * @param string $value
-   * @return string
-   */
-  static function escape($value);
-
-  /**
-   * Escape a value meant to be contained in a phrase for special query characters
-   *
-   * @param string $value
-   * @return string
-   */
-  static function escapePhrase($value);
-
-  /**
-   * Convenience function for creating phrase syntax from a value
-   *
-   * @param string $value
-   * @return string
-   */
-  static function phrase($value);
 
   /**
    * Get the Solr url
@@ -532,11 +498,6 @@ interface DrupalApacheSolrServiceInterface {
    * @throws Exception If an error occurs during the service call
    */
   function optimize($waitFlush = true, $waitSearcher = true, $timeout = 3600);
-
-  /**
-   * Like PHP's built in http_build_query(), but uses rawurlencode() and no [] for repeated params.
-   */
-  function httpBuildQuery(array $query, $parent = '');
 
   /**
    * Simple Search interface
