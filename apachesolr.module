@@ -1083,14 +1083,6 @@ function apachesolr_get_solr($env_id = NULL) {
 function apachesolr_load_all_environments() {
   $environments = &drupal_static(__FUNCTION__);
 
-  // Sometimes this function is called when the 'apachesolr_index_bundles' is
-  // not created yet.
-  if (!db_table_exists('apachesolr_index_bundles')) {
-    return array();
-  }
-  if (!db_table_exists('apachesolr_environment')) {
-    return array();
-  }
   if (isset($environments)) {
     return $environments;
   }
@@ -1098,6 +1090,11 @@ function apachesolr_load_all_environments() {
   $cache = cache_get('apachesolr:environments', 'cache_apachesolr');
   if (isset($cache->data)) {
     $environments = $cache->data;
+  }
+  elseif (!db_table_exists('apachesolr_index_bundles') || !db_table_exists('apachesolr_environment')) {
+    // Sometimes this function is called when the 'apachesolr_index_bundles' is
+    // not created yet.
+    $environments = array();
   }
   else {
     // If ctools is available use it's crud functions to load the environments.
@@ -2573,25 +2570,26 @@ function theme_apachesolr_settings_title($vars) {
  * Export callback to load the view subrecords, which are the index bundles.
  */
 function apachesolr_environment_load_subrecords(&$environments) {
-  // This could be called before the schema is installed so it is wise to
-  // Verify this
-  if (db_table_exists('apachesolr_index_bundles')) {
-    $all_index_bundles = db_select('apachesolr_index_bundles', 'ib')
-      ->fields('ib', array('env_id', 'entity_type', 'bundle'))
-      ->condition('env_id', array_keys($environments), 'IN')
-      ->orderBy('env_id')
-      ->orderBy('entity_type')
-      ->orderBy('bundle')
-      ->execute()
-      ->fetchAll(PDO::FETCH_ASSOC);
-
-    $all_index_bundles_keyed = array();
-    foreach ($all_index_bundles as $env_info) {
-      extract($env_info);
-      $all_index_bundles_keyed[$env_id][$entity_type][] = $bundle;
-    }
+  if (empty($environments)) {
+    // Nothing to do.
+    return;
   }
-  
+
+  $all_index_bundles = db_select('apachesolr_index_bundles', 'ib')
+    ->fields('ib', array('env_id', 'entity_type', 'bundle'))
+    ->condition('env_id', array_keys($environments), 'IN')
+    ->orderBy('env_id')
+    ->orderBy('entity_type')
+    ->orderBy('bundle')
+    ->execute()
+    ->fetchAll(PDO::FETCH_ASSOC);
+
+  $all_index_bundles_keyed = array();
+  foreach ($all_index_bundles as $env_info) {
+    extract($env_info);
+    $all_index_bundles_keyed[$env_id][$entity_type][] = $bundle;
+  }
+
   $all_variables = db_select('apachesolr_environment_variable', 'v')
     ->fields('v', array('env_id', 'name', 'value'))
     ->condition('env_id', array_keys($environments), 'IN')
