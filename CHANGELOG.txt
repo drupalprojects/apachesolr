@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1759004 by mkalkbrenner, pwolanin: fix for apachesolr_search_custom_page_search_form_submit() kills all  parameters.
 #1730840 by pwolanin: Normalize boolean and other values for parameters like hl.
 #1729836 by pwolanin: fix for 'Results per page' option for a search page is broken.
 #1708166 by ianmthomasuk: Fixed Thow exception if asked for invalid solr environment.

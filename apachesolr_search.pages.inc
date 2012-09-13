@@ -99,6 +99,8 @@ function apachesolr_search_custom_page_search_form_submit(&$form, &$form_state) 
   if (strlen($form_state['values']['keys'])) {
     $redirect .= '/' . $form_state['values']['keys'];
   }
+
+  $get = array();
   if (isset($form_state['values']['get'])) {
     $get = json_decode($form_state['values']['get'], TRUE);
   }
@@ -107,8 +109,15 @@ function apachesolr_search_custom_page_search_form_submit(&$form, &$form_state) 
     $get['retain-filters'] = '1';
   }
   else {
-    $get = array();
+    // Remove all filters
+    if (!empty($search_page['settings']['apachesolr_search_allow_user_input'])) {
+      unset($get['fq']);
+    }
+    if (module_exists('facetapi')) {
+      unset($get['f']);
+    }
   }
+
   // Add the query values into the redirect.
   $form_state['redirect'] = array($redirect, $get);
 }
