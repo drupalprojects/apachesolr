@@ -283,8 +283,9 @@ class SolrBaseQuery extends SolrFilterSubQuery implements DrupalSolrQueryInterfa
   public $page = 0;
 
   /**
-   * @param $env_id
-   *   The environment where you are calling the query from.  Typically the default environment.
+   * @param $name
+   *   The search name, used for finding the correct blocks and other config.
+   *   Typically "apachesolr".
    *
    * @param $solr
    *   An instantiated DrupalApacheSolrService Object.

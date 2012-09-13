@@ -906,7 +906,7 @@ function apachesolr_search_conditions_default($search_page) {
   }
 
   // We may also have filters added by facet API module. The 'f'
-  // is determined by constant FacetapiAdapter::FILTER_KEY. Hard
+  // is determined by variable FacetapiUrlProcessor::$filterKey. Hard
   // coded here to avoid extra class loading.
   if (!empty($_GET['f']) && is_array($_GET['f'])) {
     if (module_exists('facetapi')) {

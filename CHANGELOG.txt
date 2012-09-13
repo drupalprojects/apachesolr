@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1759004 by mkalkbrenner, pwolanin: fix for apachesolr_search_custom_page_search_form_submit() kills all $_GET parameters.
 #1778150 by cpliakas, pwolanin: fix for SQL error in apachesolr_environment_load_subrecords().
 #1743138 by mundanity: Fixed Invalid argument when running Drush.
 #1751640 by cpliakas: Added drush commands to see the ID of the last item indexes as well as the next item queued for indexing.
