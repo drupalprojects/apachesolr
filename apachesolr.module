@@ -1143,26 +1143,24 @@ function apachesolr_load_service_class($class = NULL, $class_info = NULL) {
  */
 function apachesolr_load_all_environments($reset = FALSE) {
   static $environments;
+
   if ($reset) {
-    $environments = array();
+    $environments = NULL;
     cache_clear_all('apachesolr:environments', 'cache_apachesolr');
   }
-  // Sometimes this function is called when the 'apachesolr_index_bundles' is
-  // not created yet.
-  if (!db_table_exists('apachesolr_index_bundles')) {
-    return array();
-  }
-  if (!db_table_exists('apachesolr_environment')) {
-    return array();
-  }
 
-  if (!empty($environments)) {
+  if (isset($environments)) {
     return $environments;
   }
   // Use cache_get to avoid DB when using memcache, etc.
   $cache = cache_get('apachesolr:environments', 'cache_apachesolr');
-  if (!empty($cache->data)) {
+  if (isset($cache->data)) {
     $environments = $cache->data;
+  }
+  elseif (!db_table_exists('apachesolr_index_bundles') || !db_table_exists('apachesolr_environment')) {
+    // Sometimes this function is called when the 'apachesolr_index_bundles' is
+    // not created yet.
+    $environments = array();
   }
   else {
     // If ctools is available use its crud functions to load the environments.
@@ -2609,33 +2607,32 @@ function theme_apachesolr_settings_title($vars) {
  * Export callback to load the view subrecords, which are the index bundles.
  */
 function apachesolr_environment_load_subrecords(&$environments) {
-  // This could be called before the schema is installed so it is wise to
-  // Verify this
-  if (db_table_exists('apachesolr_index_bundles')) {
-    $query = "SELECT env_id, entity_type, bundle
-      FROM {apachesolr_index_bundles}
-      WHERE env_id IN (". db_placeholders($environments, 'varchar') .")
-      ORDER BY env_id, entity_type, bundle";
-    $all_index_bundles_results = db_query($query, array_keys($environments));
-    $all_index_bundles_keyed = array();
-    while($all_index_bundles_result = db_fetch_array($all_index_bundles_results)) {
-      // bundle variable comes from the extract
-      extract($all_index_bundles_result);
-      $all_index_bundles_keyed[$env_id][$entity_type][] = $bundle;
-    }
+  if (empty($environments)) {
+    // Nothing to do.
+    return;
   }
 
-  if (db_table_exists('apachesolr_environment_variable')) {
-    $query = "SELECT env_id, name, value
-      FROM {apachesolr_environment_variable}
-      WHERE env_id IN (". db_placeholders($environments, 'varchar') .")
-      ORDER BY env_id, name, value";
-    $all_variables_results = db_query($query, array_keys($environments));
-    $variables = array();
-    while ($all_variables_result = db_fetch_array($all_variables_results)) {
-      extract($all_variables_result);
-      $variables[$env_id][$name] = unserialize($value);
-    }
+  $query = "SELECT env_id, entity_type, bundle
+    FROM {apachesolr_index_bundles}
+    WHERE env_id IN (". db_placeholders($environments, 'varchar') .")
+    ORDER BY env_id, entity_type, bundle";
+  $all_index_bundles_results = db_query($query, array_keys($environments));
+  $all_index_bundles_keyed = array();
+  while($all_index_bundles_result = db_fetch_array($all_index_bundles_results)) {
+    // bundle variable comes from the extract
+    extract($all_index_bundles_result);
+    $all_index_bundles_keyed[$env_id][$entity_type][] = $bundle;
+  }
+
+  $query = "SELECT env_id, name, value
+    FROM {apachesolr_environment_variable}
+    WHERE env_id IN (". db_placeholders($environments, 'varchar') .")
+    ORDER BY env_id, name, value";
+  $all_variables_results = db_query($query, array_keys($environments));
+  $variables = array();
+  while ($all_variables_result = db_fetch_array($all_variables_results)) {
+    extract($all_variables_result);
+    $variables[$env_id][$name] = unserialize($value);
   }
   
   foreach ($environments as $env_id => &$environment) {
