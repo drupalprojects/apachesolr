@@ -1357,7 +1357,7 @@ function apachesolr_search_get_search_suggestions($env_id) {
 }
 
 /**
- * Implements hook_entity_info_alter().
+ * Implements hook_apachesolr_entity_info_alter().
  */
 function apachesolr_search_apachesolr_entity_info_alter(&$entity_info) {
   // First set defaults so that we don't need to worry about NULL keys.

@@ -253,7 +253,7 @@ function hook_apachesolr_ENTITY_TYPE_exclude($entity_id, $row, $env_id) {
 /**
  * Add information to index other entities.
  * There are some modules in http://drupal.org that can give a good example of
- * custom entity indexing such as apachesolr_user_indexer, apachesolr_term
+ * custom entity indexing such as apachesolr_user, apachesolr_term
  *
  * @param array $entity_info
  */
