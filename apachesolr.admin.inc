@@ -1123,7 +1123,7 @@ function apachesolr_index_config_form_submit($form, &$form_state) {
       }
     }
     else {
-      drupal_set_message(t('The Apache Solr search engine is not available. Please contact your site administrator.'), 'error');
+      drupal_set_message(t('Search is temporarily unavailable. If the problem persists, please contact the site administrator.'), 'error');
     }
   }
 

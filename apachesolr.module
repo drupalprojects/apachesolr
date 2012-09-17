@@ -485,7 +485,7 @@ function apachesolr_failure($search_name, $querystring) {
 
   switch ($fail_rule) {
     case 'apachesolr:show_error':
-      drupal_set_message(t('The Apache Solr search engine is not available. Please contact your site administrator.'), 'error');
+      drupal_set_message(t('Search is temporarily unavailable. If the problem persists, please contact the site administrator.'), 'error');
       break;
     case 'apachesolr:show_no_results':
       // Do nothing.

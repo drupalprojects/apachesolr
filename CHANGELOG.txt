@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1732900 by cpliakas: Added Change the wording of the generic 'Apache Solr server unavailable" error message.
 #1781040 by mkalkbrenner: Fixed Switch 'Enable spell check" does not work - spell check is allways on.
 #1786450 by Nick_vh: Fixed apachesolr.interface.inc is not always loaded.
 #1760592 by cpliakas, pwolanin: fix for core_search page does not use the current default search environment.

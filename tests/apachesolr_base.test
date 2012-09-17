@@ -276,7 +276,7 @@ class DrupalSolrOfflineSearchPagesWebTestCase extends DrupalWebTestCase {
     $this->assertText(t('Test Search Page'), t('Search page was succesfully edited'));
     $this->assertText('search/searchdifferentpath', t('Search path was updated'));
     $this->drupalGet('search/searchdifferentpath');
-    $this->assertText(t('The Apache Solr search engine is not available. Please contact your site administrator.'), t('Search path was successfully created and is accessible'));
+    $this->assertText(t('Search is temporarily unavailable. If the problem persists, please contact the site administrator.'), t('Search path was successfully created and is accessible'));
   }
 
   /**
