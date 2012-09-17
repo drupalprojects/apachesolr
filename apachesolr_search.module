@@ -1354,7 +1354,7 @@ function apachesolr_search_get_search_suggestions($env_id) {
 }
 
 /**
- * Implements hook_content_extra_fields_alter().
+ * Implements hook_apachesolr_entity_info_alter().
  */
 function apachesolr_search_apachesolr_entity_info_alter(&$entity_info) {
   // Now set those values that we know.  Other modules can do so
