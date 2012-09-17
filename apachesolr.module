@@ -1057,6 +1057,10 @@ function apachesolr_get_solr($env_id = NULL) {
   $solr_cache = &drupal_static(__FUNCTION__);
   $environments = apachesolr_load_all_environments();
 
+  if (!interface_exists('DrupalApacheSolrServiceInterface')) {
+    require_once(dirname(__FILE__) . '/apachesolr.interface.inc');
+  }
+
   if (empty($env_id)) {
     $env_id = apachesolr_default_environment();
   }
@@ -1348,6 +1352,10 @@ function apachesolr_environment_variable_del($env_id, $name) {
  */
 function apachesolr_server_status($url, $class = NULL) {
   $status = &drupal_static(__FUNCTION__, array());
+
+  if (!interface_exists('DrupalApacheSolrServiceInterface')) {
+    require_once(dirname(__FILE__) . '/apachesolr.interface.inc');
+  }
 
   if (empty($class)) {
     $class = variable_get('apachesolr_service_class', 'DrupalApacheSolrService');

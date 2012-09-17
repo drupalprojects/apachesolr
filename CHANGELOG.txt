@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1786450 by Nick_vh: Fixed apachesolr.interface.inc is not always loaded.
 #1760592 by cpliakas, pwolanin: fix for core_search page does not use the current default search environment.
 #1759004 by mkalkbrenner, pwolanin: fix for apachesolr_search_custom_page_search_form_submit() kills all $_GET parameters.
 #1778150 by cpliakas, pwolanin: fix for SQL error in apachesolr_environment_load_subrecords().
