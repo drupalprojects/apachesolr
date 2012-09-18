@@ -2700,7 +2700,8 @@ function apachesolr_ctools_environment_export($environment, $indent) {
 
   $index_bundles = array();
 
-  if ($bundles = apachesolr_get_index_bundles($environment->env_id, 'node')) {
+  $type = 'node';
+  if ($bundles = apachesolr_get_index_bundles($environment->env_id, $type)) {
     $index_bundles[$type] = $bundles;
   }
   $additions_top = array();

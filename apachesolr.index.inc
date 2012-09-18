@@ -88,9 +88,8 @@ function apachesolr_index_status($env_id) {
     $query = "SELECT count(*)
      FROM {{$table}} aie
      WHERE (aie.bundle IN (" . db_placeholders($bundles, 'varchar') . "))
-     AND (aie.entity_type = '%s')
      AND ((aie.changed > %d) OR ((aie.changed <= %d) AND (aie.entity_id > %d)))";
-    $arguments = array_merge($bundles, array($entity_type, $last_changed, $last_changed, $last_entity_id));
+    $arguments = array_merge($bundles, array($last_changed, $last_changed, $last_entity_id));
     if ($table == 'apachesolr_index_entities') {
       // Other, entity-specific tables don't need this condition.
       $query .= " AND aie.entity_type = '%s'";
