@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1717490 by pwolanin, Nick_vh: Fixed Search result template suggestions relies on non-required fields.
 #1786450 by Nick_vh, pwolanin: Fixed apachesolr.interface.inc is not always loaded. - Follow up
 #1778050 by Nick_vh, pwolanin: fix for stale cache when CTools is already enabled.
 #1708150 by ianmthomasuk, Nick_vh, pwolanin: Added additional typing to function definitions.
