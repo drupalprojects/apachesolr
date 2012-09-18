@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1765938 by cpliakas: Added Move the variable_get() for 'apachesolr_environments()" after the cache_set() so that URLs can be modified dynamically.
 #1782436 by cspitzlay: Fixed Error and obsolete hint in code comment.
 #1732900 by cpliakas: Added Change the wording of the generic 'Apache Solr server unavailable" error message.
 #1781040 by mkalkbrenner: Fixed Switch 'Enable spell check" does not work - spell check is allways on.
