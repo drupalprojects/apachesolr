@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1722966 by greggles: Fixed make apachesolr_index_batch_index_finished() message more translateable.
 #1682004 by Nick_vh, cpliakas: Added template hints for search results based on search page.
 #1722012 by Nick_vh, pwolanin | xurubo93: Fixed Warning: Missing argument 4 for apachesolr_multilingual_apachesolr_index_documents_alter().
 #1717490 by pwolanin, Nick_vh: Fixed Search result template suggestions relies on non-required fields.
