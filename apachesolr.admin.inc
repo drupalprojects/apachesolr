@@ -183,14 +183,15 @@ function apachesolr_environment_edit_form(&$form_state, $environment = NULL) {
       '#value' => t('Delete'),
     );
   }
-
+  // Cancel
   $form['actions']['cancel'] = array(
-    '#type' => 'submit',
-    '#submit' => array('apachesolr_environment_edit_cancel'),
-    '#value' => t('Cancel'),
+    '#type' => 'markup',
+    '#value' => l(t('Cancel'), referer_uri()),
   );
+
   return $form;
 }
+
 
 function apachesolr_environment_edit_test_submit($form, &$form_state) {
   $ping = apachesolr_server_status($form_state['values']['url'], $form_state['values']['service_class'], $form_state['values']['service_class_info']);
@@ -249,17 +250,6 @@ function apachesolr_environment_edit_submit($form, &$form_state) {
   else {
     $form_state['redirect'] = array($_GET['q']);
   }
-}
-
-function apachesolr_environment_edit_cancel($form, &$form_state) {
-  // Ensures destination is an internal URL, builds "cancel" link.
-  if (isset($_REQUEST['destination'])) {
-    $destination = $_REQUEST['destination'];
-  }
-  else {
-    $destination = 'admin/settings/apachesolr/settings';
-  }
-  $form_state['redirect'] = $destination;
 }
 
 /**

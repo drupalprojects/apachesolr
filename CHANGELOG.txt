@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1677050 by Nick_vh, cpliakas: Fixed Cancel link redirects to a different page than the user came from when creating a new environment.
 #1787386 by pwolanin: Fixed 6.x-3.x indexing doesn't give the right number to index.
 #1781040 by Nick_vh, mkalkbrenner: Fixed Switch 'Enable spell check" does not work - spell check is allways on.
 #1743138 by mundanity: Fixed Invalid argument when running Drush.

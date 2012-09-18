@@ -425,11 +425,10 @@ function apachesolr_search_page_settings_form(&$form_state, $search_page = NULL)
     '#submit' => array('apachesolr_search_page_settings_form_submit'),
   );
 
-
+  // Cancel
   $form['actions']['cancel'] = array(
-    '#type' => 'submit',
-    '#value' => t('Cancel'),
-    '#submit' => array('apachesolr_search_page_settings_cancel'),
+    '#type' => 'markup',
+    '#value' => l(t('Cancel'), referer_uri()),
   );
 
   return $form;
@@ -554,17 +553,6 @@ function apachesolr_search_page_settings_form_submit($form, &$form_state) {
   // Menu rebuild needed to pick up search path.
   menu_cache_clear_all();
   menu_rebuild();
-}
-
-function apachesolr_search_page_settings_cancel($form, &$form_state) {
-  // Ensures destination is an internal URL, builds "cancel" link.
-  if (isset($_GET['destination'])) {
-    $destination = $_GET['destination'];
-  }
-  else {
-    $destination = 'admin/settings/apachesolr/search-pages';
-  }
-  $form_state['redirect'] = $destination;
 }
 
 /**
