@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1743138 by mundanity: Fixed Invalid argument when running Drush.
 #1751640 by cpliakas: Added drush commands to see the ID of the last item indexes as well as the next item queued for indexing.
 #1759110 by Nick_vh: Fixed process response fails if variable was set but never removed.
 #1708212 by ianmthomasuk, Nick_vh: Fixed Duplicate field error when indexing single value fields.
