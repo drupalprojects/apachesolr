@@ -909,17 +909,16 @@ function apachesolr_fields_default_indexing_callback($entity, $field_name, $inde
         'key' => $index_key,
         'value' => $function($values[$i]['value']),
       );
-
-      // Only store the first value of the field in a singular index
-      if ($numeric && ($i == 0)) {
-        $singular_field_info = $field_info;
-        $singular_field_info['multiple'] = FALSE;
-        $single_key = apachesolr_index_key($singular_field_info);
-        $fields[] = array(
-          'key' => $single_key,
-          'value' => $function($values[$i]['value']),
-        );
-      }
+    }
+    // Also store the first value of the field in a singular index for multi value fields
+    if ($field_info['multiple'] && $numeric && !empty($values[0])) {
+      $singular_field_info = $field_info;
+      $singular_field_info['multiple'] = FALSE;
+      $single_key = apachesolr_index_key($singular_field_info);
+      $fields[] = array(
+        'key' => $single_key,
+        'value' => $function($values[0]['value']),
+      );
     }
   }
   return $fields;
