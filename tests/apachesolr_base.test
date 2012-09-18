@@ -287,7 +287,7 @@ class DrupalSolrOfflineSearchPagesWebTestCase extends DrupalWebTestCase {
     cache_clear_all();
     menu_rebuild();
     $this->drupalGet('search/searchdifferentpath');
-    $this->assertText(t('The Apache Solr search engine is not available. Please contact your site administrator.'), t('Search path was sucessfully created and is accessible'));
+    $this->assertText(t('Search is temporarily unavailable. If the problem persists, please contact the site administrator.'), t('Search path was successfully created and is accessible'));
   }
 
   /**
