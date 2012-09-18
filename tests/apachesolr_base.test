@@ -274,7 +274,7 @@ class DrupalSolrOfflineSearchPagesWebTestCase extends DrupalWebTestCase {
       'page_title' => 'Test Title',
       'search_path' => 'search/searchdifferentpath',
     );
-    $this->drupalPost($this->getUrl(), $edit, t('Save configuration'));
+    $this->drupalPost($this->getUrl(), $edit, t('Save'));
     $this->assertResponse(200);
     // Reset static var
     apachesolr_search_page_load('core_search', TRUE);
@@ -331,7 +331,7 @@ class DrupalSolrOfflineSearchPagesWebTestCase extends DrupalWebTestCase {
       'page_title' => 'Test Title',
       'search_path' => 'search/searchdifferentpath',
     );
-    $this->drupalPost($this->getUrl(), $edit, t('Save configuration'));
+    $this->drupalPost($this->getUrl(), $edit, t('Save'));
     $this->assertResponse(200);
     // Make sure the menu is recognized
     // Reset static var

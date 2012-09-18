@@ -159,9 +159,16 @@ function apachesolr_environment_edit_form(&$form_state, $environment = NULL) {
 
   $form['actions']['save'] = array(
     '#type' => 'submit',
+    '#redirect' => 'admin/settings/apachesolr/settings',
     '#validate' => array('apachesolr_environment_edit_validate'),
     '#submit' => array('apachesolr_environment_edit_submit'),
     '#value' => t('Save'),
+  );
+  $form['actions']['save_edit'] = array(
+    '#type' => 'submit',
+    '#validate' => array('apachesolr_environment_edit_validate'),
+    '#submit' => array('apachesolr_environment_edit_submit'),
+    '#value' => t('Save and edit'),
   );
   $form['actions']['test'] = array(
     '#type' => 'submit',
@@ -230,13 +237,24 @@ function apachesolr_environment_edit_submit($form, &$form_state) {
   }
   cache_clear_all('apachesolr:environments', 'cache_apachesolr');
   drupal_set_message(t('The %name search environment has been saved.', array('%name' => $form_state['values']['name'])));
-  $form_state['redirect'] = 'admin/settings/apachesolr/settings';
+
+  // for some reason $_GET was not sufficient.
+  if (isset($_REQUEST['destination'])) {
+    unset($_REQUEST['destination']);
+  }
+
+  if (isset($form_state['clicked_button']['#redirect'])) {
+    $form_state['redirect'] = array($form_state['clicked_button']['#redirect']);
+  }
+  else {
+    $form_state['redirect'] = array($_GET['q']);
+  }
 }
 
 function apachesolr_environment_edit_cancel($form, &$form_state) {
   // Ensures destination is an internal URL, builds "cancel" link.
-  if (isset($_GET['destination'])) {
-    $destination = $_GET['destination'];
+  if (isset($_REQUEST['destination'])) {
+    $destination = $_REQUEST['destination'];
   }
   else {
     $destination = 'admin/settings/apachesolr/settings';

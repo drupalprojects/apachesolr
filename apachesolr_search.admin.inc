@@ -415,9 +415,16 @@ function apachesolr_search_page_settings_form(&$form_state, $search_page = NULL)
   // Button for the corresponding actions
   $form['actions']['submit'] = array(
     '#type' => 'submit',
-    '#value' => t('Save configuration'),
+    '#redirect' => 'admin/settings/apachesolr/search-pages',
+    '#value' => t('Save'),
     '#submit' => array('apachesolr_search_page_settings_form_submit'),
   );
+  $form['actions']['submit_edit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save and edit'),
+    '#submit' => array('apachesolr_search_page_settings_form_submit'),
+  );
+
 
   $form['actions']['cancel'] = array(
     '#type' => 'submit',
@@ -532,8 +539,18 @@ function apachesolr_search_page_settings_form_submit($form, &$form_state) {
 
   // Saves our values in the database, sets redirect path on success.
   drupal_set_message(t('The configuration options have been saved for %page.', array('%page' => $form_state['values']['label'])));
-  $form_state['redirect'] = 'admin/settings/apachesolr/search-pages';
 
+  // for some reason $_GET was not sufficient.
+  if (isset($_REQUEST['destination'])) {
+    unset($_REQUEST['destination']);
+  }
+
+  if (isset($form_state['clicked_button']['#redirect'])) {
+    $form_state['redirect'] = array($form_state['clicked_button']['#redirect']);
+  }
+  else {
+    $form_state['redirect'] = array($_GET['q']);
+  }
   // Menu rebuild needed to pick up search path.
   menu_cache_clear_all();
   menu_rebuild();

@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1717628 by Nick_vh, pwolanin | cpliakas: Added 'Save and Edit" functionality for configuration pages.
 #1719302 by Nick_vh, msti: Fixed Running an empty facet query so the facet blocks can be displayed.
 #1722966 by greggles: Fixed make apachesolr_index_batch_index_finished() message more translateable.
 #1682004 by Nick_vh, cpliakas: Added template hints for search results based on search page.
