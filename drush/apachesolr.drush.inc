@@ -37,6 +37,22 @@ function apachesolr_drush_command() {
     'callback' => 'apachesolr_drush_solr_index',
     'description' => dt('Reindexes content marked for (re)indexing.'),
   );
+  $items['solr-get-last-indexed'] = array(
+    'callback' => 'apachesolr_drush_solr_get_last_indexed',
+    'description' => dt('Get the ID of the last document indexed.'),
+    'arguments' => array(
+      'environment-id' => dt('Optional. The environment ID, uses the default if not passed.'),
+      'entity-type' => dt('Optional. The machine name of the entity, defaults to "node".'),
+    ),
+  );
+  $items['solr-get-next-indexed'] = array(
+    'callback' => 'apachesolr_drush_solr_get_next_indexed',
+    'description' => dt('Get the ID of the next document to be indexed.'),
+    'arguments' => array(
+      'environment-id' => dt('Optional. The environment ID, uses the default if not passed.'),
+      'entity-type' => dt('Optional. The machine name of the entity, defaults to "node".'),
+    ),
+  );
   $items['solr-search'] = array(
     'callback' => 'apachesolr_drush_solr_search',
     'description' => dt('Search the site for keywords using Apache Solr'),
@@ -236,6 +252,24 @@ function apachesolr_drush_solr_index() {
   $env_id = apachesolr_default_environment();
   apachesolr_index_batch_index_remaining($env_id);
   drush_backend_batch_process();
+}
+
+function apachesolr_drush_solr_get_last_indexed($env_id = NULL, $entity_type = 'node') {
+  if (NULL === $env_id) {
+    $env_id = apachesolr_default_environment();
+  }
+  $return = apachesolr_get_last_index_position($env_id, $entity_type);
+  drush_print($return['last_entity_id']);
+}
+
+function apachesolr_drush_solr_get_next_indexed($env_id = NULL, $entity_type = 'node') {
+  module_load_include('inc', 'apachesolr', 'apachesolr.index');
+  if (NULL === $env_id) {
+    $env_id = apachesolr_default_environment();
+  }
+  $return = apachesolr_index_get_entities_to_index($env_id, $entity_type, 1);
+  $output = (isset($return[0]->entity_id)) ? $return[0]->entity_id : '0';
+  drush_print($output);
 }
 
 function apachesolr_drush_solr_search() {
