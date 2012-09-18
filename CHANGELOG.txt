@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1708150 by ianmthomasuk, Nick_vh, pwolanin: Added additional typing to function definitions.
 #1786450 by Nick_vh, pwolanin: Fixed apachesolr.interface.inc is not always loaded.
 #1760592 by cpliakas, pwolanin: fix for core_search page does not use the current default search environment.
 #1732900 by cpliakas: Added Change the wording of the generic 'Apache Solr server unavailable" error message.

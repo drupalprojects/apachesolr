@@ -1710,7 +1710,7 @@ function apachesolr_static_response_cache($searcher, $response = NULL) {
  *
  * @throws Exception
  */
-function apachesolr_drupal_query($name, $params = array(), $solrsort = '', $base_path = '', $solr = NULL) {
+function apachesolr_drupal_query($name, array $params = array(), $solrsort = '', $base_path = '', $solr = NULL) {
   if (!interface_exists('DrupalSolrQueryInterface')) {
     require_once(dirname(__FILE__) . '/apachesolr.interface.inc');
   }
