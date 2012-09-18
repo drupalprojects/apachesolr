@@ -1,9 +1,19 @@
 <?php
 /**
  * @file
- *   Exposed Hooks in 7.x:
+ *   Exposed Hooks in 6.x-3.x:
  */
 
+/**
+ * Lets modules know when the default environment is changed.
+ */
+function hook_apachesolr_default_environment($env_id, $old_env_id) {
+  $page = apachesolr_search_page_load('core_search');
+  if ($page && $page['env_id'] != $env_id) {
+    $page['env_id'] = $env_id;
+    apachesolr_search_page_save($page);
+  }
+}
 
 /**
  * Add index mappings for Field API types. The default mappings array

@@ -323,6 +323,19 @@ function apachesolr_search_default_search_page($page_id = NULL, $reset = FALSE) 
 }
 
 /**
+ * Implements hook_apachesolr_default_environment()
+ *
+ * Make sure the core search page is using the default environment.
+ */
+function apachesolr_search_apachesolr_default_environment($env_id, $old_env_id) {
+  $page = apachesolr_search_page_load('core_search');
+  if ($page && $page['env_id'] != $env_id) {
+    $page['env_id'] = $env_id;
+    apachesolr_search_page_save($page);
+  }
+}
+
+/**
  * Load a search page
  * @param string $page_id
  * @return array
@@ -512,6 +525,12 @@ function apachesolr_search_load_all_search_pages() {
     }
 
     $search_pages = $search_pages + $search_pages_db;
+
+    // Ensure that the core search page uses the default environment. In some
+   // instances, for example when unit testing, this search page isn't defined.
+   if (isset($search_pages['core_search'])) {
+     $search_pages['core_search']['env_id'] = apachesolr_default_environment();
+   }
 
     // convert settings to an array
     foreach ($search_pages as $id => $search_page) {

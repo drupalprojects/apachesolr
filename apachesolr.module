@@ -1064,6 +1064,15 @@ function apachesolr_default_environment($env_id = NULL) {
 }
 
 /**
+ * Set the default environment and let other modules know about the change.
+ */
+function apachesolr_set_default_environment($env_id) {
+  $old_env_id = variable_get('apachesolr_default_environment', 'solr');
+  variable_set('apachesolr_default_environment', $env_id);
+  module_invoke_all('apachesolr_default_environment', $env_id, $old_env_id);
+}
+
+/**
  * Factory method for solr singleton objects. Structure allows for an arbitrary
  * number of solr objects to be used based on a name whie maps to
  * the host, port, path combination.
