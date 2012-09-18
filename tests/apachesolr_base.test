@@ -227,6 +227,7 @@ class DrupalSolrOfflineSearchPagesWebTestCase extends DrupalWebTestCase {
    */
   function setUp() {
     parent::setUp('content', 'search', 'apachesolr', 'apachesolr_search');
+    apachesolr_load_service_class('', array('file' => 'tests/Dummy_Solr', 'module' => 'apachesolr', 'class' => 'DummySolr'));
     // Create a basic user, which is subject to moderation.
     $permissions = array(
       'access content',
