@@ -1122,9 +1122,8 @@ function apachesolr_get_solr($env_id = NULL, $reset = FALSE) {
 }
 
 function apachesolr_load_service_class($class = NULL, $class_info = NULL) {
-  // If class is already loaded, do nothing
-  if (class_exists($class)) {
-    return $class;
+  if (!interface_exists('DrupalApacheSolrServiceInterface')) {
+    require_once(dirname(__FILE__) . '/apachesolr.interface.inc');
   }
 
   // Use the default class if none is specified.
@@ -1134,6 +1133,11 @@ function apachesolr_load_service_class($class = NULL, $class_info = NULL) {
       'module' => 'apachesolr',
       'class' => 'DrupalApacheSolrService'));
     $class = $class_info['class'];
+  }
+
+  // If class is already loaded, do nothing
+  if (class_exists($class)) {
+    return $class;
   }
 
   if (isset($class_info['file']) && isset($class_info['module'])) {
