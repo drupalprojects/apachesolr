@@ -1103,7 +1103,12 @@ function apachesolr_search_run($name, array $params = array(), $solrsort = '', $
   $env_id = $query->solr('getId');
   apachesolr_has_searched($env_id, TRUE);
   $process_response_callback = apachesolr_environment_variable_get($env_id, 'process_response_callback', 'apachesolr_search_process_response');
-  return call_user_func($process_response_callback, $response, $final_query);
+  if (function_exists($process_response_callback)) {
+    return call_user_func($process_response_callback, $response, $final_query);
+  }
+  else {
+    return apachesolr_search_process_response($response, $final_query);
+  }
 }
 
 function apachesolr_search_basic_params(DrupalSolrQueryInterface $query = NULL) {

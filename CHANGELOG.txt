@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1759110 by Nick_vh: Fixed process response fails if variable was set but never removed.
 #1708212 by ianmthomasuk, Nick_vh: Fixed Duplicate field error when indexing single value fields.
 #1741066 by Nick_vh: Added geo query type to make contrib's modules life easier.
 #1717628 by Nick_vh, pwolanin | cpliakas: Added 'Save and Edit" functionality for configuration pages.
