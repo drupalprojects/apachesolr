@@ -278,6 +278,7 @@ class DrupalSolrOfflineSearchPagesWebTestCase extends DrupalWebTestCase {
     $this->assertResponse(200);
     // Reset static var
     apachesolr_search_page_load('core_search', TRUE);
+
     $this->drupalGet('admin/settings/apachesolr/search-pages');
     $this->assertText(t('Test Search Page'), t('Search page was succesfully edited'));
     $this->assertText('search/searchdifferentpath', t('Search path was updated'));

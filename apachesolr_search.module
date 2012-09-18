@@ -13,6 +13,23 @@
  * displayed.
  */
 function apachesolr_search_init() {
+  // Useless without facetapi
+  if (!module_exists('facetapi')) {
+    return;
+  }
+
+  // Using a simple query we will figure out if we have to execute this snippet
+  // on every page or exit as fast as possible.
+  $query = "SELECT count(env_id)
+    FROM {apachesolr_environment_variable}
+    WHERE name = 'apachesolr_search_show_facets'";
+  $count = db_result(db_query($query));
+  if ($count == 0) {
+    return;
+  }
+
+  // Load the default search page, we only support facets to link to this
+  // search page due to complexity and slow downs
   $search_page_id = apachesolr_search_default_search_page();
   $search_page = apachesolr_search_page_load($search_page_id);
   // Do not continue if our search page is not valid
@@ -21,31 +38,35 @@ function apachesolr_search_init() {
   }
 
   $show_facets = apachesolr_environment_variable_get($search_page['env_id'], 'apachesolr_search_show_facets', 0);
-  if ($show_facets && module_exists('facetapi')) {
+  if ($show_facets) {
 
     // Converts current path to lowercase for case insensitive matching.
-    $path = drupal_strtolower(drupal_get_path_alias($_GET['q']));
+    $paths = array();
+    $paths[] = drupal_strtolower(drupal_get_path_alias($_GET['q']));
+    $paths[] = drupal_strtolower($_GET['q']);
     $facet_pages = apachesolr_environment_variable_get($search_page['env_id'], 'apachesolr_search_facet_pages', '');
 
     // Iterates over each environment to check if an empty query should be run.
     if (!empty($facet_pages)) {
       // Compares path with settings, runs query if there is a match.
       $patterns = drupal_strtolower($facet_pages);
-      if (drupal_match_path($path, $patterns)) {
-        try {
-          if (!empty($search_page['search_path'])) {
-            $solr = apachesolr_get_solr($search_page['env_id']);
-            // Initializes params for empty query.
-            $params = array(
-              'spellcheck' => 'false',
-              'fq' => array(),
-              'rows' => 1,
-            );
-            apachesolr_search_run_empty('apachesolr', $params, $search_page['search_path'], $solr);
+      foreach ($paths as $path) {
+        if (drupal_match_path($path, $patterns)) {
+          try {
+            if (!empty($search_page['search_path'])) {
+              $solr = apachesolr_get_solr($search_page['env_id']);
+              // Initializes params for empty query.
+              $params = array(
+                'spellcheck' => 'false',
+                'fq' => array(),
+                'rows' => 1,
+              );
+              apachesolr_search_run_empty('apachesolr', $params, $search_page['search_path'], $solr);
+            }
           }
-        }
-        catch (Exception $e) {
-          watchdog('Apache Solr', nl2br(check_plain($e->getMessage())), NULL, WATCHDOG_ERROR);
+          catch (Exception $e) {
+            watchdog('Apache Solr', nl2br(check_plain($e->getMessage())), NULL, WATCHDOG_ERROR);
+          }
         }
       }
     }
@@ -341,7 +362,7 @@ function apachesolr_search_apachesolr_default_environment($env_id, $old_env_id) 
  * @return array
  */
 function apachesolr_search_page_load($page_id, $reset = FALSE) {
-  $search_pages = apachesolr_search_load_all_search_pages();
+  $search_pages = apachesolr_search_load_all_search_pages($reset);
   if (!empty($search_pages[$page_id])) {
     return $search_pages[$page_id];
   }
@@ -502,8 +523,20 @@ function apachesolr_search_block_save($delta = '', $edit = array()) {
  * @return array $search_pages
  *   Array of all search pages
  */
-function apachesolr_search_load_all_search_pages() {
-  $search_pages = array();
+function apachesolr_search_load_all_search_pages($reset = FALSE) {
+  static $search_pages = array();
+
+  if ($reset) {
+    $search_pages = array();
+    if (module_exists('ctools')) {
+      ctools_include('export');
+      ctools_export_load_object_reset('apachesolr_search_page');
+    }
+  }
+
+  if (!empty($search_pages)) {
+    return $search_pages;
+  }
   // Get all search_pages and their id
   if (db_table_exists('apachesolr_search_page')) {
     // If ctools module is enabled, add search pages from code, e.g. from a
@@ -1638,7 +1671,15 @@ function apachesolr_search_facetapi_realm_settings_form_submit(&$form, &$form_st
   // Adds the settings to the array keyed by environment ID, saves variables.
   $show_facets = $form_state['values']['apachesolr_search_show_facets'];
   $facet_pages = $form_state['values']['apachesolr_search_facet_pages'];
-  apachesolr_environment_variable_set($env_id, 'apachesolr_search_show_facets', $show_facets);
+  if ($show_facets) {
+    apachesolr_environment_variable_set($env_id, 'apachesolr_search_show_facets', $show_facets);
+  }
+  else {
+    // Due to performance reasons, we delete it from the vars so that our init
+    // process can react on environments that hae it set and not unset.
+    // See apachesolr_search_init().
+    apachesolr_environment_variable_del($env_id, 'apachesolr_search_show_facets');
+  }
   apachesolr_environment_variable_set($env_id, 'apachesolr_search_facet_pages', $facet_pages);
 }
 

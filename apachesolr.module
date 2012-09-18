@@ -530,7 +530,7 @@ function apachesolr_failure($search_name, $querystring) {
       // If we're failing over to another module make sure the search is available.
       if (module_exists('search')) {
           drupal_set_message(t("%search_name is not available. Your search is being redirected.", array('%search_name' => $search_name)));
-          drupal_goto('search/node/' . drupal_encode_path($querystring));
+          drupal_goto('search/node/' . drupal_urlencode($querystring));
       }
       // if search is not enabled, break and do nothing
       break;
@@ -1109,7 +1109,7 @@ function apachesolr_get_solr($env_id = NULL, $reset = FALSE) {
       $class = $environments[$env_id]['service_class'];
     }
     $class = apachesolr_load_service_class($class, $class_info);
-    
+
     if (empty($solr_cache[$env_id])) {
       $solr = new $class($environments[$env_id]['url'], $env_id);
       $solr_cache[$env_id] = $solr;
@@ -1603,7 +1603,7 @@ function apachesolr_do_query(DrupalSolrQueryInterface $current_query) {
     // A module implementing HOOK_apachesolr_query_alter() aborted the search.
     return array(NULL, array());
   }
-  
+
 
   $keys = $query->getParam('q');
 
@@ -2612,7 +2612,7 @@ function apachesolr_environment_load_subrecords(&$environments) {
     extract($all_variables_result);
     $variables[$env_id][$name] = unserialize($value);
   }
-  
+
   foreach ($environments as $env_id => &$environment) {
     $index_bundles = !empty($all_index_bundles_keyed[$env_id]) ? $all_index_bundles_keyed[$env_id] : array();
     $conf = !empty($variables[$env_id]) ? $variables[$env_id] : array();
