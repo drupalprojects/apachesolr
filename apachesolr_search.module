@@ -985,7 +985,8 @@ function apachesolr_search_conditions_default($search_page) {
  * Handle browse results for empty searches.
  */
 function apachesolr_search_page_browse($empty_search_behavior, $env_id) {
-  $build = array();
+  $blocks = array();
+
   // Switch in case we come up with new flags.
   switch ($empty_search_behavior) {
     case 'browse':
@@ -994,8 +995,6 @@ function apachesolr_search_page_browse($empty_search_behavior, $env_id) {
         // Get facet render elements.
         $searcher = $query->getSearcher();
         $elements = facetapi_build_realm($searcher, 'block');
-        $blocks = array();
-        $build_results = array();
 
         foreach (element_children($elements) as $key) {
           $delta = "facetapi_{$key}";
