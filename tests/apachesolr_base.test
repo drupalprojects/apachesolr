@@ -57,6 +57,9 @@ class DrupalSolrOfflineEnvironmentWebTestCase extends DrupalWebTestCase {
     $environment = apachesolr_environment_load($env_id);
     $environment['url'] = 'http://localhost/solr/core_that_should_not_exist';
     apachesolr_environment_save($environment);
+    cache_clear_all('apachesolr:environments', 'cache_apachesolr');
+    drupal_static_reset('apachesolr_load_all_environments');
+    drupal_static_reset('apachesolr_get_solr');
     $status = apachesolr_server_status($environment['url']);
     $this->assertFalse($status, t('A false URL could not be loaded and is offline'));
     $this->drupalLogin($this->admin_user);
@@ -69,6 +72,13 @@ class DrupalSolrOfflineEnvironmentWebTestCase extends DrupalWebTestCase {
    *	Asserts that the module was installed and that a notice appears that the server is offline
    */
   function testIndexFileIncluded() {
+    $env_id = apachesolr_default_environment();
+    $environment = apachesolr_environment_load($env_id);
+    $environment['url'] = 'http://localhost/solr/core_that_should_not_exist';
+    apachesolr_environment_save($environment);
+    cache_clear_all('apachesolr:environments', 'cache_apachesolr');
+    drupal_static_reset('apachesolr_load_all_environments');
+
     $paths = array(
       'user',
       'node',
@@ -240,6 +250,14 @@ class DrupalSolrOfflineSearchPagesWebTestCase extends DrupalWebTestCase {
     // Assign users to their test suite-wide properties.
     $this->basic_user = $basic_user;
     $this->admin_user = $admin_user;
+
+    // Make sure our environment does not exists
+    $env_id = apachesolr_default_environment(NULL, TRUE);
+    $environment = apachesolr_environment_load($env_id, TRUE);
+    $environment['url'] = 'http://localhost/solr/core_that_should_not_exist';
+    apachesolr_environment_save($environment);
+    // Reset all caches
+    apachesolr_load_all_environments(TRUE);
   }
 
   /**
@@ -272,6 +290,7 @@ class DrupalSolrOfflineSearchPagesWebTestCase extends DrupalWebTestCase {
     drupal_static_reset('apachesolr_search_load_all_search_pages');
     menu_cache_clear_all();
     menu_rebuild();
+
     $this->drupalGet('admin/config/search/apachesolr/search-pages');
     $this->assertText(t('Test Search Page'), t('Search page was succesfully edited'));
     $this->assertText('search/searchdifferentpath', t('Search path was updated'));

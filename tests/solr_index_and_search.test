@@ -61,11 +61,11 @@ abstract class AbstractDrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
       $this->instancedir = $instancedir;
       $this->solr_url = $solr_url;
       $this->core_admin_url = $core_admin_url;
-      $this->checkCoreStatus();
 
       if (apachesolr_server_status($environment['url'])) {
         $this->solr = apachesolr_get_solr($env_id);
         $this->solr_available = TRUE;
+        $this->checkCoreStatus();
       }
       else {
         // workaround for drupal.org test bot

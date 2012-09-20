@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 ------------------------------
+#1778266 by Nick_vh, mkalkbrenner: Refactoring of DrupalSolrOnlineWebTestCase to be used by Others.
 #1778266 by mkalkbrenner: Refactoring of DrupalSolrOnlineWebTestCase to be used by Others.
 #1789526 by pwolanin: Clarify lack of upgrade path from 6.x-1.x.
 #1765938 by cpliakas: Added Move the variable_get() for 'apachesolr_environments()" after the cache_set() so that URLs can be modified dynamically.
