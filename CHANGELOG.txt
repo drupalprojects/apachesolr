@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
-------------------------------
+-----------------------------
+#1778050 by Nick_vh, pwolanin: fix for stale cache when CTools is already enabled.
 #1778266 by Nick_vh, mkalkbrenner: Refactoring of DrupalSolrOnlineWebTestCase to be used by Others.
 #1778266 by mkalkbrenner: Refactoring of DrupalSolrOnlineWebTestCase to be used by Others.
 #1789526 by pwolanin: Clarify lack of upgrade path from 6.x-1.x.
