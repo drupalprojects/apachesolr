@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1668454 by killua99: fix for block_search redirect wrong when Drupal is a dubdirectory.
 #1778266 by mkalkbrenner, Nick_vh: Refactoring of DrupalSolrOnlineWebTestCase to be used by Others.
 #1765938 by cpliakas: Added Move the variable_get() for 'apachesolr_environments()" after the cache_set() so that URLs can be modified dynamically.
 #1789526 by pwolanin: Clarify lack of upgrade path from 6.x-1.x.
