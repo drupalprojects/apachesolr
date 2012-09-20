@@ -10,12 +10,19 @@ abstract class AbstractDrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
    * Implementation of setUp().
    */
   function setUp() {
-    $args = func_get_args();
-    $args[] = 'apachesolr';
-    $args[] = 'apachesolr_search';
-    $args[] = 'search';
+    // Install modules needed for this test. This could have been passed in as
+    // either a single array argument or a variable number of string arguments.
+    // @todo Remove this compatibility layer in Drupal 8, and only accept
+    // $modules as a single array argument.
+    $modules = func_get_args();
+    if (isset($modules[0]) && is_array($modules[0])) {
+      $modules = $modules[0];
+    }
+    $modules[] = 'apachesolr';
+    $modules[] = 'apachesolr_search';
+    $modules[] = 'search';
 
-    call_user_func_array('parent::setUp', $args);
+    parent::setUp($modules);
   }
 
   function setUpSolr() {
@@ -124,10 +131,6 @@ class DrupalSolrOnlineWebTestCase extends AbstractDrupalSolrOnlineWebTestCase {
       dirname(__FILE__) . '/conf/*'
     );
   }
-
-  function tearDown() {
-    parent::tearDown();
-  }
 }
 
 
@@ -138,10 +141,6 @@ class DrupalSolrMatchTestCase extends DrupalSolrOnlineWebTestCase {
       'description' => 'Indexes content and queries it.',
       'group' => 'ApacheSolr',
     );
-  }
-
-  function setUp() {
-    parent::setUp();
   }
 
   /**
