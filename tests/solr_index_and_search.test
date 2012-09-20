@@ -1,6 +1,9 @@
 <?php
 
-class DrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
+abstract class AbstractDrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
+
+  protected $solr;
+  protected $solr_available = FALSE; // workaround for drupal.org test bot
   public $solr_core_name;
   public $environment = array();
 
@@ -8,10 +11,20 @@ class DrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
    * Implementation of setUp().
    */
   public function setUp() {
+    $args = func_get_args();
+    $args[] = 'content';
+    $args[] = 'search';
+    $args[] = 'apachesolr';
+    $args[] = 'apachesolr_search';
 
-    parent::setUp('content', 'search', 'apachesolr', 'apachesolr_search');
+    call_user_func_array('parent::setUp', $args);
+  }
+
+  function setUpSolr() {
+    $patterns = func_get_args();
+
     // Load the default server.
-    $env_id = apachesolr_default_environment();
+    $env_id = apachesolr_default_environment(NULL, TRUE);
     $environment = apachesolr_environment_load($env_id, TRUE);
     $this->environment = $environment;
 
@@ -36,18 +49,13 @@ class DrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
       $instancedir = realpath("$filesdir/solr");
 
       // Copy all files in solr-conf dir to our virtual solr core
-      $pattern = dirname(__FILE__) . '/../solr-conf/*';
-      foreach (glob($pattern) as $conf_file) {
-        copy($conf_file, "$instancedir/conf/" . basename($conf_file));
+      foreach ($patterns as $pattern) {
+        foreach (glob($pattern) as $conf_file) {
+          copy($conf_file, "$instancedir/conf/" . basename($conf_file));
+        }
       }
 
-      $pattern = dirname(__FILE__) . '/conf/*';
-      foreach (glob($pattern) as $conf_file) {
-        copy($conf_file, "$instancedir/conf/" . basename($conf_file));
-      }
-
-      // Copy(dirname(__FILE__) . '/../solr-conf/schema.xml', "$instancedir/conf/schema.xml");
-      $contents = file_get_contents(dirname(__FILE__) . '/../solr-conf/solrconfig.xml');
+      $contents = file_get_contents("$instancedir/conf/solrconfig.xml");
 
       // Change the autoCommit time down to 1 second.
       file_put_contents("$instancedir/conf/solrconfig.xml", preg_replace('@<maxTime>[0-9]+</maxTime>@', '<maxTime>1000</maxTime>', $contents));
@@ -59,9 +67,21 @@ class DrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
       $this->instancedir = $instancedir;
       $this->solr_url = $solr_url;
       $this->core_admin_url = $core_admin_url;
-      $this->checkCoreStatus();
+
+      // Check the new environment
+      if (apachesolr_server_status($environment['url'])) {
+        $this->solr = apachesolr_get_solr($env_id, TRUE);
+        $this->solr_available = TRUE;
+        $this->checkCoreStatus();
+      }
+      else {
+        // workaround for drupal.org test bot
+        // the tests succeed but further tests will not run because $this->solr_available is FALSE
+        $this->pass(t('Warning : The solr instance could not be found. Please enable a multicore one on http://localhost:8983/solr'));
+      }
     }
     else {
+      // workaround for drupal.org test bot
       $this->pass(t('Warning : The solr instance could not be found. Please enable a multicore one on http://localhost:8983/solr'));
     }
   }
@@ -70,9 +90,7 @@ class DrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
    * Helper function to invoke core admin actions.
    */
   protected function coreAdmin($action, $return_response = FALSE) {
-    // Load the default server.
-    $environment = $this->environment;
-    if (apachesolr_server_status($environment['url'])) {
+    if ($this->solr_available) { // workaround for drupal.org test bot
       $query = array();
       $query['action'] = $action;
       $query['wt'] = 'json';
@@ -83,9 +101,6 @@ class DrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
       if ($return_response) {
         return json_decode($this->drupalGetContent(), TRUE);
       }
-    }
-    else {
-      $this->pass(t('Warning : The solr instance could not be found. Please enable a multicore one on http://localhost:8983/solr'));
     }
   }
 
@@ -104,6 +119,25 @@ class DrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
   }
 }
 
+
+class DrupalSolrOnlineWebTestCase extends AbstractDrupalSolrOnlineWebTestCase {
+  /**
+   * Implementation of setUp().
+   */
+  function setUp() {
+    parent::setUp();
+    parent::setUpSolr(
+      dirname(__FILE__) . '/../solr-conf/*',
+      dirname(__FILE__) . '/conf/*'
+    );
+  }
+
+  function tearDown() {
+    parent::tearDown();
+  }
+}
+
+
 class DrupalSolrMatchTestCase extends DrupalSolrOnlineWebTestCase {
   public static function getInfo() {
     return array(
@@ -117,13 +151,9 @@ class DrupalSolrMatchTestCase extends DrupalSolrOnlineWebTestCase {
    * Test search indexing.
    */
   function testMatching() {
-    // Load the default server.
-    $env_id = apachesolr_default_environment();
-    $environment = apachesolr_environment_load($env_id, TRUE);
-    if (apachesolr_server_status($environment['url'])) {
-      $solr = apachesolr_get_solr($env_id);
-      $this->assertTrue($solr->ping(), "The Server could be Pinged");
-      $response = $solr->search("*:*", 0, 0, array('qt' => 'standard'));
+    if ($this->solr_available) { // workaround for drupal.org test bot
+      $this->assertTrue($this->solr->ping(), "The Server could be Pinged");
+      $response = $this->solr->search("*:*", array('qt' => 'standard'));
       $response = $response->response;
       $this->assertEqual($response->numFound, 0, "There should not be any documents in the index");
     }

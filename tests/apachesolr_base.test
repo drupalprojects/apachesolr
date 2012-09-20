@@ -52,9 +52,9 @@ class DrupalSolrOfflineEnvironmentWebTestCase extends DrupalWebTestCase {
    *	Asserts that the module was installed and that a notice appears that the server is offline
    */
   function testServerOffline() {
-    // Load the default server.
-    $env_id = apachesolr_default_environment();
-    $environment = apachesolr_environment_load($env_id);
+    // Load the default server and reset the static
+    $env_id = apachesolr_default_environment(NULL, TRUE);
+    $environment = apachesolr_environment_load($env_id, TRUE);
     $environment['url'] = 'http://localhost/solr/core_that_should_not_exist';
     apachesolr_environment_save($environment);
     $status = apachesolr_server_status($environment['url']);
@@ -248,6 +248,14 @@ class DrupalSolrOfflineSearchPagesWebTestCase extends DrupalWebTestCase {
     // Assign users to their test suite-wide properties.
     $this->basic_user = $basic_user;
     $this->admin_user = $admin_user;
+
+    // Make sure our environment does not exists
+    $env_id = apachesolr_default_environment(NULL, TRUE);
+    $environment = apachesolr_environment_load($env_id, TRUE);
+    $environment['url'] = 'http://localhost/solr/core_that_should_not_exist';
+    apachesolr_environment_save($environment);
+    // Reset all caches
+    apachesolr_load_all_environments(TRUE);
   }
 
   /**
@@ -284,7 +292,7 @@ class DrupalSolrOfflineSearchPagesWebTestCase extends DrupalWebTestCase {
     $this->assertText('search/searchdifferentpath', t('Search path was updated'));
 
     // Reset static var
-    apachesolr_search_page_load('core_search', TRUE);
+    $search_page = apachesolr_search_page_load('core_search', TRUE);
 
     cache_clear_all();
     menu_rebuild();

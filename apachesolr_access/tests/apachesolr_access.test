@@ -76,7 +76,7 @@ class DrupalApacheSolrNodeAccess extends DrupalWebTestCase {
     node_access_write_grants($author_restricted_node, array($author_grant));
 
     // This loads the document class too.
-    $env_id = apachesolr_default_environment();
+    $env_id = apachesolr_default_environment(NULL, TRUE);
     $solr = apachesolr_get_solr($env_id);
 
     $document = new ApacheSolrDocument();
@@ -145,7 +145,7 @@ class DrupalApacheSolrNodeAccess extends DrupalWebTestCase {
     }
     // Test reset of index position.
     $this->drupalLogin($this->admin_user);
-    $env_id = apachesolr_default_environment();
+    $env_id = apachesolr_default_environment(NULL, TRUE);
     apachesolr_set_last_index_position($env_id, 'node', 1, 1);
     $empty = serialize(array());
     $value = db_result(db_query('SELECT value FROM {variable} WHERE name = "%s"', array('apachesolr_index_last')));

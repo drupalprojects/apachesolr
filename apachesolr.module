@@ -1057,8 +1057,12 @@ function apachesolr_suppress_blocks($env_id, $suppress = NULL) {
 /**
  * Get or set the default environment ID for the current page.
  */
-function apachesolr_default_environment($env_id = NULL) {
+function apachesolr_default_environment($env_id = NULL, $reset = FALSE) {
   static $default_env_id;
+
+  if ($reset) {
+    $default_env_id = NULL;
+  }
 
   if (isset($env_id)) {
     $default_env_id = $env_id;
