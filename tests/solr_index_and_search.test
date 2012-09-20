@@ -11,7 +11,20 @@ abstract class AbstractDrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
    */
   function setUp() {
     require_once dirname(dirname(realpath(__FILE__))) . '/Apache_Solr_Document.php';
-    parent::setUp('content', 'apachesolr', 'apachesolr_search', 'search');
+
+    // Install modules needed for this test. This could have been passed in as
+    // either a single array argument or a variable number of string arguments.
+    // @todo Remove this compatibility layer in Drupal 8, and only accept
+    // $modules as a single array argument.
+    $modules = func_get_args();
+    if (isset($modules[0]) && is_array($modules[0])) {
+      $modules = $modules[0];
+    }
+    $modules[] = 'apachesolr';
+    $modules[] = 'apachesolr_search';
+    $modules[] = 'search';
+
+    parent::setUp($modules);
   }
 
   function setUpSolr() {
