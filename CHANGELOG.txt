@@ -1,5 +1,9 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 -----------------------------
+
+Apache Solr integration 7.x-1.0-rc4, 2012-09-21
+-----------------------------
+#1790894 by pwolanin: fix for Cloning an environment doesn't clone the bundles to be indexed.
 #1778050 by Nick_vh, pwolanin: fix for stale cache when CTools is already enabled.
 #1778266 by Nick_vh, mkalkbrenner: Refactoring of DrupalSolrOnlineWebTestCase to be used by Others.
 #1778266 by mkalkbrenner: Refactoring of DrupalSolrOnlineWebTestCase to be used by Others.
@@ -23,7 +27,7 @@ Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 #1722966 by greggles: Fixed make apachesolr_index_batch_index_finished() message more translateable.
 #1717628 by Nick_vh, pwolanin: Added 'Save and Edit" functionality for configuration pages - Follow ups.
 
-Apache Solr integration 7.x-1.0-rc3, 08-10-2012
+Apache Solr integration 7.x-1.0-rc3, 2012-08-10
 ------------------------------
 #1682004 by Nick_vh: Add template hints for search results based on search page.
 #1722012 by mkalkbrenner, Nick_vh: fix for Missing argument 4 for apachesolr_multilingual_apachesolr_index_documents_alter().
@@ -51,11 +55,11 @@ Apache Solr integration 7.x-1.0-rc3, 08-10-2012
 #1652746 by chrisssi: Fixed Notice: Undefined offset: 3 in _menu_translate() (Zeile 775 von /var/www/includes/menu.inc).
 #1402748 by Nick_vh, killua99: Fixed Check in apachesolr_do_query() if the static of the query with that name already exists, and if so return it.
 
-Apache Solr integration 7.x-1.0-rc2, 06-21-2012
+Apache Solr integration 7.x-1.0-rc2, 2012-06-21
 ------------------------------
 Renamed schema.xml and solrconfig.xml to rc2
 
-Apache Solr integration 7.x-1.0-rc1, 06-21-2012
+Apache Solr integration 7.x-1.0-rc1, 2012-06-21
 ------------------------------
 #1642140 by Nick_vh: Fixed Make the search query also escape the slash and move away from menu_tail() to just 1 argument.
 #1518108 by grendzy: Added Devel interface for inspecting solr documents.
