@@ -548,18 +548,14 @@ function apachesolr_index_mark_for_reindex($env_id, $entity_type = 'node') {
  * @throws Exception
  */
 function apachesolr_index_set_bundles($env_id, $entity_type, array $bundles) {
-  try {
-    $query = "DELETE FROM {apachesolr_index_bundles} WHERE env_id = '%s' AND entity_type = '%s'";
-    db_query($query, array($env_id, $entity_type));
-    if ($bundles) {
-      foreach ($bundles as $bundle) {
-        $query = "INSERT INTO {apachesolr_index_bundles} (env_id, entity_type, bundle) VALUES ('%s', '%s', '%s')";
-        db_query($query, array($env_id, $entity_type, $bundle));
-      }
+  // @todo - need a lock?
+  $query = "DELETE FROM {apachesolr_index_bundles} WHERE env_id = '%s' AND entity_type = '%s'";
+  db_query($query, array($env_id, $entity_type));
+  if ($bundles) {
+    foreach ($bundles as $bundle) {
+      $query = "INSERT INTO {apachesolr_index_bundles} (env_id, entity_type, bundle) VALUES ('%s', '%s', '%s')";
+      db_query($query, array($env_id, $entity_type, $bundle));
     }
-  }
-  catch (Exception $e) {
-    watchdog('Apache Solr','Could not set bundles', WATCHDOG_ERROR);
   }
 }
 

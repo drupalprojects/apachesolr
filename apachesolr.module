@@ -687,8 +687,10 @@ function apachesolr_node_type($op, $info) {
     $query = "UPDATE {{$table}} asn
       INNER JOIN {node} n ON asn.entity_id = n.nid SET asn.changed = '%s'
       WHERE (n.type = '%s' OR n.type = '%s')";
-    $result = db_query($query, array(APACHESOLR_REQUEST_TIME, $info->type, $info->old_type));
+    db_query($query, array(APACHESOLR_REQUEST_TIME, $info->type, $info->old_type));
+    db_query("UPDATE {apachesolr_index_bundles} SET bundle = '%s' WHERE bundle = '%s' AND entity_type = '%s'", array($info->type, $info->old_type, 'node'));
   }
+  apachesolr_environments_clear_cache();
 }
 
 /**
@@ -1100,6 +1102,7 @@ function apachesolr_get_solr($env_id = NULL, $reset = FALSE) {
   static $solr_cache;
   if ($reset) {
     $solr_cache = array();
+    return;
   }
   $environments = apachesolr_load_all_environments();
 
@@ -1161,6 +1164,9 @@ function apachesolr_load_service_class($class = NULL, $class_info = NULL) {
 /**
  * Function that loads all the environments
  *
+ * @param $reset
+ *  If TRUE, all environment caches are cleared and returns NULL.
+ *
  * @return $environments
  *   The environments in the database
  */
@@ -1174,6 +1180,7 @@ function apachesolr_load_all_environments($reset = FALSE) {
       ctools_include('export');
       ctools_export_load_object_reset('apachesolr_environment');
     }
+    return;
   }
 
   if (isset($environments)) {
@@ -1262,7 +1269,11 @@ function apachesolr_array_merge_deep_array($arrays) {
  *   The environment that was requested or FALSE if non-existent
  */
 function apachesolr_environment_load($env_id, $reset = FALSE) {
-  $environments = apachesolr_load_all_environments($reset);
+  if ($reset) {
+    // Clear caches.
+    apachesolr_environments_clear_cache();
+  }
+  $environments = apachesolr_load_all_environments();
   return isset($environments[$env_id]) ? $environments[$env_id] : FALSE;
 }
 
@@ -1303,9 +1314,7 @@ function apachesolr_environment_delete($env_id) {
     db_query($query, $env_id);
 
     module_invoke_all('apachesolr_environment_delete', $environment);
-    cache_clear_all('apachesolr:environments', 'cache_apachesolr');
-    $environments = NULL;
-    $solr_cache = NULL;
+    apachesolr_environments_clear_cache();
   }
 }
 
@@ -1318,11 +1327,8 @@ function apachesolr_environment_delete($env_id) {
  */
 function apachesolr_environment_clone($env_id) {
   $environment = apachesolr_environment_load($env_id);
-  $conf = isset($environment['conf']) ? $environment['conf'] : array();
-
   $environments = apachesolr_load_all_environments();
-  $new_env_id = apachesolr_create_unique_id($environments, $env_id);
-  $environment['env_id'] = $new_env_id;
+  $environment['env_id'] = apachesolr_create_unique_id($environments, $env_id);
   $environment['name'] = $environment['name'] . ' [cloned]';
   apachesolr_environment_save($environment);
 }
@@ -1356,6 +1362,7 @@ function apachesolr_create_unique_id($existing, $id) {
  *
  */
 function apachesolr_environment_save($environment) {
+  module_load_include('inc', 'apachesolr', 'apachesolr.index');
   // Update or insert since D6 has no db_merge(). Update the environment if it exists.
   if (db_result(db_query("SELECT 1 FROM {apachesolr_environment} WHERE env_id = '%s'", $environment['env_id']))) {
     $query = "UPDATE {apachesolr_environment} SET name = '%s', url = '%s', service_class = '%s' WHERE env_id = '%s'";
@@ -1366,11 +1373,25 @@ function apachesolr_environment_save($environment) {
     db_query($query, array($environment['env_id'], $environment['name'], $environment['url'], $environment['service_class']));
   }
   $conf = isset($environment['conf']) ? $environment['conf'] : array();
+  $index_bundles = isset($environment['index_bundles']) ? $environment['index_bundles'] : array();
   // Update the environment variables (if any).
   foreach ($conf as $name => $value) {
     apachesolr_environment_variable_set($environment['env_id'], $name, $value);
   }
-  // Reset all caches.
+  // Update the index bundles (if any).
+  foreach ($index_bundles as $entity_type => $bundles) {
+    apachesolr_index_set_bundles($environment['env_id'], $entity_type, $bundles);
+  }
+  apachesolr_environments_clear_cache();
+}
+
+/**
+ * Clear all caches for environments.
+ */
+function apachesolr_environments_clear_cache() {
+  // Reset all caches - use reset flag so we can get
+  // to the static variables.
+  apachesolr_get_solr(NULL, TRUE);
   apachesolr_load_all_environments(TRUE);
 }
 
@@ -1393,15 +1414,13 @@ function apachesolr_environment_variable_get($env_id, $name, $default = NULL) {
  * @see variable_set()
  */
 function apachesolr_environment_variable_set($env_id, $name, $value) {
-  static $environments;
-  static $solr_cache;
+  // @todo - fix this query since it's not standard SQL.
+  // http://api.drupal.org/api/drupal/includes%21bootstrap.inc/function/variable_set/6
   $query = "INSERT INTO {apachesolr_environment_variable} (env_id, name, value)
     VALUES ('%s','%s','%s')
     ON DUPLICATE KEY UPDATE env_id = '%s', name = '%s', value = '%s'";
   db_query($query, array($env_id, $name, serialize($value), $env_id, $name, serialize($value)));
-  cache_clear_all('apachesolr:environments', 'cache_apachesolr');
-  $environments = NULL;
-  $solr_cache = NULL;
+  apachesolr_environments_clear_cache();
 }
 
 /**
@@ -1410,13 +1429,9 @@ function apachesolr_environment_variable_set($env_id, $name, $value) {
  * @see variable_del()
  */
 function apachesolr_environment_variable_del($env_id, $name) {
-  static $environments;
-  static $solr_cache;
   $query = "DELETE FROM {apachesolr_environment_variable} WHERE env_id = '%s' AND name = '%s'";
   db_query($query, array($env_id, $name));
-  cache_clear_all('apachesolr:environments', 'cache_apachesolr');
-  $environments = NULL;
-  $solr_cache = NULL;
+  apachesolr_environments_clear_cache();
 }
 
 /**

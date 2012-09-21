@@ -1,10 +1,46 @@
 <?php
+
+abstract class DrupalSolrOfflineWebTestCase extends DrupalWebTestCase {
+  function _nestedCompare($a1, $a2) {
+    if (count($a1) != count($a2)) {
+      $extra1 = array_diff_key($a1, $a2);
+      $extra2 = array_diff_key($a2, $a1);
+      $extra = '';
+      if ($extra1) {
+        $extra .= ' Extra keys in $a1: ' . implode(', ', array_keys($extra1));
+      }
+      if ($extra2) {
+        $extra .= ' Extra keys in $a2: ' . implode(', ', array_keys($extra2));
+      }
+      debug('count($a1) != count($a2) :' . $extra);
+      return FALSE;
+    }
+    foreach ($a1 as $k => $v) {
+      if (!isset($a2[$k])) {
+        debug("\$a2[$k] is not set");
+        return FALSE;
+      }
+      if (is_array($a1[$k]) && is_array($a2[$k])) {
+        if (!$this->_nestedCompare($a1[$k], $a2[$k])) {
+          debug("_nestedCompare(\$a1[$k], \$a2[$k]) is false");
+          return FALSE;
+        }
+      }
+      elseif ($a1[$k] !== $a2[$k]) {
+        debug("\$a1[$k] !== \$a2[$k] : " . var_export($a1[$k], TRUE) . " " . var_export($a2[$k], TRUE));
+        return FALSE;
+      }
+    }
+    return TRUE;
+  }
+}
+
 /**
  * @file
  *   Unit test class that provides tests for base functionality of the Apachesolr
  *   Module without having the need of a Solr Server
  */
-class DrupalSolrOfflineEnvironmentWebTestCase extends DrupalWebTestCase {
+class DrupalSolrOfflineEnvironmentWebTestCase extends DrupalSolrOfflineWebTestCase {
   /**
    * A global basic user who can search.
    */
@@ -49,7 +85,7 @@ class DrupalSolrOfflineEnvironmentWebTestCase extends DrupalWebTestCase {
   }
 
   /**
-   *	Asserts that the module was installed and that a notice appears that the server is offline
+   * Asserts that the module was installed and that a notice appears that the server is offline
    */
   function testServerOffline() {
     // Load the default server and reset the static
@@ -66,7 +102,7 @@ class DrupalSolrOfflineEnvironmentWebTestCase extends DrupalWebTestCase {
   }
 
   /**
-   *	Asserts that the module was installed and that a notice appears that the server is offline
+   * Asserts that the module was installed and that a notice appears that the server is offline
    */
   function testIndexFileIncluded() {
     $paths = array(
@@ -92,7 +128,7 @@ class DrupalSolrOfflineEnvironmentWebTestCase extends DrupalWebTestCase {
   }
 
   /**
-   *	Asserts that we can edit a search environment
+   * Asserts that we can edit a search environment
    */
   function testEditSearchEnvironment() {
     $this->drupalLogin($this->admin_user);
@@ -112,7 +148,7 @@ class DrupalSolrOfflineEnvironmentWebTestCase extends DrupalWebTestCase {
   }
 
   /**
-   *	Asserts that we can use various url forms for the search environment
+   * Asserts that we can use various url forms for the search environment
    */
   function testEditSearchEnvironmentURLs() {
     // Set the various url schemes that will be tested
@@ -137,7 +173,7 @@ class DrupalSolrOfflineEnvironmentWebTestCase extends DrupalWebTestCase {
   }
 
   /**
-   *	Asserts that we can edit a search environment
+   * Asserts that we can clone a search environment
    */
   function testCloneSearchEnvironment() {
     $this->drupalLogin($this->admin_user);
@@ -152,10 +188,20 @@ class DrupalSolrOfflineEnvironmentWebTestCase extends DrupalWebTestCase {
 
     $this->drupalGet('admin/settings/apachesolr/settings');
     $this->assertText(t('localhost server [cloned]'), t('Search Environment was succesfully cloned'));
+    // Check if the bundles and configurations are exactly the same
+    // after we clear the caches.
+    apachesolr_environments_clear_cache();
+    $envs = apachesolr_load_all_environments();
+    $this->assertEqual(count($envs), 2, 'Now we have 2 environments');
+    $orig_env = $envs['solr'];
+    unset($envs['solr']);
+    $cloned_env = array_pop($envs);
+    $this->assertTrue($this->_nestedCompare($orig_env['index_bundles'], $cloned_env['index_bundles']));
+    $this->assertTrue($this->_nestedCompare($orig_env['conf'], $cloned_env['conf']));
   }
 
   /**
-   *	Asserts that we can edit a search environment
+   * Asserts that we can edit a search environment
    */
   function testCreateNewSearchEnvironment() {
     // Create a new environment
@@ -183,19 +229,15 @@ class DrupalSolrOfflineEnvironmentWebTestCase extends DrupalWebTestCase {
 
     $this->drupalGet('admin/settings/apachesolr/settings');
     $this->assertText(t('my test description (Default)'), t('New Search environment was succesfully changed to default environment'));
-    // Load it, to fill our cache.
-    $environments = apachesolr_load_all_environments(TRUE);
+    // Clear our cache.
+    apachesolr_environments_clear_cache();
     $mode = apachesolr_environment_variable_get('solr_test', 'apachesolr_read_only', APACHESOLR_READ_WRITE);
-
+    $this->assertEqual($mode, APACHESOLR_READ_ONLY, 'Environment succesfully changed to read only');
     // Verify the modus
     $this->drupalGet('admin/settings/apachesolr/settings');
     // Click on the second environment edit link
     $this->clickLink(t('Edit'), 0);
     $this->assertFieldChecked('edit-conf-apachesolr-read-only-1', t('Environment succesfully changed to read only'));
-  }
-
-  function tearDown() {
-    parent::tearDown();
   }
 }
 
@@ -204,7 +246,7 @@ class DrupalSolrOfflineEnvironmentWebTestCase extends DrupalWebTestCase {
  *   Unit test class that provides tests for base functionality of the Apachesolr
  *   Module without having the need of a Solr Server
  */
-class DrupalSolrOfflineSearchPagesWebTestCase extends DrupalWebTestCase {
+class DrupalSolrOfflineSearchPagesWebTestCase extends DrupalSolrOfflineWebTestCase {
   /**
    * A global basic user who can search.
    */
@@ -301,7 +343,7 @@ class DrupalSolrOfflineSearchPagesWebTestCase extends DrupalWebTestCase {
   }
 
   /**
-   *	Asserts that we can edit a search environment
+   * Asserts that we can clone a search page
    */
   function testCloneSearchPage() {
     $this->drupalLogin($this->admin_user);
@@ -318,11 +360,11 @@ class DrupalSolrOfflineSearchPagesWebTestCase extends DrupalWebTestCase {
     apachesolr_search_page_load('core_search', TRUE);
 
     $this->drupalGet('admin/settings/apachesolr/search-pages');
-    $this->assertText(t('Core Search [cloned]'), t('Search Environment was succesfully cloned'));
+    $this->assertText(t('Core Search [cloned]'), 'Search page was succesfully cloned');
   }
 
   /**
-   *	Asserts that we can edit a search environment
+   * Asserts that we can edit a search environment
    */
   function testNewAndRemoveSearchPage() {
     // Create a new search page
@@ -416,10 +458,6 @@ class DrupalSolrNodeTestCase extends DrupalWebTestCase {
     $this->assertText(t('Are you sure you want to delete'), t('Delete confirmation page was succesfully loaded'));
     $this->drupalPost($this->getUrl(), array(), t('Delete'));
     $this->assertResponse(200);
-  }
-
-  function tearDown() {
-    parent::tearDown();
   }
 }
 

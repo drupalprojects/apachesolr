@@ -1,5 +1,9 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+
+Apache Solr integration 6.x-3.0-beta3, 2012-09-21
+------------------------------
+#1790894 by pwolanin: fix for Cloning an environment doesn't clone the bundles to be indexed.
 #1668454 by killua99: fix for block_search redirect wrong when Drupal is a dubdirectory.
 #1778266 by mkalkbrenner, Nick_vh: Refactoring of DrupalSolrOnlineWebTestCase to be used by Others.
 #1765938 by cpliakas: Added Move the variable_get() for 'apachesolr_environments()" after the cache_set() so that URLs can be modified dynamically.
