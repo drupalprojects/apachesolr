@@ -363,6 +363,9 @@ function apachesolr_facetapi_query_types() {
     'apachesolr_geo' => array(
       'handler' => array(
         'class' => 'ApacheSolrFacetapiGeo',
+        'parent' => 'date',
+        'file' => 'query_type_geo.inc',
+        'path' => $path,
         'adapter' => 'apachesolr',
       ),
     ),

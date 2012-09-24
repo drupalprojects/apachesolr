@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+Issue #1793002 by Nick_vh: Fixed Geo query type in 6.x-3.x causes notices due to lack of context.
 
 Apache Solr integration 6.x-3.0-beta3, 2012-09-21
 ------------------------------
