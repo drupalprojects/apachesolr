@@ -1,6 +1,10 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 -----------------------------
 
+Apache Solr integration 7.x-1.0-rc5, xxxx-xx-xx
+-----------------------------
+#1793610 by zengenuity: Fix for regession - spelling suggestions missing.
+
 Apache Solr integration 7.x-1.0-rc4, 2012-09-21
 -----------------------------
 #1790894 by pwolanin: fix for Cloning an environment doesn't clone the bundles to be indexed.
