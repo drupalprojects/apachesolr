@@ -3,6 +3,7 @@ Apache Solr integration 6.x-3.x, xxxx-xx-xx
 
 Apache Solr integration 6.x-3.0-beta3, 2012-10-01
 ------------------------------
+#1800324 by pwolanin: Clean up and align node access tests.
 #1790590 by pwolanin: Fix DrupalSolrOnlineWebTestCase so it works with any multicore setup.
 #1799340 by pwolanin: Put a PHP version requirement in apachesolr.info.
 #1793610 by zengenuity: Fix for regession - spelling suggestions missing.

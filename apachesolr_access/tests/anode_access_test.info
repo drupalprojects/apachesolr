@@ -1,0 +1,6 @@
+name = "A Node module access tests"
+; copied from Drupal 7 node_access_test
+description = "Support module for node permission testing."
+package = Testing
+core = 6.x
+hidden = TRUE
