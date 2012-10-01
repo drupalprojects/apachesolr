@@ -492,8 +492,11 @@ function apachesolr_status_page($environment = NULL) {
       $status = apachesolr_index_status($environment["env_id"]);
       // We need a schema version greater than beta3. This is mostly to catch
       // people using the Drupal 6 schema.
-      if (version_compare($stats_summary['@schema_version'], 'drupal-3.0-beta3', '<=')) {
-        drupal_set_message(t('Your schema.xml version is too old. You must update it and re-index your content.'), 'error');
+      if (preg_match('/^drupal-[13]/', $stats_summary['@schema_version'])) {
+        $minimum = 'drupal-3.0-beta4';
+        if (version_compare($stats_summary['@schema_version'], $minimum, '<')) {
+          drupal_set_message(t('Your schema.xml version is too old. You must update it to at least %minimum and re-index your content.', array('%minimum' => $minimum)), 'error');
+        }
       }
       $pending_msg = $stats_summary['@pending_docs'] ? t('(@pending_docs sent but not yet processed)', $stats_summary) : '';
       $index_msg = $stats_summary['@index_size'] ? t('(@index_size on disk)', $stats_summary) : '';
