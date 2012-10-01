@@ -505,25 +505,28 @@ function apachesolr_status_page($environment = NULL) {
         '!pending' => $pending_msg,
         '!index_msg' => $index_msg,
       ));
-      $messages[] = array('Indexed', $indexed_message);
+      $messages[] = array(t('Indexed'), $indexed_message);
 
       $remaining_message = t('@items (@percentage% has been sent to the server)', array(
           '@items' => format_plural($status['remaining'], t('1 item'), t('@count items')),
           '@percentage' => ((int)min(100, 100 * ($status['total'] - $status['remaining']) / max(1, $status['total']))),
         )
       );
-      $messages[] = array('Remaining', $remaining_message);
+      $messages[] = array(t('Remaining'), $remaining_message);
 
-      $messages[] = array('Schema', t('@schema_version', $stats_summary));
+      $messages[] = array(t('Schema'), t('@schema_version', $stats_summary));
       if (!empty($stats_summary['@core_name'])) {
-        $messages[] = array('Solr Core Name', t('@core_name', $stats_summary));
+        $messages[] = array(t('Solr Core Name'), t('@core_name', $stats_summary));
       }
-      $messages[] = array('Delay', t('@autocommit_time before updates are processed.', $stats_summary));
-      $messages[] = array('Pending Deletions', t('@deletes_total', $stats_summary));
+      $messages[] = array(t('Delay'), t('@autocommit_time before updates are processed.', $stats_summary));
+      $messages[] = array(t('Pending Deletions'), t('@deletes_total', $stats_summary));
     }
     catch (Exception $e) {
       watchdog('Apache Solr', nl2br(check_plain($e->getMessage())), NULL, WATCHDOG_ERROR);
     }
+  }
+  if (empty($messages)) {
+    $messages[] = array(t('Error'), t('No data was returned from the server. Check your log messages.'));
   }
   // Initializes output with information about which server's setting we are
   // editing, as it is otherwise not transparent to the end user.
