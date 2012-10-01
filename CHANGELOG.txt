@@ -3,6 +3,7 @@ Apache Solr integration 6.x-3.x, xxxx-xx-xx
 
 Apache Solr integration 6.x-3.0-beta3, 2012-10-01
 ------------------------------
+#1698050 by duellj: fix for apachesolr_clean_text() should strip extra spaces.
 #1764450 by cpliakas: Improve the docblocks in apachesolr.index.inc.
 #1799330 by pwolanin: fix for Stats table missing t() calls.
 #1800324 by pwolanin: Clean up and align node access tests.
