@@ -3,3 +3,4 @@ description = Support module for apachesolr module testing.
 package = Search Toolkit
 core = 7.x
 hidden = TRUE
+dependencies[] = apachesolr
