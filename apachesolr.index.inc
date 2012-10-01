@@ -145,6 +145,8 @@ function apachesolr_index_status($env_id) {
 }
 
 /**
+ * Worker callback for apachesolr_index_entities().
+ *
  * Loads and proccesses the entity queued for indexing and converts into one or
  * more documents that are sent to the Apache Solr server for indexing.
  *
