@@ -125,14 +125,23 @@ function apachesolr_environment_edit_form(&$form_state, $environment = NULL) {
     '#default_value' => $environment['name'],
     '#required' => TRUE,
   );
+  if (empty($environment['env_id'])) {
+    $key = '#default_value';
+    $disabled = FALSE;
+  }
+  else {
+    $key = '#value';
+    $disabled = TRUE;
+  }
   $form['env_id'] = array(
     '#type' => 'textfield',
-    '#title' => t('Label'),
+    '#title' => t('Environment id'),
     '#description' => '',
     '#required' => TRUE,
     '#size' => 30,
     '#maxlength' => 32,
-    '#default_value' => !empty($environment['env_id']) ? $environment['env_id'] : '',
+    '#disabled' => $disabled, // Cannot change it once set.
+    $key => $environment['env_id'],
     '#description' => t('A unique machine-readable identifier for the search page configuration. It must only contain lowercase letters, numbers, and underscores.'),
   );
 
@@ -228,6 +237,9 @@ function apachesolr_environment_edit_validate($form, &$form_state) {
   $env_id = strtolower(preg_replace(array('/[^a-zA-Z0-9]+/','/-+/','/^-+/','/-+$/',), array('_', '_', '', ''), $form_state['values']['env_id']));
   if ($form_state['values']['env_id'] != $env_id && !empty($env_id)) {
     form_set_error('env_id', t('A unique machine-readable identifier for the search page configuration. It must only contain lowercase letters, numbers, and underscores.'));
+  }
+  elseif (empty($form['env_id']['#disabled']) && apachesolr_environment_load($env_id)) {
+    form_set_error('env_id', t('That indentifier is already in use.'));
   }
 }
 
