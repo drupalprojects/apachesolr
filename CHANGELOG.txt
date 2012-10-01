@@ -3,8 +3,10 @@ Apache Solr integration 6.x-3.x, xxxx-xx-xx
 
 Apache Solr integration 6.x-3.0-beta3, 2012-10-01
 ------------------------------
+#1787370 by pwolanin: Don't complain about schema version if it doesn't match expected naming pattern.
 #1799032 by pwolanin: Remove uneeded object reference in indexing function.
 #1793002 by Nick_vh: Fixed Geo query type in 6.x-3.x causes notices due to lack of context.
+#1792224 by Nick_vh: Fixed Sort block missing.
 #1790894 by pwolanin: fix for Cloning an environment doesn't clone the bundles to be indexed.
 #1668454 by killua99: fix for block_search redirect wrong when Drupal is a dubdirectory.
 #1778266 by mkalkbrenner, Nick_vh: Refactoring of DrupalSolrOnlineWebTestCase to be used by Others.
