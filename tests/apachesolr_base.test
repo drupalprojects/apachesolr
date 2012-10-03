@@ -413,7 +413,6 @@ class DrupalSolrOfflineSearchPagesWebTestCase extends DrupalSolrOfflineWebTestCa
     $query = apachesolr_current_query('DummySolr');
     $this->assertEqual($query->getParam('rows'), 5, 'Passed in rows param overrode default');
   }
-
 }
 
 class DrupalSolrNodeTestCase extends DrupalWebTestCase {
@@ -431,10 +430,15 @@ class DrupalSolrNodeTestCase extends DrupalWebTestCase {
    */
   function setUp() {
     parent::setUp('content', 'apachesolr', 'apachesolr_search', 'search', 'apachesolr_test');
-  }
+    apachesolr_load_service_class('', array('file' => 'tests/Dummy_Solr', 'module' => 'apachesolr', 'class' => 'DummySolr'));
 
-  function testApacheSolrNodeAddDelete() {
-    // Login as basic user to perform initial content creation.
+    // Create a basic user, which is subject to moderation.
+    $permissions = array(
+      'access content',
+      'search content',
+    );
+    $basic_user = $this->drupalCreateUser($permissions);
+
     // Create an admin user that can bypass revision moderation.
     $permissions = array(
       'access content',
@@ -444,20 +448,65 @@ class DrupalSolrNodeTestCase extends DrupalWebTestCase {
     );
     $admin_user = $this->drupalCreateUser($permissions);
 
-    $this->drupalLogin($admin_user);
 
-    //Create a nodes
-    $edit = array();
-    $edit['uid'] = $admin_user->uid;
-    $node = $this->drupalCreateNode($edit);
+    // Assign users to their test suite-wide properties.
+    $this->basic_user = $basic_user;
+    $this->admin_user = $admin_user;
 
-    $this->drupalGet('admin/content/node');
-    // Remove the same node
-    $this->clickLink(t('edit'));
-    $this->drupalPost($this->getUrl(), array(), t('Delete'));
-    $this->assertText(t('Are you sure you want to delete'), t('Delete confirmation page was succesfully loaded'));
-    $this->drupalPost($this->getUrl(), array(), t('Delete'));
-    $this->assertResponse(200);
+    // Make sure our environment does not exists
+    $env_id = apachesolr_default_environment(NULL, TRUE);
+    $environment = apachesolr_environment_load($env_id, TRUE);
+    $environment['url'] = 'http://localhost/solr/core_that_should_not_exist';
+    apachesolr_environment_save($environment);
+    // Reset all caches
+    apachesolr_load_all_environments(TRUE);
+  }
+
+  function testApacheSolrNodeAddDelete() {
+
+    $this->drupalLogin($this->admin_user);
+
+    // enable our bundles to be indexed, and clear caches
+    apachesolr_index_set_bundles('solr', 'node', array('page', 'story'));
+    content_clear_type_cache();
+    apachesolr_environments_clear_cache();
+
+    // Define types of node bundles that we want to index
+    $types = array('page', 'story');
+    $table = apachesolr_get_indexer_table('node');
+
+    foreach ($types as $type) {
+      $edit = array();
+      // Create a node of the type $type.
+      $edit['uid'] = $this->admin_user->uid;
+      $edit['type'] = $type;
+      $edit['title'] = $this->randomName(16);
+      $node = $this->drupalCreateNode($edit);
+      $this->assertTrue(is_object($node) && isset($node->nid), t('Article type @type has been created.', array('@type' => $type)));
+
+      // Check that the node has been created.
+      $node = $this->drupalGetNodeByTitle($edit['title']);
+      $this->assertTrue($node, t('Created article @type found in database.', array('@type' => $type)));
+
+      // Check that the node has status 1
+      $query = "SELECT status FROM {{$table}} WHERE entity_id = %d";
+      $db_node_status = db_result(db_query($query, $node->nid));
+      $this->assertEqual($db_node_status, 1, t('Node @entity_id has status 1', array('@entity_id' => $node->nid)));
+
+      // Delete the node
+      $this->drupalPost('node/' . $node->nid . '/delete', array(), t('Delete'));
+
+      // check if the entity delete does its work. It should have set the
+      // status to 0 so it will be deleted when solr comes online
+      $query = "SELECT status FROM {{$table}} WHERE entity_id = %d";
+      $db_node_status = db_result(db_query($query, $node->nid));
+      $this->assertEqual($db_node_status, 0, t('Node @entity_id has status 0', array('@entity_id' => $node->nid)));
+
+      // Check that all the nodes have been deleted.
+      $query = "SELECT count(*) as count FROM {node} WHERE nid = %d";
+      $count = db_result(db_query($query));
+      $this->assertEqual($count, 0, t('No more nodes left in the node table.'));
+    }
   }
 }
 

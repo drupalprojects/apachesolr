@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+Issue #1802288 by Nick_vh: Fixed Improve testing of node deletion.
 
 Apache Solr integration 6.x-3.0-beta3, 2012-10-01
 ------------------------------

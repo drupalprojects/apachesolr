@@ -10,20 +10,8 @@ abstract class AbstractDrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
    * Implementation of setUp().
    */
   function setUp() {
-    // Install modules needed for this test. This could have been passed in as
-    // either a single array argument or a variable number of string arguments.
-    $modules = func_get_args();
-    if (isset($modules[0]) && is_array($modules[0])) {
-      $modules = $modules[0];
-    }
-    $modules[] = 'apachesolr';
-    $modules[] = 'apachesolr_search';
-    $modules[] = 'search';
-    $modules[] = 'content';
-
     require_once dirname(dirname(realpath(__FILE__))) . '/Apache_Solr_Document.php';
-
-    parent::setUp($modules);
+    parent::setUp('content', 'apachesolr', 'apachesolr_search', 'search');
   }
 
   function setUpSolr() {

@@ -1954,7 +1954,7 @@ function apachesolr_remove_entity($env_id, $entity_type, $entity_id) {
   }
   else {
     // Set status 0 so we try to delete from the index again in the future.
-    $query = "UPDATE {{$indexer_table}} asn SET asn.changed = '%s', status = 0 WHERE asn.entity_id = %d";
+    $query = "UPDATE {{$indexer_table}} asn SET asn.changed = '%s', status = %d WHERE asn.entity_id = %d";
     db_query($query, array(APACHESOLR_REQUEST_TIME, 0, $entity_id));
   }
 }
