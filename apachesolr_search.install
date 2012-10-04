@@ -183,7 +183,7 @@ function apachesolr_search_uninstall() {
 /**
  * Remove all apachesolr_search env variables for show_facets if it is zero
  */
-function apachesolr_search_update_7006() {
+function apachesolr_search_update_6301() {
   $environments = apachesolr_load_all_environments(TRUE);
   foreach ($environments as $environment) {
     $show_facets = apachesolr_environment_variable_get($environment['env_id'], 'apachesolr_search_show_facets', 0);
