@@ -1033,6 +1033,7 @@ function apachesolr_index_batch_index_remaining($env_id) {
     'error_message' => t('Solr indexing has encountered an error.'),
     'file' => drupal_get_path('module', 'apachesolr') . '/apachesolr.admin.inc',
   );
+  drupal_alter('apachesolr_index_batch', $batch);
   batch_set($batch);
 }
 
