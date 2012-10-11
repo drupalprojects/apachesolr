@@ -40,31 +40,8 @@ function apachesolr_index_entities($env_id, $limit) {
     $rows = apachesolr_index_get_entities_to_index($env_id, $entity_type, $limit);
     $documents = array();
     foreach ($rows as $row) {
-      if (!empty($row->status)) {
-        // Let any module exclude this entity from the index.
-        $build_document = TRUE;
-        foreach (module_implements('apachesolr_exclude') as $module) {
-          $exclude = module_invoke($module, 'apachesolr_exclude', $row->entity_id, $entity_type, $row, $env_id);
-          // If the hook returns TRUE we should exclude the entity
-          if (!empty($exclude)) {
-            $build_document = FALSE;
-          }
-        }
-        foreach (module_implements('apachesolr_' . $entity_type . '_exclude') as $module) {
-          $exclude = module_invoke($module, 'apachesolr_' . $entity_type . '_exclude', $row->entity_id, $row, $env_id);
-          // If the hook returns TRUE we should exclude the entity
-          if (!empty($exclude)) {
-            $build_document = FALSE;
-          }
-        }
-        if ($build_document) {
-          $documents = array_merge($documents, apachesolr_index_entity_to_documents($row, $env_id));
-        }
-      }
-      else {
-        // Delete the entity from our index if the status callback returned 0
-        apachesolr_remove_entity($env_id, $row->entity_type, $row->entity_id);
-      }
+      $row_documents = apachesolr_index_entities_document($row, $entity_type, $env_id);
+      $documents = array_merge($documents, $row_documents);
     }
 
     $indexed = apachesolr_index_send_to_solr($env_id, $documents);
@@ -90,6 +67,35 @@ function apachesolr_index_entities($env_id, $limit) {
   return $documents_submitted;
 }
 
+function apachesolr_index_entities_document($row, $entity_type, $env_id) {
+  $documents = array();
+  if (!empty($row->status)) {
+    // Let any module exclude this entity from the index.
+    $build_document = TRUE;
+    foreach (module_implements('apachesolr_exclude') as $module) {
+      $exclude = module_invoke($module, 'apachesolr_exclude', $row->entity_id, $entity_type, $row, $env_id);
+      // If the hook returns TRUE we should exclude the entity
+      if (!empty($exclude)) {
+        $build_document = FALSE;
+      }
+    }
+    foreach (module_implements('apachesolr_' . $entity_type . '_exclude') as $module) {
+      $exclude = module_invoke($module, 'apachesolr_' . $entity_type . '_exclude', $row->entity_id, $row, $env_id);
+      // If the hook returns TRUE we should exclude the entity
+      if (!empty($exclude)) {
+        $build_document = FALSE;
+      }
+    }
+    if ($build_document) {
+      $documents = array_merge($documents, apachesolr_index_entity_to_documents($row, $env_id));
+    }
+  }
+  else {
+    // Delete the entity from our index if the status callback returned 0
+    apachesolr_remove_entity($env_id, $row->entity_type, $row->entity_id);
+  }
+  return $documents;
+}
 /**
  * Returns the total number of documents that are able to be indexed and the
  * number of documents left to be indexed.
