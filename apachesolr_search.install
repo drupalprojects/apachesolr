@@ -185,10 +185,50 @@ function apachesolr_search_uninstall() {
  */
 function apachesolr_search_update_6301() {
   $environments = apachesolr_load_all_environments(TRUE);
-  foreach ($environments as $environment) {
-    $show_facets = apachesolr_environment_variable_get($environment['env_id'], 'apachesolr_search_show_facets', 0);
-    if ($show_facets === 0) {
-      apachesolr_environment_variable_del($environment['env_id'], 'apachesolr_search_show_facets');
+  if (is_array($environments)) {
+    foreach ($environments as $environment) {
+      $show_facets = apachesolr_environment_variable_get($environment['env_id'], 'apachesolr_search_show_facets', 0);
+      if ($show_facets === 0) {
+        apachesolr_environment_variable_del($environment['env_id'], 'apachesolr_search_show_facets');
+      }
     }
   }
+  return array();
+}
+
+/**
+ * This function cleans up the old apachesolr tables. There is no magic upgrade
+ * pat. The old facet and MLT blocks will be gone
+ */
+function apachesolr_search_update_6302() {
+  $ret = array();
+  // Check if we are upgrading from Apache Solr 1.x to 3.x
+  $old_variable_exists = db_result(db_query("SELECT 1 FROM {variable} WHERE name='apachesolr_search_excluded_types'"));
+  if ($old_variable_exists) {
+    // Delete all old more like this and other blocks
+    $ret[] = update_sql("DELETE FROM {blocks} WHERE 'module' = 'apachesolr_search'");
+    // Delete old variables
+    variable_del('apachesolr_search_changed_boost');
+    variable_del('apachesolr_search_comment_boost');
+    variable_del('apachesolr_search_date_boost');
+    variable_del('apachesolr_search_default_previous');
+    variable_del('apachesolr_search_excluded_types');
+    variable_del('apachesolr_search_make_default');
+    variable_del('apachesolr_search_mlt_blocks');
+    variable_del('apachesolr_search_promote_boost');
+    variable_del('apachesolr_search_query_fields');
+    variable_del('apachesolr_search_spellcheck');
+    variable_del('apachesolr_search_sticky_boost');
+    variable_del('apachesolr_search_taxonomy_links');
+    variable_del('apachesolr_search_taxonomy_previous');
+    variable_del('apachesolr_search_type_boosts');
+
+
+    // Create tables.
+    drupal_install_schema('apachesolr_search');
+
+    apachesolr_search_enable();
+
+  }
+  return $ret;
 }

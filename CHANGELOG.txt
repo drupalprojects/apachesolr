@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1805516 by Nick_vh: Added Basic upgrade path for 6.x-1.x to 6.x-3.x.
 #1806294 by Nick_vh: Allow the batch to be alterable.
 #1806300 by Nick_vh: Separate out the creation of the document from the index process.
 #1802288 by Nick_vh: Fixed Improve testing of node deletion.
