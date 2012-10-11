@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 -----------------------------
+#1807552 by Nick_vh, wimvds: Fixed Site and url wrong when indexing multilingual content (using i18n module).
 #1759190 by mkalkbrenner: Fixed obsolete form code?.
 #1802288 by Nick_vh: Fixed Improve testing of node deletion.
 

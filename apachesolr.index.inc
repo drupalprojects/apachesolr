@@ -374,9 +374,16 @@ function _apachesolr_index_process_entity_get_document($entity, $entity_type) {
   list($entity_id, $vid, $bundle) = entity_extract_ids($entity_type, $entity);
 
   $document = new ApacheSolrDocument();
+  $languages = language_list();
+
+  // Define our url options in advance
+  $url_options = array('absolute' => TRUE);
+  if (isset($entity->language) && isset($languages[$entity->language])) {
+    $url_options = $url_options + array('language' => $languages[$entity->language]);
+  }
 
   $document->id = apachesolr_document_id($entity_id, $entity_type);
-  $document->site = url(NULL, array('absolute' => TRUE));
+  $document->site = url(NULL, $url_options);
   $document->hash = apachesolr_site_hash();
 
   $document->entity_id = $entity_id;
@@ -388,7 +395,7 @@ function _apachesolr_index_process_entity_get_document($entity, $entity_type) {
   // A path is not a requirement of an entity
   if (!empty($path)) {
     $document->path = $path['path'];
-    $document->url = url($path['path'], $path['options'] + array('absolute' => TRUE));
+    $document->url = url($path['path'], $path['options'] + $url_options);
   }
   if (empty($entity->language)) {
     // 'und' is the language-neutral code in Drupal 7.

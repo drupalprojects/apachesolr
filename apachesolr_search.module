@@ -1289,9 +1289,19 @@ function apachesolr_search_process_response($response, DrupalSolrQueryInterface 
 
       $fields = (array) $doc;
 
+      // a path is not a requirement of entity (see entity_uri() ), so we check if we
+      // can show it and fallback to the main page of the site if we don't
+      // have it.
+      if (!isset($doc->url)) {
+        $path = '';
+      }
+      else {
+        $path = $doc->url;
+      }
+
       $result = array(
         // link is a required field, so handle it centrally.
-        'link' => url($doc->path, array('absolute' => TRUE)),
+        'link' => $path,
         // template_preprocess_search_result() runs check_plain() on the title
         // again.  Decode to correct the display.
         'title' => htmlspecialchars_decode($doc->label, ENT_QUOTES),
