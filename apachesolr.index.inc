@@ -383,9 +383,10 @@ function _apachesolr_index_process_entity_get_document($entity, $entity_type) {
   $bundle = $entity->type;
 
   $document = new ApacheSolrDocument();
-  $languages = language_list();
 
-  // Define our url options in advance
+  // Define our url options in advance. This differs depending on the
+  // language
+  $languages = language_list();
   $url_options = array('absolute' => TRUE);
   if (isset($entity->language) && isset($languages[$entity->language])) {
     $url_options = $url_options + array('language' => $languages[$entity->language]);
@@ -400,13 +401,6 @@ function _apachesolr_index_process_entity_get_document($entity, $entity_type) {
   $document->bundle = $bundle;
   $document->bundle_name = entity_bundle_label($entity_type, $bundle);
 
-  // Hardcoded drupal 6 node path
-  $path = 'node/' . $entity->nid;
-  // A path is not a requirement of an entity
-  if (!empty($path)) {
-    $document->path = $path;
-    $document->url = url($path, $url_options);
-  }
   if (empty($entity->language)) {
     // 'und' is the language-neutral code in Drupal 7.
     $document->language = 'und';
@@ -415,14 +409,21 @@ function _apachesolr_index_process_entity_get_document($entity, $entity_type) {
     $document->language = $entity->language;
   }
 
-  // Path aliases can have important information about the content.
-  // Add them to the index as well.
-  if (function_exists('drupal_get_path_alias')) {
-    // Add any path alias to the index, looking first for language specific
-    // aliases but using language neutral aliases otherwise.
-    $output = drupal_get_path_alias($document->path, $document->language);
-    if ($output && $output != $document->path) {
-      $document->path_alias = $output;
+  // Hardcoded drupal 6 node path
+  $path = 'node/' . $entity->nid;
+  // A path is not a requirement of an entity
+  if (!empty($path)) {
+    $document->path = $path;
+    $document->url = url($path, $url_options);
+    // Path aliases can have important information about the content.
+    // Add them to the index as well.
+    if (function_exists('drupal_get_path_alias')) {
+      // Add any path alias to the index, looking first for language specific
+      // aliases but using language neutral aliases otherwise.
+      $output = drupal_get_path_alias($document->path, $document->language);
+      if ($output && $output != $document->path) {
+        $document->path_alias = $output;
+      }
     }
   }
   return $document;
