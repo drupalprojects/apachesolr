@@ -133,6 +133,7 @@ function apachesolr_index_status($env_id) {
     // that we get a definitive order.
     $query = db_select($table, 'aie')
       ->condition('aie.bundle', $bundles)
+      ->condition('aie.status', 1)
       ->condition(db_or()
         ->condition('aie.changed', $last_changed, '>')
         ->condition(db_and()
