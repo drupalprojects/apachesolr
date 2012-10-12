@@ -1597,47 +1597,6 @@ function apachesolr_search_apachesolr_environment_delete($server) {
   }
 }
 
-
-/**
- * Implements hook_form_[form_id]_alter().
- *
- * This adds the retain filters to the search form.
- */
-function apachesolr_search_form_search_form_alter(&$form, $form_state) {
-  if (!empty($form['module']['#value']) && $form['module']['#value'] == 'apachesolr_search') {
-    $form['#submit'][] = 'apachesolr_search_form_search_submit';
-    // No other modification make sense unless a query is active.
-    // Note - this means that the query must always be run before
-    // calling drupal_get_form('search_form').
-    // Load core search page
-    $search_page = apachesolr_search_page_load('core_search');
-    $apachesolr_has_searched = apachesolr_has_searched($search_page['env_id']);
-
-    $searcher = NULL;
-    $fq = NULL;
-    if ($apachesolr_has_searched) {
-      $query = apachesolr_current_query($search_page['env_id']);
-      $searcher = $query->getSearcher();
-      // We use the presence of filter query params as a flag for the retain filters checkbox.
-      $fq = $query->getParam('fq');
-    }
-
-    $form['basic']['apachesolr_search']['#tree'] = TRUE;
-    $form['basic']['apachesolr_search']['get'] = array(
-      '#type' => 'hidden',
-      '#default_value' => json_encode(array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1))),
-    );
-
-    if ($fq || isset($form_state['input']['apachesolr_search']['retain-filters'])) {
-      $form['basic']['apachesolr_search']['retain-filters'] = array(
-        '#type' => 'checkbox',
-        '#title' => t('Retain current filters'),
-        '#default_value' => (int) isset($_GET['retain-filters']),
-      );
-    }
-  }
-}
-
 /**
  * Default theme function for spelling suggestions.
  */
@@ -1649,21 +1608,6 @@ function theme_apachesolr_search_suggestions($variables) {
   }
   $output .= '</dl></div>';
   return $output;
-}
-
-/**
- * Added form submit function to retain filters.
- *
- * @see apachesolr_search_form_search_form_alter()
- */
-function apachesolr_search_form_search_submit($form, &$form_state) {
-  $fv = $form_state['values'];
-  $get = json_decode($fv['apachesolr_search']['get'], TRUE);
-  if (!empty($fv['apachesolr_search']['retain-filters'])) {
-    $get['retain-filters'] = '1';
-    // Add the query values into the redirect.
-    $form_state['redirect'] = array($form_state['redirect'], array('query' => $get));
-  }
 }
 
 /**
