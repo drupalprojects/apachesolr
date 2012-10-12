@@ -133,6 +133,7 @@ function apachesolr_index_status($env_id) {
     $query = "SELECT count(*)
      FROM {{$table}} aie
      WHERE (aie.bundle IN (" . db_placeholders($bundles, 'varchar') . "))
+     AND (aie.status = 1)
      AND ((aie.changed > %d) OR ((aie.changed <= %d) AND (aie.entity_id > %d)))";
     $arguments = array_merge($bundles, array($last_changed, $last_changed, $last_entity_id));
     if ($table == 'apachesolr_index_entities') {
