@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
 -----------------------------
+#1773506 by drzraf: Fixed drush solr-search notice when file entity are part of the result.
 #1764334 by cpliakas: Fixed Negative percentage of documents sent to the server for indexing.
 #1806300 by Nick_vh: Separate out the creation of the document from the index process.
 #1807552 by Nick_vh, wimvds: Fixed Site and url wrong when indexing multilingual content (using i18n module).
