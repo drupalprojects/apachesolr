@@ -816,6 +816,10 @@ function apachesolr_search_search_box_form_submit($form, &$form_state) {
 
   $form_id = $form['form_id']['#value'];
   $keys = $form_state['values'][$form_id];
+
+  // Replace keys with their rawurlencoded value
+  $keys = str_replace("/","%2f", $keys);
+
   // Handle Apache webserver clean URL quirks.
   if (variable_get('clean_url', '0')) {
     $keys = str_replace('+', '%2B', $keys);
