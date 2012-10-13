@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1811364 by Nick_vh: Fixed Add newly created content type to the indexed bundles for all environments.
 #1811456 by rupl: Fixed Improve documentation of addFilter in apachesolr.api.php.
 #1794602 by Nick_vh, pwolanin | ppmr: Fixed Undefined index: path in ApacheSolrDocument->__get() (line 304 of ...\apachesolr\Apache_Solr_Document.
 #1764334 by cpliakas, Nick_vh: Fixed Negative percentage of documents sent to the server for indexing.
