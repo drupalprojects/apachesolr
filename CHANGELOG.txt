@@ -1,4 +1,7 @@
-Apache Solr integration 7.x-1.x-xxxx, xxxx-xx-xx
+Apache Solr integration 7.x-1.0-xxxx, xxxx-xx-xx
+-----------------------------
+
+Apache Solr integration 7.x-1.0, 2012-10-13
 -----------------------------
 #761990 by pwolanin, jhedstrom, Nick_vh, jpmckinney | morningtime: Fixed 400 Bad Status if URL length limit exceeded.
 #1811364 by Nick_vh: Fixed Add newly created content type to the indexed bundles for all environments.
