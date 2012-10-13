@@ -737,9 +737,12 @@ function apachesolr_node_type_insert($info) {
     if (isset($env['index_bundles']['node'])) {
       $bundles = $env['index_bundles']['node'];
     }
-    $bundles[] = $info->type;
-    // Set the new bundle as indexable for all environments
-    apachesolr_index_set_bundles($env['env_id'], 'node', $bundles);
+    // Is the bundle already marked?
+    if (!in_array($info->type, $bundles)) {
+      $bundles[] = $info->type;
+      // Set the new bundle as indexable for all environments
+      apachesolr_index_set_bundles($env['env_id'], 'node', $bundles);
+    }
   }
 }
 
