@@ -684,6 +684,22 @@ function apachesolr_node_type($op, $info) {
       call_user_func($callback, $env_id, $existing_bundles, $new_bundles);
     }
   }
+  elseif ($op == 'insert') {
+    // Get all our environments
+    $envs = apachesolr_load_all_environments();
+    $bundles = array();
+    foreach($envs as $env) {
+      if (isset($env['index_bundles']['node'])) {
+        $bundles = $env['index_bundles']['node'];
+      }
+      // Is the bundle already marked?
+      if (!in_array($info->type, $bundles)) {
+        $bundles[] = $info->type;
+        // Set the new bundle as indexable for all environments
+        apachesolr_index_set_bundles($env['env_id'], 'node', $bundles);
+      }
+    }
+  }
   elseif (!empty($info->old_type) && $info->old_type != $info->type) {
     // We cannot be sure we are going before or after node module.
     $table = apachesolr_get_indexer_table('node');
