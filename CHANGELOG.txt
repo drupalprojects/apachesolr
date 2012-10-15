@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1226274 by pwolanin: Fixes for schema.xml version numbering and organization.
 #761990 by pwolanin, jhedstrom, Nick_vh, jpmckinney | morningtime: Fixed 400 Bad Status if URL length limit exceeded.
 #1811364 by Nick_vh: Fixed Add newly created content type to the indexed bundles for all environments.
 #1811456 by rupl: Fixed Improve documentation of addFilter in apachesolr.api.php.
