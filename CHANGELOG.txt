@@ -1,5 +1,9 @@
-Apache Solr integration 7.x-1.0-xxxx, xxxx-xx-xx
+Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+
+Apache Solr integration 7.x-1.1, xxxx-xx-xx
+-----------------------------
+#1226274 by pwolanin: Fixes for schema.xml version numbering and organization
 
 Apache Solr integration 7.x-1.0, 2012-10-13
 -----------------------------
