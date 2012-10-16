@@ -159,6 +159,13 @@ behavior:
 Troubleshooting
 ---------------
 Problem:
+You use http basic auth to limit access to your Solr server.
+
+Solution:
+Set the Server URL to include the username and password like
+http://username:password@example.com:8080/solr
+
+Problem:
 Links to nodes appear in the search results with a different host name or
 subdomain than is preferred.  e.g. sometimes at http://example.com
 and sometimes at http://www.example.com
