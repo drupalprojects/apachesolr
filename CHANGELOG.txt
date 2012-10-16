@@ -1,7 +1,8 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1811456 by jhedstrom: remove dsm() from code.
 #1226274 by pwolanin: Fixes for schema.xml version numbering and organization.
-#761990 by pwolanin, jhedstrom, Nick_vh, jpmckinney | morningtime: Fixed 400 Bad Status if URL length limit exceeded.
+#761990  by pwolanin, jhedstrom, Nick_vh, jpmckinney | morningtime: Fixed 400 Bad Status if URL length limit exceeded.
 #1811364 by Nick_vh: Fixed Add newly created content type to the indexed bundles for all environments.
 #1811456 by rupl: Fixed Improve documentation of addFilter in apachesolr.api.php.
 #1794602 by Nick_vh, pwolanin | ppmr: Fixed Undefined index: path in ApacheSolrDocument->__get() (line 304 of ...\apachesolr\Apache_Solr_Document.

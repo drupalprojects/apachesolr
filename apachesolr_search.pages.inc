@@ -96,7 +96,6 @@ function apachesolr_search_custom_page_search_form(&$form_state, $search_page, $
 function apachesolr_search_custom_page_search_form_submit(&$form, &$form_state) {
   $search_page = $form['#search_page'];
   $redirect = $search_page['search_path'];
-  dsm($form);
   if (strlen($form_state['values']['keys'])) {
     // Replace keys with their rawurlencoded value
     $keys = str_replace("/","%2f", $form_state['values']['keys']);
