@@ -1,5 +1,9 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+
+
+Apache Solr integration 6.x-3.0-rc, 2012-10-22
+------------------------------
 #1780200 by pwolanin: document basic auth in README.
 #1811456 by jhedstrom: remove dsm() from code.
 #1226274 by pwolanin: Fixes for schema.xml version numbering and organization.
