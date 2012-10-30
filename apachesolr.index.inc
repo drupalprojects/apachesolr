@@ -863,8 +863,8 @@ function apachesolr_index_node_solr_reindex($env_id, $bundle = NULL) {
 function apachesolr_index_node_status_callback($entity_id, $entity_type) {
   // Make sure we have a boolean value.
   // Anything different from 1 becomes zero
-  $node = node_load($entity_id, NULL, TRUE);
-  $status = ($node->status == 1 ? 1 : 0);
+  $node_status = db_result(db_query("SELECT n.status FROM {node} n WHERE nid = %d", array($entity_id)));
+  $status = ($node_status == 1 ? 1 : 0);
   return $status;
 }
 
