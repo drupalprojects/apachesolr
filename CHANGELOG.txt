@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+#1825840 by firebird: Fixed Typo in menu description.
 
 Apache Solr integration 7.x-1.1, 2012-10-15
 -----------------------------
