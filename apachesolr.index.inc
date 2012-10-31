@@ -139,7 +139,6 @@ function apachesolr_index_status($env_id) {
         ->condition(db_and()
           ->condition('aie.changed', $last_changed, '<=')
           ->condition('aie.entity_id', $last_entity_id, '>')))
-      ->orderBy('aie.entity_id', 'ASC')
       ->addTag('apachesolr_index_' . $entity_type);
 
 
@@ -456,6 +455,7 @@ function apachesolr_index_get_entities_to_index($env_id, $entity_type, $limit) {
       ->condition(db_and()
         ->condition('aie.changed', $last_changed, '<=')
         ->condition('aie.entity_id', $last_entity_id, '>')))
+    ->orderBy('aie.changed', 'ASC')
     ->orderBy('aie.entity_id', 'ASC')
     ->addTag('apachesolr_index_' . $entity_type);
 
