@@ -285,6 +285,7 @@ function apachesolr_uninstall() {
   variable_del('apachesolr_read_only');
   variable_del('apachesolr_set_nodeapi_messages');
   variable_del('apachesolr_last_optimize');
+  variable_del('apachesolr_update_from_6303');
   // Remove tables.
   drupal_uninstall_schema('apachesolr');
   // Remove blocks.
@@ -364,4 +365,12 @@ function apachesolr_update_6302() {
     apachesolr_enable();
   }
   return $ret;
+}
+
+/**
+ * Leave a flag for 7.x updates so we have an upgrade path.
+ */
+function apachesolr_update_6303() {
+  variable_set('apachesolr_update_from_6303', TRUE);
+  return array();
 }
