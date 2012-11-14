@@ -393,6 +393,9 @@ function apachesolr_default_node_facet_info($searcher_info) {
         if (!empty($field_info['map callback'])) {
           $facets[$field]['map callback'] = $field_info['map callback'];
         }
+        if (!empty($field_info['alter callbacks'])) {
+          $facets[$field]['alter callbacks'] = $field_info['alter callbacks'];
+        }
       }
     }
   }
