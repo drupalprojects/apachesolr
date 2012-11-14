@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+#1840430 by Nick_vh: Fixed add alter callbacks from facetapi to the mappings array.
 #1827320 by drumm: Fixed Upgrading from 6.x-3.x does not need apachesolr_update_7000-15.
 #1828040 by david.gil, Nick_vh: Fixed Cannot access empty property in query_type_numeric_range().inc on line 77.
 #1828014 by DeFr, Nick_vh: Fixed Mass re-indexation can miss (a lot of) content.
