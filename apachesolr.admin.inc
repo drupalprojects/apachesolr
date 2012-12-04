@@ -594,7 +594,9 @@ function apachesolr_index_report($environment = NULL) {
       $solr = apachesolr_get_solr($environment['env_id']);
       // Note: we use 2 since 1 fails on Ubuntu Hardy.
       $data = $solr->getLuke(2);
-      $messages[] = array(t('# of terms in index'), $data->index->numTerms);
+      if (isset($data->index->numTerms)) {
+        $messages[] = array(t('# of terms in index'), $data->index->numTerms);
+      }
     }
     catch (Exception $e) {
       watchdog('Apache Solr', nl2br(check_plain($e->getMessage())), NULL, WATCHDOG_ERROR);
