@@ -417,7 +417,7 @@ function apachesolr_search_block_info() {
   // Add the sort block.
   $blocks['sort'] = array(
     'info' => t('Apache Solr Core: Sorting'),
-    'cache' => DRUPAL_CACHE_PER_PAGE,
+    'cache' => DRUPAL_CACHE_CUSTOM,
   );
   return $blocks;
 }
@@ -432,19 +432,32 @@ function apachesolr_search_block_view($delta = '') {
       if (apachesolr_has_searched($env_id) && !apachesolr_suppress_blocks($env_id) && $delta == 'sort') {
         $response = NULL;
         $query = apachesolr_current_query($env_id);
+        $solrsort = NULL;
         if ($query) {
           // Get the query and response. Without these no blocks make sense.
           $response = apachesolr_static_response_cache($query->getSearcher());
         }
+        
+        // If there are less than two results, do not return the sort block
         if (empty($response) || ($response->response->numFound < 2)) {
           return;
         }
 
+        // Check if we have to return a cached version of this block
+        if ($query) {
+          // Get the URI without any query parameter.
+          $uri = parse_url(request_uri());
+          // Get the current sort as an array.
+          $solrsort = $query->getSolrsort();
+          $cache_id = $uri['path'] . ':' . implode(':', $solrsort);
+          // Do we have something in cache ?
+          if ($cache = cache_get($cache_id, 'cache_block')) {
+            $block = $cache->data;
+            return $block;
+          }
+        }
+
         $sorts = $query->getAvailableSorts();
-
-        // Get the current sort as an array.
-        $solrsort = $query->getSolrsort();
-
         $sort_links = array();
         $path = $query->getPath();
         $new_query = clone $query;
@@ -475,10 +488,13 @@ function apachesolr_search_block_view($delta = '') {
         foreach ($sort_links as $name => $link) {
           $themed_links[$name] = theme('apachesolr_sort_link', $link);
         }
-        return array(
+        $block = array(
         'subject' => t('Sort by'),
           'content' => theme('apachesolr_sort_list', array('items' => $themed_links))
         );
+        // Cache the block
+        cache_set($cache_id, $block, 'cache_block');
+        return $block;
       }
     }
   }
