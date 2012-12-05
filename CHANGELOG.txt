@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+#1803512 by David_Rothstein | amanire: Fixed The OR operator returns no results for facets with colons in the value (such as entity reference facets).
 #1679392 by David_Rothstein, brianV: Move logic from apachesolr_default_node_facet_info() into a separate function so other modules can use it for non-node entities.
 #1814080 by Nick_vh, JordanMagnuson: Fixed Apachesolr sort block fills cache_block() table without stopping.
 #1550964 by Nick_vh, drzraf, rajivk, rjbrown99, j0rd | tinflute: Support Solr 4.0 schema.
