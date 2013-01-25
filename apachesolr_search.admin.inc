@@ -666,7 +666,7 @@ function apachesolr_bias_settings_page($environment = NULL) {
     ),
   );
 
-  // Adds content bias and type boost / exclusion forms.
+  // Adds content bias and type boost forms.
   $fields = apachesolr_search_get_fields($environment);
   $form = array();
   $form = drupal_get_form('apachesolr_search_bias_form', $env_id, $fields);
@@ -878,7 +878,7 @@ function apachesolr_search_type_boost_form($env_id) {
 
   $form['type_boost'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Type biasing and exclusion'),
+    '#title' => t('Type biasing'),
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
     '#group' => 'bias_tabs',
@@ -894,7 +894,15 @@ function apachesolr_search_type_boost_form($env_id) {
 
   // Get the current boost values.
   $type_boosts = apachesolr_environment_variable_get($env_id, 'apachesolr_search_type_boosts', array());
-  $names = node_type_get_names();
+  $names = array();
+  foreach (entity_get_info() as $entity_type => $entity_info) {
+    if (!empty($entity_info['apachesolr']['indexable'])) {
+      foreach ($entity_info['bundles'] as $key => $info) {
+        $names[$key] = $info['label'];
+      }
+    }
+  }
+  asort($names);
 
   foreach ($names as $type => $name) {
     $form['type_boost']['apachesolr_search_type_boosts'][$type] = array(
