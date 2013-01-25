@@ -2,8 +2,18 @@
 
 /**
  * Implements hook_apachesolr_index_document_build_node()
+ *
+ * Add node access grants of generic view grants if node access is not used.
+ *
+ * @param $document
+ *   The document to add our node access information to
+ * @param $node
+ *   The node which is used to built the document from
+ * @param $env_id
+ *   The environment for which we are building the document. This parameter does not have any effect in
+ *   this code so it can be ignored
  */
-function apachesolr_access_apachesolr_index_document_build_node($document, $node, $env_id) {
+function apachesolr_access_apachesolr_index_document_build_node(ApacheSolrDocument $document, $node, $env_id) {
   $account = &drupal_static(__FUNCTION__);
 
   if (!isset($account)) {
@@ -17,23 +27,27 @@ function apachesolr_access_apachesolr_index_document_build_node($document, $node
     foreach ($result as $grant) {
       $grant_realm = apachesolr_access_clean_realm_name($grant->realm);
       $key = 'access_node_' . apachesolr_site_hash() . '_' . $grant_realm;
-      $document->setMultiValue($key, $grant->gid);
+      $document->addField($key, $grant->gid);
     }
   }
   else {
     // Add the generic view grant if we are not using
     // node access or the node is viewable by anonymous users.
     // We assume we'll never have an entity with the name '__all'.
-    $document->setMultiValue('access__all', 0);
+    $document->addField('access__all', 0);
   }
 }
 
 /**
  * Creates a Solr query for a given user
  *
- * @param $account an account to get grants for and build a solr query
+ * @param $account
+ *   an account to get grants for and build a solr query
  *
  * @throws Exception
+ *
+ * @return SolrFilterSubQuery
+ *   Instance of SolrFilterSubQuery
  */
 function apachesolr_access_build_subquery($account) {
   if (!user_access('access content', $account)) {
@@ -61,6 +75,11 @@ function apachesolr_access_build_subquery($account) {
 
 /**
  * Implements hook_apachesolr_query_alter().
+ *
+ * Alter the query to include the access subquery
+ *
+ * @param DrupalSolrQueryInterface $query
+ *
  */
 function apachesolr_access_apachesolr_query_alter(DrupalSolrQueryInterface $query) {
   global $user;
@@ -76,7 +95,10 @@ function apachesolr_access_apachesolr_query_alter(DrupalSolrQueryInterface $quer
 
 /**
  * Implements hook_node_insert().
- * hook_node*() is called before hook_node_access_records() in node_save().
+ *
+ * hook_node_ACTION() is called before hook_node_access_records() in node_save().
+ *
+ * @param object $node
  */
 function apachesolr_access_node_insert($node) {
   $node->apachesolr_access_node_ignore = 1;
@@ -84,6 +106,10 @@ function apachesolr_access_node_insert($node) {
 
 /**
  * Implements hook_node_update().
+ *
+ * hook_node_ACTION() is called before hook_node_access_records() in node_save().
+ *
+ * @param object $node
  */
 function apachesolr_access_node_update($node) {
   $node->apachesolr_access_node_ignore = 1;
@@ -94,6 +120,8 @@ function apachesolr_access_node_update($node) {
  *
  * Listen to this hook to find out when a node needs to be re-indexed
  * for its node access grants.
+ *
+ * @param object $node
  */
 function apachesolr_access_node_access_records($node) {
   // node_access_needs_rebuild() will usually be TRUE during a
@@ -106,6 +134,11 @@ function apachesolr_access_node_access_records($node) {
 
 /**
  * Implements hook_form_alter().
+ *
+ * @param array $form
+ * @param array $form_state
+ * @param string $form_id
+ *
  */
 function apachesolr_access_form_alter(&$form, $form_state, $form_id) {
   if ($form_id == 'node_configure_rebuild_confirm') {
@@ -118,6 +151,10 @@ function apachesolr_access_form_alter(&$form, $form_state, $form_id) {
  *
  * This is unfortunate because not every node is going to be affected, but
  * there is little we can do.
+ *
+ * @param $form
+ * @param $form_state
+ *
  */
 function apachesolr_access_rebuild_nodeaccess(&$form, $form_state) {
   drupal_set_message(t('Solr search index will be rebuilt.'));
@@ -125,12 +162,24 @@ function apachesolr_access_rebuild_nodeaccess(&$form, $form_state) {
   apachesolr_clear_last_index_position();
 }
 
+/**
+ * Implements hook_enable().
+ *
+ * On enabling the module, tell the user to reindex
+ */
 function apachesolr_access_enable() {
   drupal_set_message(t('Your content <a href="@url">must be re-indexed</a> before Apache Solr Access will be functional on searches.', array('@url' => url('admin/config/search/apachesolr/index'))), 'warning');
 }
 
 /**
  * Helper function - return a safe (PHP identifier) realm name.
+ *
+ * @todo See if we can replace this with a native php function
+ *
+ * @param string $realm
+ *
+ * @return string
+ *   Clean string without bad characters
  */
 function apachesolr_access_clean_realm_name($realm) {
   return preg_replace('/[^a-zA-Z0-9_\x7f-\xff]/', '_', $realm);

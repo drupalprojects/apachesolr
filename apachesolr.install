@@ -289,7 +289,7 @@ function apachesolr_uninstall() {
  */
 function apachesolr_update_7000() {
   if (variable_get('apachesolr_update_from_6303', FALSE)) {
-    return;
+    return NULL;
   }
 
   $schema['apachesolr_server'] = array(
@@ -368,7 +368,7 @@ function apachesolr_update_7000() {
  */
 function apachesolr_update_7001() {
   if (variable_get('apachesolr_update_from_6303', FALSE)) {
-    return;
+    return NULL;
   }
 
   if (db_field_exists('apachesolr_server', 'asid')) {
@@ -392,7 +392,7 @@ function apachesolr_update_7001() {
  */
 function apachesolr_update_7002() {
   if (variable_get('apachesolr_update_from_6303', FALSE)) {
-    return;
+    return NULL;
   }
 
   $schema['apachesolr_server_variable'] = array(
@@ -447,7 +447,7 @@ function apachesolr_update_7002() {
  */
 function apachesolr_update_7003() {
   if (variable_get('apachesolr_update_from_6303', FALSE)) {
-    return;
+    return NULL;
   }
 
   // Same as apachesolr_update_6006()
@@ -467,7 +467,7 @@ function apachesolr_update_7003() {
  */
 function apachesolr_update_7004() {
   if (variable_get('apachesolr_update_from_6303', FALSE)) {
-    return;
+    return NULL;
   }
 
   $failure = variable_get('apachesolr_failure', NULL);
@@ -489,7 +489,7 @@ function apachesolr_update_7004() {
  */
 function apachesolr_update_7005() {
   if (variable_get('apachesolr_update_from_6303', FALSE)) {
-    return;
+    return NULL;
   }
 
   if (db_field_exists('apachesolr_server', 'port')) {
@@ -522,7 +522,7 @@ function apachesolr_update_7005() {
  */
 function apachesolr_update_7006() {
   if (variable_get('apachesolr_update_from_6303', FALSE)) {
-    return;
+    return NULL;
   }
 
   variable_del('apachesolr_facetstyle');
@@ -536,7 +536,7 @@ function apachesolr_update_7006() {
  */
 function apachesolr_update_7007() {
   if (variable_get('apachesolr_update_from_6303', FALSE)) {
-    return;
+    return NULL;
   }
 
   db_drop_primary_key('apachesolr_server');
@@ -569,7 +569,7 @@ function apachesolr_update_7007() {
  */
 function apachesolr_update_7008() {
   if (variable_get('apachesolr_update_from_6303', FALSE)) {
-    return;
+    return NULL;
   }
 
   variable_del('apachesolr_facet_missing');
@@ -584,7 +584,7 @@ function apachesolr_update_7008() {
  */
 function apachesolr_update_7009() {
   if (variable_get('apachesolr_update_from_6303', FALSE)) {
-    return;
+    return NULL;
   }
 
   // Only run when facetapi is available and/or installed
@@ -620,7 +620,7 @@ function apachesolr_update_7009() {
  */
 function apachesolr_update_7010() {
   if (variable_get('apachesolr_update_from_6303', FALSE)) {
-    return;
+    return NULL;
   }
 
   db_drop_field('cache_apachesolr', 'headers');
@@ -632,7 +632,7 @@ function apachesolr_update_7010() {
  */
 function apachesolr_update_7011() {
   if (variable_get('apachesolr_update_from_6303', FALSE)) {
-    return;
+    return NULL;
   }
 
   $stored = variable_get('apachesolr_index_last', array());
@@ -649,7 +649,7 @@ function apachesolr_update_7011() {
  */
 function apachesolr_update_7012() {
   if (variable_get('apachesolr_update_from_6303', FALSE)) {
-    return;
+    return NULL;
   }
 
   // @see: drupal_load()
@@ -823,7 +823,7 @@ function apachesolr_update_7012() {
  */
 function apachesolr_update_7013() {
   if (variable_get('apachesolr_update_from_6303', FALSE)) {
-    return;
+    return NULL;
   }
 
   db_drop_primary_key('apachesolr_index_entities');
@@ -861,7 +861,7 @@ function apachesolr_update_7013() {
  */
 function apachesolr_update_7014() {
   if (variable_get('apachesolr_update_from_6303', FALSE)) {
-    return;
+    return NULL;
   }
 
   $types = array(
@@ -880,7 +880,7 @@ function apachesolr_update_7014() {
  */
 function apachesolr_update_7015() {
   if (variable_get('apachesolr_update_from_6303', FALSE)) {
-    return;
+    return NULL;
   }
 
   // Brand new installations since update_7013 have the wrong primary key.

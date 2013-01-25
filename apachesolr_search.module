@@ -15,7 +15,7 @@
 function apachesolr_search_init() {
   // Useless without facetapi
   if (!module_exists('facetapi')) {
-    return;
+    return NULL;
   }
 
   // Using a simple query we will figure out if we have to execute this snippet
@@ -25,7 +25,7 @@ function apachesolr_search_init() {
     WHERE name = 'apachesolr_search_show_facets'";
   $count = db_query($query)->fetchField();
   if ($count == 0) {
-    return;
+    return NULL;
   }
 
   // Load the default search page, we only support facets to link to this
@@ -34,7 +34,7 @@ function apachesolr_search_init() {
   $search_page = apachesolr_search_page_load($search_page_id);
   // Do not continue if our search page is not valid
   if (empty($search_page)) {
-    return;
+    return NULL;
   }
 
   $show_facets = apachesolr_environment_variable_get($search_page['env_id'], 'apachesolr_search_show_facets', 0);
@@ -277,7 +277,7 @@ function apachesolr_search_get_taxonomy_term_title($search_page_id = NULL, $valu
      $page_title = str_replace('%value', '!value', $search_page['page_title']);
      $term = taxonomy_term_load($value);
      if (!$term) {
-       return;
+       return NULL;
      }
      $title = $term->name;
    }
@@ -299,7 +299,7 @@ function apachesolr_search_get_user_title($search_page_id = NULL, $value = NULL)
     $page_title = str_replace('%value', '!value', $search_page['page_title']);
     $user = user_load($value);
     if (!$user) {
-       return;
+       return NULL;
      }
     $title = $user->name;
   }
@@ -440,7 +440,7 @@ function apachesolr_search_block_view($delta = '') {
         
         // If there are less than two results, do not return the sort block
         if (empty($response) || ($response->response->numFound < 2)) {
-          return;
+          return NULL;
         }
 
         // Check if we have to return a cached version of this block
@@ -670,7 +670,7 @@ function apachesolr_search_mlt_suggestions($settings, $id, $solr = NULL) {
     // This hook allows modules to modify the query object.
     drupal_alter('apachesolr_query', $query);
     if ($query->abort_search) {
-      return;
+      return NULL;
     }
 
     $response = $query->search();
@@ -1073,7 +1073,7 @@ function apachesolr_search_run($name, array $params = array(), $solrsort = '', $
     $query->addParam('fl', 'teaser');
   }
 
-  list($final_query, $response) = apachesolr_do_query($query, $page);
+  list($final_query, $response) = apachesolr_do_query($query);
   $env_id = $query->solr('getId');
   apachesolr_has_searched($env_id, TRUE);
   $process_response_callback = apachesolr_environment_variable_get($env_id, 'process_response_callback', 'apachesolr_search_process_response');
@@ -1462,7 +1462,7 @@ function apachesolr_search_preprocess_search_results(&$variables) {
     }
     if (empty($variables['response'])) {
       $variables['description'] = '';
-      return;
+      return NULL;
     }
     $total = $variables['response']->response->numFound;
     $params = $variables['query']->getParams();

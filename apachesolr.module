@@ -907,7 +907,7 @@ function apachesolr_cron($env_id = NULL) {
   }
   // Indexes in read-only mode do not change the index, so will not update, delete, or optimize during cron.
   if (apachesolr_environment_variable_get($env_id, 'apachesolr_read_only', APACHESOLR_READ_WRITE) == APACHESOLR_READ_ONLY) {
-    return;
+    return NULL;
   }
   module_load_include('inc', 'apachesolr', 'apachesolr.index');
 
@@ -933,7 +933,7 @@ function apachesolr_cron($env_id = NULL) {
     $last = variable_get('apachesolr_last_optimize', 0);
     $time = REQUEST_TIME;
     if ($optimize_interval && ($time - $last > $optimize_interval)) {
-      $solr->optimize(FALSE, FALSE);
+      $solr->optimize(false, FALSE);
       variable_set('apachesolr_last_optimize', $time);
       apachesolr_set_last_index_updated($env_id, $time);
     }
@@ -1524,24 +1524,24 @@ function apachesolr_static_response_cache($searcher, $response = NULL) {
 /**
  * Factory function for query objects.
  *
- * @param $name
+ * @param string $name
  *   The search name, used for finding the correct blocks and other config.
  *   Typically "apachesolr".
- * @param $params
+ * @param array $params
  *   Array of params , such as 'q', 'fq' to be applied.
- * @param $solrsort
+ * @param string $solrsort
  *   Visible string telling solr how to sort.
- * @param $base_path
+ * @param string $base_path
  *   The search base path (without the keywords) for this query.
- * @param $solr
- *   An instance of DrupalApacheSolrService.
+ * @param DrupalApacheSolrServiceInterface $solr
+ *   An instance of DrupalApacheSolrServiceInterface.
  *
- * @return
+ * @return DrupalSolrQueryInterface
  *   DrupalSolrQueryInterface object.
  *
  * @throws Exception
  */
-function apachesolr_drupal_query($name, array $params = array(), $solrsort = '', $base_path = '', $solr = NULL) {
+function apachesolr_drupal_query($name, array $params = array(), $solrsort = '', $base_path = '', DrupalApacheSolrServiceInterface $solr = NULL) {
   if (!interface_exists('DrupalSolrQueryInterface')) {
     require_once(dirname(__FILE__) . '/apachesolr.interface.inc');
   }
@@ -1563,10 +1563,10 @@ function apachesolr_drupal_query($name, array $params = array(), $solrsort = '',
  * Factory function for query objects.
  *
  * @param $operator
- *   Wether the subquery should be added to another query as OR or AND
+ *   Whether the subquery should be added to another query as OR or AND
  *
- * @return
- *   DrupalSolrQueryInterface object.
+ * @return DrupalSolrQueryInterface|false
+ *   Subquery or error.
  *
  * @throws Exception
  */
@@ -1583,11 +1583,20 @@ function apachesolr_drupal_subquery($operator = 'OR') {
   if (!class_exists($class_info['class']) && isset($class_info['file']) && isset($class_info['module'])) {
     module_load_include('php', $class_info['module'], $class_info['file']);
   }
-  return new $class($operator);
+  $query = new $class($operator);
+  return $query;
 }
 
 /**
  * Static getter/setter for the current query. Only set once per page.
+ *
+ * @param $env_id
+ *   Environment from which to save or get the current query
+ * @param DrupalSolrQueryInterface $query
+ *   $query object to save in the static
+ *
+ * @return DrupalSolrQueryInterface|null
+ *   return the $query object if it is available in the drupal_static or null otherwise
  */
 function apachesolr_current_query($env_id, DrupalSolrQueryInterface $query = NULL) {
   $saved_query = &drupal_static(__FUNCTION__, NULL);
@@ -1883,7 +1892,7 @@ function apachesolr_entity_update($entity, $type) {
     // Delete the entity from our index if the status callback returns FALSE
     if (!$status) {
       apachesolr_entity_delete($entity, $type);
-      return;
+      return NULL;
     }
 
     $indexer_table = apachesolr_get_indexer_table($type);
@@ -1973,7 +1982,7 @@ function apachesolr_entity_fields($entity_type = 'node') {
           'facet missing allowed' => FALSE,
           'facet mincount allowed' => FALSE,
           // Field API allows any field to be multi-valued.
-          'multiple' => TRUE,
+          'multiple' => FALSE,
         );
       if ($key !== 'per-field') {
         $mappings[$key] += $defaults;
@@ -2616,7 +2625,7 @@ function theme_apachesolr_settings_title($vars) {
 function apachesolr_environment_load_subrecords(&$environments) {
   if (empty($environments)) {
     // Nothing to do.
-    return;
+    return NULL;
   }
 
   $all_index_bundles = db_select('apachesolr_index_bundles', 'ib')

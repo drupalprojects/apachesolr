@@ -379,7 +379,7 @@ class DummySolr implements DrupalApacheSolrServiceInterface {
    *
    * @throws Exception If an error occurs during the service call
    */
-  function commit($optimize = true, $waitFlush = true, $waitSearcher = true, $timeout = 3600, $softCommit = false) {
+  function commit($optimize = TRUE, $waitFlush = TRUE, $waitSearcher = TRUE, $timeout = 3600, $softCommit = FALSE) {
   }
 
   /**
@@ -432,7 +432,7 @@ class DummySolr implements DrupalApacheSolrServiceInterface {
    *
    * @throws Exception If an error occurs during the service call
    */
-  function optimize($waitFlush = true, $waitSearcher = true, $timeout = 3600, $softCommit = false) {
+  function optimize($waitFlush = TRUE, $waitSearcher = TRUE, $timeout = 3600, $softCommit = FALSE) {
   }
 }
 

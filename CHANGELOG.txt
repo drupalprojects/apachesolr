@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+#1897556 by Nick_vh: Update documentation for all the functions and make sure it reflects reality.
 #1836262 by ianmthomasuk, Nick_vh: Added Allow indexing of a set number of items using drush.
 #1898166 by Nick_vh: Fixed Make better use of the entity cache.
 #1868870 by cpliakas | Nick_vh: Revert changes to interface cause fatal errors for modules that implement the interface.

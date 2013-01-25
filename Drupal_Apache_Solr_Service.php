@@ -719,7 +719,7 @@ class DrupalApacheSolrService implements DrupalApacheSolrServiceInterface {
    *
    * @throws Exception If an error occurs during the service call
    */
-  public function commit($optimize = true, $waitFlush = true, $waitSearcher = true, $timeout = 3600) {
+  public function commit($optimize = TRUE, $waitFlush = TRUE, $waitSearcher = TRUE, $timeout = 3600) {
     $optimizeValue = $optimize ? 'true' : 'false';
     $flushValue = $waitFlush ? 'true' : 'false';
     $searcherValue = $waitSearcher ? 'true' : 'false';
@@ -803,7 +803,7 @@ class DrupalApacheSolrService implements DrupalApacheSolrServiceInterface {
    *
    * @throws Exception If an error occurs during the service call
    */
-  public function optimize($waitFlush = true, $waitSearcher = true, $timeout = 3600) {
+  public function optimize($waitFlush = TRUE, $waitSearcher = TRUE, $timeout = 3600) {
     $flushValue = $waitFlush ? 'true' : 'false';
     $searcherValue = $waitSearcher ? 'true' : 'false';
     $softCommit = $this->soft_commit ? 'true' : 'false';

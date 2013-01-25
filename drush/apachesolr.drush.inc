@@ -185,16 +185,23 @@ function apachesolr_drush_command() {
 function apachesolr_drush_help($section) {
   switch ($section) {
     case 'drush:solr-delete-index':
-      return dt("Used without parameters, this command deletes the entire Solr index. Used with parameters for content type, it deletes just the content types that are specified. After the index has been deleted, all content will be indexed again on future cron runs.");
+      return dt("Used without parameters, this command deletes the entire Solr index.
+        Used with parameters for content type, it deletes just the content types that are specified.
+        After the index has been deleted, all content will be indexed again on future cron runs.");
     case 'drush:solr-mark-all':
-      return dt("Used without parameters, this command marks all of the content in the Solr index for reindexing. Used with paramters for content type, it marks just the content types that are specified. Reindexing is different than deleting as the content is still searchable while it is in queue to be reindexed. Reindexing is done on future cron runs.");
+      return dt("Used without parameters, this command marks all of the content in the Solr index for
+        reindexing. Used with parameters for content type, it marks just the content types that are specified.
+        Reindexing is different than deleting as the content is still searchable while it is in queue to be reindexed.
+        Reindexing is done on future cron runs.");
     case 'drush:solr-index':
-      return dt("Reindexes content marked for (re)indexing. If you want to reindex all content or content of a specific type, use solr-reindex first to mark that content.");
+      return dt("Reindexes content marked for (re)indexing. If you want to reindex all content or content
+         of a specific type, use solr-reindex first to mark that content.");
     case 'drush:solr-search':
-      return dt('Executes a search against the site\'s Apache Solr search index and returns the restults.');
+      return dt('Executes a search against the site\'s Apache Solr search index and returns the results.');
     case 'error:APACHESOLR_ENV_ID_ERROR':
       return dt('Not a valid environment ID.');
   }
+  return '';
 }
 
 /**
@@ -234,6 +241,9 @@ function apachesolr_drush_solr_delete_index() {
   drush_print(t('Deleted the Solr index'));
 }
 
+/**
+ * Mark all of a specific environment id for reindexing
+ */
 function apachesolr_drush_solr_mark_for_reindex() {
   module_load_include('inc', 'apachesolr', 'apachesolr.index');
   $args = func_get_args();
@@ -252,6 +262,9 @@ function apachesolr_drush_solr_mark_for_reindex() {
   drush_print(t('Marked content for reindexing'));
 }
 
+/**
+ * Index all the items in the queue using a batch command
+ */
 function apachesolr_drush_solr_index() {
   module_load_include('inc', 'apachesolr', 'apachesolr.admin');
   module_load_include('inc', 'apachesolr', 'apachesolr.index');
@@ -264,6 +277,12 @@ function apachesolr_drush_solr_index() {
   drush_backend_batch_process();
 }
 
+/**
+ * Get the last indexed document
+ *
+ * @param string $env_id
+ * @param string $entity_type
+ */
 function apachesolr_drush_solr_get_last_indexed($env_id = NULL, $entity_type = 'node') {
   if (NULL === $env_id) {
     $env_id = apachesolr_default_environment();
@@ -282,6 +301,9 @@ function apachesolr_drush_solr_get_next_indexed($env_id = NULL, $entity_type = '
   drush_print($output);
 }
 
+/**
+ * Search the solr index using Drush
+ */
 function apachesolr_drush_solr_search() {
   $args = func_get_args();
   $keys = implode(' ', $args);
@@ -297,6 +319,9 @@ function apachesolr_drush_solr_search() {
   }
 }
 
+/**
+ * Get all the environments (using option all) or get the default environment id
+ */
 function apachesolr_drush_solr_get_env_id() {
   $all = drush_get_option('all');
 
@@ -311,6 +336,14 @@ function apachesolr_drush_solr_get_env_id() {
   }
 }
 
+/**
+ * Get the environment name based on the environment ID
+ *
+ * @print The environment name
+ *
+ * @return mixed APACHESOLR_ENV_ID_ERROR
+ *   Only return error if the environment can't be found
+ */
 function apachesolr_drush_solr_get_env_name() {
   $env_id = drush_get_option('id', apachesolr_default_environment());
   try {
@@ -322,6 +355,14 @@ function apachesolr_drush_solr_get_env_name() {
   drush_print($environment['name']);
 }
 
+/**
+ * Get the environment url based on the environment ID
+ *
+ * @print The environment url
+ *
+ * @return mixed APACHESOLR_ENV_ID_ERROR
+ *   Only return error if the environment can't be found
+ */
 function apachesolr_drush_solr_get_env_url() {
   $env_id = drush_get_option('id', apachesolr_default_environment());
   try {
@@ -333,6 +374,14 @@ function apachesolr_drush_solr_get_env_url() {
   drush_print($environment['url']);
 }
 
+/**
+ * Set the environment url based on the environment ID
+ *
+ * @param $url
+ *
+ * @return mixed APACHESOLR_ENV_ID_ERROR
+ *   Only return error if the environment can't be found
+ */
 function apachesolr_drush_solr_set_env_url($url) {
   $env_id = drush_get_option('id', apachesolr_default_environment());
   try {
@@ -345,11 +394,15 @@ function apachesolr_drush_solr_set_env_url($url) {
   apachesolr_environment_save($environment);
 }
 
-/*** variable code - much of it copied from dush core **/
-
 /**
  * Command callback.
+ *
  * List your site's variables.
+ * much of it copied from drush core
+ *
+ * @param string $arg_name
+ *
+ * @return array|mixed Could be the variable or a drush error
  */
 function drush_apachesolr_solr_variable_get($arg_name = NULL) {
   $output = NULL;
@@ -380,6 +433,11 @@ function drush_apachesolr_solr_variable_get($arg_name = NULL) {
 /**
  * Command callback.
  * Set a variable.
+ *
+ * @param string $arg_name
+ * @param mixed $value
+ *
+ * @return mixed
  */
 function drush_apachesolr_solr_variable_set($arg_name, $value) {
   $args = func_get_args();
@@ -442,6 +500,15 @@ function drush_apachesolr_solr_variable_set($arg_name, $value) {
   }
 }
 
+/**
+ *
+ * Format a specific variable
+ *
+ * @param $value
+ * @param $format
+ *
+ * @return bool|int|string
+ */
 function _apachesolr_drush_variable_format($value, $format) {
   if ($format == 'auto') {
     if (is_numeric($value)) {
@@ -481,6 +548,9 @@ function _apachesolr_drush_variable_format($value, $format) {
 /**
  * Command callback.
  * Delete a variable.
+ * @param $arg_name
+ *
+ * @return string
  */
 function drush_apachesolr_solr_variable_delete($arg_name) {
 
@@ -523,6 +593,9 @@ function drush_apachesolr_solr_variable_delete($arg_name) {
 /**
  * Load an environment from an id and validate the result.
  *
+ * @param string $env_id
+ *
+ * @return array $environment
  * @throws Exception
  */
 function _apachesolr_drush_environment_load_and_validate($env_id) {
@@ -537,7 +610,14 @@ function _apachesolr_drush_environment_load_and_validate($env_id) {
 /**
  * Search for similar variable names.
  *
+ * @param string $env_id
+ * @param string $arg
+ * @param bool|string $starts_with
+ *
  * @throws Exception
+ *
+ * @return array $variable
+ *   Only return it if found
  */
 function _apachesolr_drush_variable_like($env_id, $arg = NULL, $starts_with = FALSE) {
   $found = array();
