@@ -960,13 +960,14 @@ function apachesolr_index_action_form_delete_confirm_submit($form, &$form_state)
 /**
  * Submit a batch job to index the remaining, unindexed content.
  */
-function apachesolr_index_batch_index_remaining($env_id) {
+function apachesolr_index_batch_index_remaining($env_id, $total_limit = null) {
   $batch = array(
     'operations' => array(
       array(
         'apachesolr_index_batch_index_entities',
         array(
           $env_id,
+          $total_limit,
         ),
       ),
     ),
@@ -982,8 +983,14 @@ function apachesolr_index_batch_index_remaining($env_id) {
 
 /**
  * Batch Operation Callback
+ *
+ * @param $env_id
+ *   The machine name of the environment
+ * @param $total_limit
+ *   The total number of items to index across all batches
+ * @param $context
  */
-function apachesolr_index_batch_index_entities($env_id, &$context) {
+function apachesolr_index_batch_index_entities($env_id, $total_limit = NULL, &$context) {
   module_load_include('inc', 'apachesolr', 'apachesolr.index');
   if (empty($context['sandbox'])) {
     try {
@@ -1002,12 +1009,24 @@ function apachesolr_index_batch_index_entities($env_id, &$context) {
     $status = apachesolr_index_status($env_id);
     $context['sandbox']['progress'] = 0;
     $context['sandbox']['submitted'] = 0;
-    $context['sandbox']['max'] = $status['remaining'];
+
+    // How many items do we want to index? All or a limited set of items
+    if (empty($total_limit)) {
+      $context['sandbox']['max'] = $status['remaining'];
+    }
+    else {
+      $context['sandbox']['max'] = $total_limit;
+    }
   }
 
   // We can safely process the apachesolr_cron_limit nodes at a time without a
   // timeout or out of memory error.
   $limit = variable_get('apachesolr_cron_limit', 50);
+
+  // Reduce the limit for our final batch if we would be processing more than had been requested
+  if ($limit + $context['sandbox']['progress'] > $context['sandbox']['max']) {
+    $limit = $context['sandbox']['max'] - $context['sandbox']['progress'];
+  }
 
   if ($context['sandbox']['max'] >= $context['sandbox']['progress'] + $limit) {
     $context['sandbox']['progress'] += $limit;
