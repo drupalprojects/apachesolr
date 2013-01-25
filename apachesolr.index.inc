@@ -94,6 +94,8 @@ function apachesolr_index_entities_document($row, $entity_type, $env_id) {
     // Delete the entity from our index if the status callback returned 0
     apachesolr_remove_entity($env_id, $row->entity_type, $row->entity_id);
   }
+  // Clear entity cache for this specific entity
+  entity_get_controller($row->entity_type)->resetCache(array($row->entity_id));
   return $documents;
 }
 /**
@@ -210,8 +212,9 @@ function apachesolr_index_entity_to_documents($item, $env_id) {
   // Pull out all of our pertinent data.
   $entity_type = $item->entity_type;
 
-  // TRUE on reset to bypass static caching and not blow out our memory limit.
-  $entity = entity_load($entity_type, array($item->entity_id), array(), TRUE);
+  // Entity cache will be reset at the end of the indexing algorithm, to use the cache properly whenever
+  // the code does another entity_load
+  $entity = entity_load($entity_type, array($item->entity_id));
   $entity = $entity ? reset($entity) : FALSE;
 
   if (empty($entity)) {
@@ -891,8 +894,14 @@ function apachesolr_index_node_solr_reindex($env_id, $bundle = NULL) {
 function apachesolr_index_node_status_callback($entity_id, $entity_type) {
   // Make sure we have a boolean value.
   // Anything different from 1 becomes zero
-  $node = node_load($entity_id, NULL, TRUE);
-  $status = ($node->status == 1 ? 1 : 0);
+  $entity = entity_load($entity_type, array($entity_id));
+  $entity = $entity ? reset($entity) : FALSE;
+
+  if (empty($entity)) {
+    // If the object failed to load, just stop.
+    return FALSE;
+  }
+  $status = ($entity->status == 1 ? 1 : 0);
   return $status;
 }
 

@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+#1898166 by Nick_vh: Fixed Make better use of the entity cache.
 #1868870 by cpliakas | Nick_vh: Revert changes to interface cause fatal errors for modules that implement the interface.
 #1803512 by David_Rothstein | amanire: Fixed The OR operator returns no results for facets with colons in the value (such as entity reference facets).
 #1679392 by David_Rothstein, brianV: Move logic from apachesolr_default_node_facet_info() into a separate function so other modules can use it for non-node entities.
