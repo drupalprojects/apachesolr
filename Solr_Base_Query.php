@@ -507,6 +507,15 @@ class SolrBaseQuery extends SolrFilterSubQuery implements DrupalSolrQueryInterfa
     return $this->addParam($name, $value);
   }
 
+  /**
+   * Handles aliases for field to make nicer URLs.
+   *
+   * @param $field_map
+   *   An array keyed with real Solr index field names with the alias as value.
+   *
+   * @return DrupalSolrQueryInterface
+   *   The called object.
+   */
   public function addFieldAliases($field_map) {
     $this->field_map = array_merge($this->field_map, $field_map);
     // We have to re-parse the filters.
