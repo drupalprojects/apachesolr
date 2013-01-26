@@ -1104,6 +1104,11 @@ function apachesolr_set_default_environment($env_id) {
  *     watchdog('Apache Solr', nl2br(check_plain($e->getMessage())), NULL, WATCHDOG_ERROR);
  *   }
  *
+ *
+ * @param string $env_id
+ * 
+ * @return DrupalApacheSolrServiceInterface $solr
+ *
  * @throws Exception
  */
 function apachesolr_get_solr($env_id = NULL) {

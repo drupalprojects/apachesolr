@@ -247,6 +247,13 @@ class DrupalApacheSolrService implements DrupalApacheSolrServiceInterface {
     return $this->luke[$num_terms];
   }
 
+  /**
+   * Get the current solr version. This could be 1, 3 or 4
+   *
+   * @return int
+   *   1, 3 or 4. Does not give a more details version, for that you need
+   *   to get the system info.
+   */
   public function getSolrVersion() {
     $system_info = $this->getSystemInfo();
     // Get our solr version number
@@ -723,7 +730,7 @@ class DrupalApacheSolrService implements DrupalApacheSolrServiceInterface {
     $optimizeValue = $optimize ? 'true' : 'false';
     $flushValue = $waitFlush ? 'true' : 'false';
     $searcherValue = $waitSearcher ? 'true' : 'false';
-    $softCommit = $this->softCommit ? 'true' : 'false';
+    $softCommit = $this->soft_commit ? 'true' : 'false';
 
     $solr_version = $this->getSolrVersion();
     if ($solr_version <= 3) {

@@ -510,4 +510,14 @@ interface DrupalApacheSolrServiceInterface {
    * @throws Exception If an error occurs during the service call
    */
   function search($query = '', array $params = array(), $method = 'GET');
+
+  /**
+   * Get the current solr version. This could be 1, 3 or 4
+   *
+   * @return int
+   *   1, 3 or 4. Does not give a more details version, for that you need
+   *   to get the system info.
+   */
+  function getSolrVersion();
+
 }

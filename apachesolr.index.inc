@@ -71,16 +71,16 @@ function apachesolr_index_entities($env_id, $limit) {
  * Convert a certain entity from the apachesolr index table to a set of documents. 1 entity
  * can be converted in multiple documents if the apachesolr_index_entity_to_documents decides to do so.
  *
- * @param $row
+ * @param array $row
  *   A row from the indexing table
- * @param $entity_type
+ * @param string $entity_type
  *   The type of the entity
- * @param $env_id
+ * @param string $env_id
  *   The machine name of the environment.
  *
  * @return array of ApacheSolrDocument(s)
  */
-function apachesolr_index_entities_document(array $row, $entity_type, $env_id) {
+function apachesolr_index_entities_document($row, $entity_type, $env_id) {
   $documents = array();
   if (!empty($row->status)) {
     // Let any module exclude this entity from the index.
@@ -618,7 +618,7 @@ function apachesolr_index_delete_entity_from_index($env_id, $entity_type, $entit
   try {
     $solr = apachesolr_get_solr($env_id);
     $document_id = apachesolr_document_id($entity_id, $entity_type);
-    $query = "id:$document_id OR sm_parent_document_id:$document_id";
+    $query = "id:\"$document_id\" OR sm_parent_document_id:\"$document_id\"";
     $solr->deleteByQuery($query);
     apachesolr_set_last_index_updated($env_id, REQUEST_TIME);
     return TRUE;
@@ -972,7 +972,7 @@ function apachesolr_term_reference_indexing_callback($node, $field_name, $index_
     $field = $node->$field_name;
     list($lang, $items) = each($field);
     foreach ($items as $item) {
-      // Triple indexing of tids lets us do effecient searches (on tid)
+      // Triple indexing of tids lets us do efficient searches (on tid)
       // and do accurate per field or per-vocabulary faceting.
 
       // By including the ancestors to a term in the index we make
@@ -987,10 +987,14 @@ function apachesolr_term_reference_indexing_callback($node, $field_name, $index_
         // regardless of whether the facet is set to show as a hierarchy or not.
         // We would need a separate field if we were to index terms without any
         // hierarchy at all.
-        $fields[] = array(
-          'key' => $index_key,
-          'value' => $ancestor->tid,
-        );
+        // If the term is singular, then we cannot add another value to the
+        // document as the field is single
+        if ($field_info['multiple'] == true) {
+          $fields[] = array(
+            'key' => $index_key,
+            'value' => $ancestor->tid,
+          );
+        }
         $fields[] = array(
           'key' => 'tid',
           'value' => $ancestor->tid,

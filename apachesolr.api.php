@@ -232,13 +232,13 @@ function hook_apachesolr_delete_by_query_alter($query) {
  *
  * @param string $entity_id
  * @param string $entity_type
- * @param array $row
+ * @param object $row
  *   A complete set of data from the indexing table.
  * @param string $env_id
  *   The machine name of the environment.
  * @return boolean
  */
-function hook_apachesolr_exclude($entity_id, $entity_type, array $row, $env_id) {
+function hook_apachesolr_exclude($entity_id, $entity_type, $row, $env_id) {
   // Never index media entities to core_1
   if ($entity_type == 'media' && $env_id == 'core_1') {
     return TRUE;
@@ -252,13 +252,13 @@ function hook_apachesolr_exclude($entity_id, $entity_type, array $row, $env_id) 
  * the entity is skipped for indexing.
  *
  * @param string $entity_id
- * @param array $row
+ * @param object $row
  *   A complete set of data from the indexing table.
  * @param string $env_id
  *   The machine name of the environment.
  * @return boolean
  */
-function hook_apachesolr_ENTITY_TYPE_exclude($entity_id, array $row, $env_id) {
+function hook_apachesolr_ENTITY_TYPE_exclude($entity_id, $row, $env_id) {
   // Never index ENTITY_TYPE to core_1
   if ($env_id == 'core_1') {
     return TRUE;
