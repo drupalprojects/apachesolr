@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+#1900006 by Nick_vh | msellers: Fixed Undefined variable causes warning on node type uninstall.
 #1874420 by Nick_vh, j0rd | dirtabulous: Fixed Solr4 Entites Not Being Removed with deleteByQuery.
 #1871866 by Nick_vh, grom358: Fixed Type bias for all entities.
 #1861544 by fizk: Fixed Incorrect use of $field_map() in SolrBaseQuery::getSolrsortUrlQuery.
