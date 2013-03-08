@@ -609,12 +609,12 @@ function apachesolr_index_delete_entity_from_index($env_id, $entity_type, $entit
  * @throws Exception
  */
 function apachesolr_index_mark_for_reindex($env_id, $entity_type = 'node') {
-  foreach (content_types() as $content_type => $entity_info) {
+  foreach (content_types() as $bundle => $entity_info) {
     if (!empty($entity_info['extra']['apachesolr']['index'])) {
       $reindex_callback = apachesolr_entity_get_callback($entity_type, 'reindex callback');
     }
     if (!empty($reindex_callback)) {
-      call_user_func($reindex_callback, $env_id);
+      call_user_func($reindex_callback, $env_id, $bundle);
     }
   }
   apachesolr_clear_last_index_position($env_id, $entity_type);
