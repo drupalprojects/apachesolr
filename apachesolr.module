@@ -1777,6 +1777,9 @@ function apachesolr_facet_form_validate($form, &$form_state) {
  * Implements hook_entity_info_alter().
  */
 function apachesolr_entity_info_alter(&$entity_info) {
+  // Load all environments
+  $environments = apachesolr_load_all_environments();
+
   // Set those values that we know.  Other modules can do so
   // for their own entities if they want.
   $default_entity_info = array();
@@ -1792,7 +1795,7 @@ function apachesolr_entity_info_alter(&$entity_info) {
   //Allow implementations of HOOK_apachesolr_entity_info to modify these default indexers
   drupal_alter('apachesolr_entity_info', $default_entity_info);
 
-  // First set defaults so that we needn't worry about NULL keys.
+  // First set defaults so that we don't need to worry about NULL keys.
   foreach (array_keys($entity_info) as $type) {
     if (!isset($entity_info[$type]['apachesolr'])) {
       $entity_info[$type]['apachesolr'] = array();
@@ -1810,14 +1813,23 @@ function apachesolr_entity_info_alter(&$entity_info) {
     $entity_info[$type]['apachesolr'] += $default;
   }
 
-  $env_id = apachesolr_default_environment();
   // For any supported entity type and bundle, flag it for indexing.
   foreach ($entity_info as $entity_type => $info) {
     if ($info['apachesolr']['indexable']) {
-      $supported = apachesolr_get_index_bundles($env_id, $entity_type);
-      foreach (array_keys($info['bundles']) as $bundle) {
-        if (in_array($bundle, $supported)) {
-          $entity_info[$entity_type]['bundles'][$bundle]['apachesolr']['index'] = TRUE;
+      // Loop over each environment and check if any of them have other entity
+      // bundles of any entity type enabled and set the index value to TRUE
+      foreach ($environments as $env) {
+        // Skip if the environment is set to read only
+        if (empty($env['env_id']['conf']['apachesolr_read_only'])) {
+          // Get the supported bundles
+          $supported = apachesolr_get_index_bundles($env['env_id'], $entity_type);
+          // For each bundle in drupal, compare to the supported apachesolr
+          // bundles and enable where possible
+          foreach (array_keys($info['bundles']) as $bundle) {
+            if (in_array($bundle, $supported)) {
+              $entity_info[$entity_type]['bundles'][$bundle]['apachesolr']['index'] = TRUE;
+            }
+          }
         }
       }
     }
