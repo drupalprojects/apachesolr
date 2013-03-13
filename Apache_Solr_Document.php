@@ -172,10 +172,8 @@ class ApacheSolrDocument implements IteratorAggregate {
       $this->_fieldBoosts[$key] *= (float) $boost;
     }
 
-    // add value to array if not exists already
-    if (!in_array($value, $this->_fields[$key])) {
-      $this->_fields[$key][] = $value;
-    }
+    // add value to array
+    $this->_fields[$key][] = $value;
   }
 
   /**
