@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+#1918566 by mkalkbrenner: Added Devel integration: debug index documents on all environments / indexes.
 #1915418 by mkalkbrenner, Nick_vh: Fixed Unable to index a node bundle in a dedicated index / environment.
 #1900036 by remimikalsen, swentel | albert78: Fixed node reference with multiple values.
 #1900006 by Nick_vh | msellers: Fixed Undefined variable causes warning on node type uninstall.
