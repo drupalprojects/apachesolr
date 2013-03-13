@@ -1103,7 +1103,16 @@ function apachesolr_search_basic_params(DrupalSolrQueryInterface $query = NULL) 
         'is_uid',
         'tos_name',
       ),
+    'mm' => 1,
     'rows' => 10,
+    'pf' => 'content^2.0',
+    'ps' => 15,
+    'hl' => 'true',
+    'hl.fl' => 'content',
+    'hl.snippets' => 3,
+    'hl.mergeContigious' => 'true',
+    'f.content.hl.alternateField' => 'teaser',
+    'f.content.hl.maxAlternateFieldLength' => 256,
   );
   if ($query) {
     $query->addParams($params);
