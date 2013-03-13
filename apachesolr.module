@@ -898,67 +898,76 @@ function apachesolr_get_last_index_updated($env_id) {
 }
 
 /**
- * We run the indexing process only for the default environment
  * Implements hook_cron().
+ * Runs the indexing process on all writable environments or just a given environment.
  */
 function apachesolr_cron($env_id = NULL) {
+  $environments = array();
   if (empty($env_id)) {
-    $env_id = apachesolr_default_environment();
+    $environments = array_keys(apachesolr_load_all_environments());
   }
-  // Indexes in read-only mode do not change the index, so will not update, delete, or optimize during cron.
-  if (apachesolr_environment_variable_get($env_id, 'apachesolr_read_only', APACHESOLR_READ_WRITE) == APACHESOLR_READ_ONLY) {
-    return NULL;
+  else {
+    $environments[] = $env_id;
   }
+
   module_load_include('inc', 'apachesolr', 'apachesolr.index');
 
-  // For every entity type that requires extra validation
-  foreach (entity_get_info() as $type => $info) {
-    $bundles = apachesolr_get_index_bundles($env_id, $type);
+  // Optimize the index (by default once a day).
+  $optimize_interval = variable_get('apachesolr_optimize_interval', 60 * 60 * 24);
+  $last = variable_get('apachesolr_last_optimize', 0);
+  $time = REQUEST_TIME;
 
-    // If we're not checking any bundles of this entity type, just skip them all.
-    if (empty($bundles)) {
+  foreach($environments as $env_id) {
+    // Indexes in read-only mode do not change the index, so will not update, delete, or optimize during cron.
+    if (apachesolr_environment_variable_get($env_id, 'apachesolr_read_only', APACHESOLR_READ_WRITE) == APACHESOLR_READ_ONLY) {
       continue;
     }
 
-    if (isset($info['apachesolr']['cron_check'])) {
-      $callback = $info['apachesolr']['cron_check'];
-      call_user_func($callback);
-    }
-  }
+    // For every entity type that requires extra validation
+    foreach (entity_get_info() as $type => $info) {
+      $bundles = apachesolr_get_index_bundles($env_id, $type);
 
-  try {
-    $solr = apachesolr_get_solr($env_id);
-    // Optimize the index (by default once a day).
-    $optimize_interval = variable_get('apachesolr_optimize_interval', 60 * 60 * 24);
-    $last = variable_get('apachesolr_last_optimize', 0);
-    $time = REQUEST_TIME;
-    if ($optimize_interval && ($time - $last > $optimize_interval)) {
-      $solr->optimize(false, FALSE);
-      variable_set('apachesolr_last_optimize', $time);
-      apachesolr_set_last_index_updated($env_id, $time);
-    }
-    // Only clear the cache if the index changed.
-    // TODO: clear on some schedule if running multi-site.
-    $updated = apachesolr_get_last_index_updated($env_id);
-    if ($updated > 0) {
-      $solr->clearCache();
-      // Re-populate the luke cache.
-      $solr->getLuke();
-      // TODO: an admin interface for setting this.  Assume for now 5 minutes.
-      if ($time - $updated >= variable_get('apachesolr_cache_delay', 300)) {
-        // Clear the updated flag.
-        apachesolr_set_last_index_updated($env_id);
+      // If we're not checking any bundles of this entity type, just skip them all.
+      if (empty($bundles)) {
+        continue;
+      }
+
+      if (isset($info['apachesolr']['cron_check'])) {
+        $callback = $info['apachesolr']['cron_check'];
+        call_user_func($callback);
       }
     }
-  }
-  catch (Exception $e) {
-    watchdog('Apache Solr', nl2br(check_plain($e->getMessage())) . ' in apachesolr_cron', NULL, WATCHDOG_ERROR);
-  }
 
-  // We can safely process the apachesolr_cron_limit nodes at a time without a
-  // timeout or out of memory error.
-  $limit = variable_get('apachesolr_cron_limit', 50);
-  apachesolr_index_entities($env_id, $limit);
+    try {
+      $solr = apachesolr_get_solr($env_id);
+      if ($optimize_interval && ($time - $last > $optimize_interval)) {
+        $solr->optimize(FALSE, FALSE);
+        variable_set('apachesolr_last_optimize', $time);
+        apachesolr_set_last_index_updated($env_id, $time);
+      }
+      // Only clear the cache if the index changed.
+      // TODO: clear on some schedule if running multi-site.
+      $updated = apachesolr_get_last_index_updated($env_id);
+      if ($updated > 0) {
+        $solr->clearCache();
+        // Re-populate the luke cache.
+        $solr->getLuke();
+        // TODO: an admin interface for setting this.  Assume for now 5 minutes.
+        if ($time - $updated >= variable_get('apachesolr_cache_delay', 300)) {
+          // Clear the updated flag.
+          apachesolr_set_last_index_updated($env_id);
+        }
+      }
+    }
+    catch (Exception $e) {
+      watchdog('Apache Solr', nl2br(check_plain($e->getMessage())) . ' in apachesolr_cron', NULL, WATCHDOG_ERROR);
+    }
+
+    // We can safely process the apachesolr_cron_limit nodes at a time without a
+    // timeout or out of memory error.
+    $limit = variable_get('apachesolr_cron_limit', 50);
+    apachesolr_index_entities($env_id, $limit);
+  }
 }
 
 /**

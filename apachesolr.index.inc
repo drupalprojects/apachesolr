@@ -146,9 +146,7 @@ function apachesolr_index_status($env_id) {
     $last_entity_id = $last_index_position['last_entity_id'];
     $last_changed = $last_index_position['last_changed'];
 
-    // Find the next batch of entities to index for this entity type.  Note that
-    // for ordering we're grabbing the oldest first and then ordering by ID so
-    // that we get a definitive order.
+    // Find the remaining entities to index for this entity type.
     $query = db_select($table, 'aie')
       ->condition('aie.bundle', $bundles)
       ->condition('aie.status', 1)
@@ -882,6 +880,13 @@ function apachesolr_index_node_solr_reindex($env_id, $bundle = NULL) {
   $indexer_table = apachesolr_get_indexer_table('node');
   $transaction = db_transaction();
   try {
+    $indexable_bundles = apachesolr_get_index_bundles($env_id, 'node');
+
+    if ($bundle && !empty($indexable_bundles) && !in_array($bundle, $indexable_bundles)) {
+      // The bundle specified is not in the indexable bundles list.
+      return NULL;
+    }
+
     // Leave status 0 rows - those need to be
     // removed from the index later.
     $delete = db_delete($indexer_table);
@@ -890,15 +895,11 @@ function apachesolr_index_node_solr_reindex($env_id, $bundle = NULL) {
     if (!empty($bundle)) {
       $delete->condition('bundle', $bundle);
     }
+    elseif (!empty($indexable_bundles)) {
+      $delete->condition('bundle', $indexable_bundles, 'IN');
+    }
 
     $delete->execute();
-
-    $indexable_bundles = apachesolr_get_index_bundles($env_id, 'node');
-
-    if ($bundle && !empty($indexable_bundles) && !in_array($bundle, $indexable_bundles)) {
-      // The bundle specified is not in the indexable bundles list.
-      return NULL;
-    }
 
     $select = db_select('node', 'n');
     $select->condition('status', 1);
@@ -1250,7 +1251,7 @@ function apachesolr_userreference_indexing_callback($entity, $field_name, $index
 
 /**
  * Indexing callback for entityreference fields.
- * 
+ *
  * @param object $entity
  * @param string $field_name
  * @param string $index_key

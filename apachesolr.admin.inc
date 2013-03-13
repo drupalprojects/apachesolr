@@ -367,8 +367,7 @@ function apachesolr_settings(array $form, array &$form_state) {
     $confs['index'] = array(
       'class' => 'operation',
       'data' => l(t('Index'),
-        'admin/config/search/apachesolr/settings/' . $data['env_id'] . '/index',
-         array('query' => array('destination' => current_path()))
+        'admin/config/search/apachesolr/settings/' . $data['env_id'] . '/index'
       ),
     );
     $ops['edit'] = array(
@@ -608,12 +607,12 @@ function apachesolr_status_page($environment = array()) {
   );
 
   $write_status = apachesolr_environment_variable_get($env_id, 'apachesolr_read_only', APACHESOLR_READ_WRITE);
-  if (($write_status == APACHESOLR_READ_WRITE) && $env_id == apachesolr_default_environment()) {
+  if ($write_status == APACHESOLR_READ_WRITE) {
      $output['index_action_form'] = drupal_get_form('apachesolr_index_action_form', $env_id);
      $output['index_config_form'] = drupal_get_form('apachesolr_index_config_form', $env_id);
   }
   else {
-    drupal_set_message(t('Options for deleting and re-indexing are not available. This could be because the index is read-only or you are not viewing the default environment. This can be changed on the <a href="!settings_page">settings page</a>', array('!settings_page' => url('admin/config/search/apachesolr/settings/' . $env_id . '/edit', array('query' =>  drupal_get_destination())))), 'warning');
+    drupal_set_message(t('Options for deleting and re-indexing are not available because the index is read-only. This can be changed on the <a href="!settings_page">settings page</a>', array('!settings_page' => url('admin/config/search/apachesolr/settings/' . $env_id . '/edit', array('query' =>  drupal_get_destination())))), 'warning');
   }
 
   return $output;
@@ -959,11 +958,12 @@ function apachesolr_index_action_form_reset_submit(array $form, array &$form_sta
 function apachesolr_index_action_form_cron_submit(array $form, array &$form_state) {
   if (!empty($form_state['build_info']['args'][0])) {
     $env_id = $form_state['build_info']['args'][0];
+    $form_state['redirect'] = 'admin/config/search/apachesolr/settings/' . $env_id . '/index';
   }
   else {
     $env_id = apachesolr_default_environment();
+    $form_state['redirect'] = 'admin/config/search/apachesolr';
   }
-  $form_state['redirect'] = 'admin/config/search/apachesolr';
   apachesolr_cron($env_id);
   drupal_set_message(t('Apachesolr cron succesfully executed'));
 }
@@ -997,11 +997,12 @@ function apachesolr_index_action_form_remaining_confirm(array $form, array &$for
 function apachesolr_index_action_form_remaining_confirm_submit(array $form, array &$form_state) {
   if (!empty($form_state['build_info']['args'][0]['env_id'])) {
     $env_id = $form_state['build_info']['args'][0]['env_id'];
+    $form_state['redirect'] = 'admin/config/search/apachesolr/settings/' . $env_id . '/index';
   }
   else {
     $env_id = apachesolr_default_environment();
+    $form_state['redirect'] = 'admin/config/search/apachesolr';
   }
-  $form_state['redirect'] = 'admin/config/search/apachesolr';
   apachesolr_index_batch_index_remaining($env_id);
 }
 
@@ -1034,14 +1035,15 @@ function apachesolr_index_action_form_reset_confirm(array $form, array &$form_st
 function apachesolr_index_action_form_reset_confirm_submit(array $form, array &$form_state) {
   if (!empty($form_state['build_info']['args'][0]['env_id'])) {
     $env_id = $form_state['build_info']['args'][0]['env_id'];
+    $form_state['redirect'] = 'admin/config/search/apachesolr/settings/' . $env_id . '/index';
   }
   else {
     $env_id = apachesolr_default_environment();
+    $form_state['redirect'] = 'admin/config/search/apachesolr';
   }
   module_load_include('inc', 'apachesolr', 'apachesolr.index');
   apachesolr_index_mark_for_reindex($env_id);
   drupal_set_message(t('All the content on your site is queued for indexing. You can wait for it to be indexed during cron runs, or you can manually reindex it.'));
-  $form_state['redirect'] = 'admin/config/search/apachesolr';
 }
 
 /**
@@ -1073,16 +1075,16 @@ function apachesolr_index_action_form_delete_confirm(array $form, array &$form_s
 function apachesolr_index_action_form_delete_confirm_submit(array $form, array &$form_state) {
   if (!empty($form_state['build_info']['args'][0]['env_id'])) {
     $env_id = $form_state['build_info']['args'][0]['env_id'];
+    $form_state['redirect'] = 'admin/config/search/apachesolr/settings/' . $env_id . '/index';
   }
   else {
     $env_id = apachesolr_default_environment();
+    $form_state['redirect'] = 'admin/config/search/apachesolr';
   }
   // Rebuild our tracking table.
   module_load_include('inc', 'apachesolr', 'apachesolr.index');
   apachesolr_index_delete_index($env_id);
   drupal_set_message(t('The index has been deleted.'));
-
-  $form_state['redirect'] = 'admin/config/search/apachesolr';
 }
 
 /**
