@@ -1265,8 +1265,8 @@ function apachesolr_search_process_response($response, DrupalSolrQueryInterface 
       foreach ($hl_fl as $hl_param) {
         if (isset($response->highlighting->{$doc->id}->$hl_param)) {
           // Merge arrays preserving keys.
-          foreach ($response->highlighting->{$doc->id}->$hl_param as $values) {
-            $snippets[$hl_param] = $values;
+          foreach ($response->highlighting->{$doc->id}->$hl_param as $value) {
+            $snippets[$hl_param][] = $value;
           }
         }
       }
@@ -1694,17 +1694,19 @@ function theme_apachesolr_search_snippets($vars) {
   if (is_array($vars['snippets'])) {
     $snippets = $vars['snippets'];
     if (isset($snippets['content'])) {
-      $result .= $snippets['content'];
+      $result .= implode(' ... ', $snippets['content']);
       unset($snippets['content']);
     }
     if (isset($snippets['teaser'])) {
       $result .= (strlen($result) > 0) ? ' ... ' : '';
-      $result .= $snippets['teaser'];
+      $result .= implode(' ... ', $snippets['teaser']);
       unset($snippets['teaser']);
     }
     if (count($snippets)) {
       $result .= (strlen($result) > 0) ? ' ... ' : '';
-      $result .= implode(' ... ', $snippets);
+      foreach ($snippets as $snippet) {
+        $result .= implode(' ... ', $snippet);
+      }
     }
   }
   return $result . ' ...';
