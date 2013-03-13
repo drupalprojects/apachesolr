@@ -122,9 +122,8 @@ function apachesolr_index_status($env_id) {
   $total = 0;
   $entity_type = 'node';
   $bundles = apachesolr_get_index_bundles($env_id, $entity_type);
-  $table = apachesolr_get_indexer_table($entity_type);
-
   if (!empty($bundles)) {
+    $table = apachesolr_get_indexer_table($entity_type);
     $query = "SELECT count(*)
       FROM {{$table}} asn
       WHERE (asn.status = 1) AND (asn.bundle IN (" . db_placeholders($bundles, 'varchar') . "))";
@@ -882,7 +881,7 @@ function apachesolr_index_node_solr_reindex($env_id, $bundle = NULL) {
     $indexable_bundles = apachesolr_get_index_bundles($env_id, 'node');
     if ($bundle && !empty($indexable_bundles) && !in_array($bundle, $indexable_bundles)) {
       // The bundle specified is not in the indexable bundles list.
-      return;
+      return NULL;
     }
 
     // in the 6.x-3.x version we are not very respective to what bundles we
@@ -891,12 +890,12 @@ function apachesolr_index_node_solr_reindex($env_id, $bundle = NULL) {
     if ($bundle) {
       // Leave status 0 rows - those need to be
       // removed from the index later.
-      db_query("DELETE FROM {{$indexer_table}} WHERE entity_type = 'node' AND bundle = '%s' AND status = 1", array($bundle));
+      db_query("DELETE FROM {{$indexer_table}} WHERE entity_type = 'node' AND bundle = '%s' AND status = 1", $bundle);
       // Mark all nodes of the specified content type for reindexing.
       $query = "INSERT INTO {{$indexer_table}} (entity_id, bundle, status, entity_type, changed) (
         SELECT n.nid AS entity_id, n.type AS bundle, n.status AS status, 'node' AS entity_type, %d AS changed
         FROM {node} n WHERE n.type = '%s' AND status = 1)";
-      db_query($query, array(APACHESOLR_REQUEST_TIME, $bundle));
+      db_query($query, APACHESOLR_REQUEST_TIME, $bundle);
     }
     else {
       // Leave status 0 rows - those need to be
@@ -905,12 +904,8 @@ function apachesolr_index_node_solr_reindex($env_id, $bundle = NULL) {
       $query = "INSERT INTO {{$indexer_table}} (entity_id, bundle, status, entity_type, changed) (
         SELECT n.nid AS entity_id, n.type AS bundle, n.status AS status, 'node' AS entity_type, %d AS changed
         FROM {node} n WHERE status = 1)";
-      db_query($query, array(APACHESOLR_REQUEST_TIME));
+      db_query($query, APACHESOLR_REQUEST_TIME);
     }
-
-
-
-
   }
   catch (Exception $e) {
     throw $e;
