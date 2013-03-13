@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+#1918012 by mkalkbrenner, Nick_vh, pwolanin: Added Solr query needs to be aware of more context such as Search Page ID.
 #1896470 by Nick_vh, mkalkbrenner: Fixed Integrate Apache Solr Common Configurations for Solr 3.x and 4.x (Highlighting broken).
 #1918030 by mkalkbrenner, pwolanin: Allow contrib modules to add custom settings to search pages.
 #1918566 by mkalkbrenner: Added Devel integration: debug index documents on all environments / indexes.
