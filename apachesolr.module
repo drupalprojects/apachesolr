@@ -1106,7 +1106,7 @@ function apachesolr_set_default_environment($env_id) {
  *
  *
  * @param string $env_id
- * 
+ *
  * @return DrupalApacheSolrServiceInterface $solr
  *
  * @throws Exception
@@ -2016,6 +2016,12 @@ function apachesolr_entity_fields($entity_type = 'node') {
         }
         // The field info array.
         $row['field'] = $field;
+
+        // Cardinality: The number of values the field can hold. Legal values
+        // are any positive integer or FIELD_CARDINALITY_UNLIMITED.
+        if ($row['field']['cardinality'] != 1) {
+          $row['multiple'] = TRUE;
+        }
 
         // @todo: for fields like taxonomy we are indexing multiple Solr fields
         // per entity field, but are keying on a single Solr field name here.
