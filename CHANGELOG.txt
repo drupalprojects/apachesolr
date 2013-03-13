@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+#1917400 by mkalkbrenner: Fixed avoid multiple identical values in multi value fields.
 #1900036 by remimikalsen, swentel | albert78: Fixed node reference with multiple values.
 #1900006 by Nick_vh | msellers: Fixed Undefined variable causes warning on node type uninstall.
 #1874420 by Nick_vh, j0rd | dirtabulous: Fixed Solr4 Entites Not Being Removed with deleteByQuery.
