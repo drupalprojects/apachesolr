@@ -349,6 +349,7 @@ function apachesolr_search_page_settings_form($form, &$form_state, $search_page 
     '#type' => 'fieldset',
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
+    '#tree' => TRUE,
   );
 
   // Results per page per search page
@@ -456,11 +457,12 @@ function apachesolr_search_page_settings_form_validate($form, &$form_state) {
   if (empty($form_state['values']['search_path'])) {
     form_set_error('search_path', t('Path required.'));
   }
-  if (empty($form_state['values']['apachesolr_search_per_page'])) {
-    form_set_error('apachesolr_search_per_page', t('The amount of search results cannot be empty.'));
+  if (!is_numeric($form_state['values']['advanced']['apachesolr_search_per_page'])) {
+    form_set_error('advanced][apachesolr_search_per_page', t('The amount of search results must be an integer.'));
   }
-  if (!is_numeric($form_state['values']['apachesolr_search_per_page'])) {
-    form_set_error('apachesolr_search_per_page', t('The amount of search results must be an integer.'));
+  $form_state['values']['advanced']['apachesolr_search_per_page'] = (int) $form_state['values']['advanced']['apachesolr_search_per_page'];
+  if (empty($form_state['values']['advanced']['apachesolr_search_per_page'])) {
+    form_set_error('advanced][apachesolr_search_per_page', t('The amount of search results cannot be empty.'));
   }
   if ($form_state['values']['page_id'] == 'core_search') {
     if (!preg_match('@^search/[^/%]+$@', $form_state['values']['search_path'])) {
@@ -489,11 +491,8 @@ function apachesolr_search_page_settings_form_submit($form, &$form_state) {
   }
   $settings['apachesolr_search_custom_enable'] = $form_state['values']['custom_filter_enable'];
   $settings['apachesolr_search_search_type'] = $form_state['values']['search_type'];
-  $settings['apachesolr_search_search_box'] = $form_state['values']['apachesolr_search_search_box'];
-  $settings['apachesolr_search_per_page'] = $form_state['values']['apachesolr_search_per_page'];
-  $settings['apachesolr_search_browse'] = $form_state['values']['apachesolr_search_browse'];
-  $settings['apachesolr_search_spellcheck'] = $form_state['values']['apachesolr_search_spellcheck'];
-  $settings['apachesolr_search_allow_user_input'] = $form_state['values']['apachesolr_search_allow_user_input'];
+  // Add all advanced settings.
+  $settings += $form_state['values']['advanced'];
 
   // Set the default search page settings
   if (!empty($form_state['values']['make_default']) && isset($form_state['values']['page_id'])) {
