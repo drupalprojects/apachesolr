@@ -21,7 +21,13 @@ function apachesolr_access_apachesolr_index_document_build_node(ApacheSolrDocume
     $account = drupal_anonymous_user();
   }
 
-  if (!node_access('view', $node, $account)) {
+  // When using a node access module like Domain Access which has
+  // access grants that vary for anonymous users for the same content,
+  // this variable should be set to 1.  Note that doing so will prevent
+  // any results from being returned if using apachesolr_multisitesearch
+  // from a different site.
+  $always_add = apachesolr_environment_variable_get($env_id, 'apachesolr_access_always_add_grants', 0);
+  if ($always_add || !node_access('view', $node, $account)) {
     // Get node access grants.
     $result = db_query('SELECT * FROM {node_access} WHERE (nid = 0 OR nid = :nid) AND grant_view = 1', array(':nid' => $node->nid));
     foreach ($result as $grant) {
@@ -55,8 +61,7 @@ function apachesolr_access_build_subquery($account) {
   }
   $node_access_query = apachesolr_drupal_subquery();
   if (user_access('bypass node access', $account)) {
-    // Access all content from the current site, or public content.
-    $node_access_query->addFilter('access__all', 0);
+    // Access all content from the current site.
     $node_access_query->addFilter('hash', apachesolr_site_hash());
   }
   else {
@@ -68,8 +73,13 @@ function apachesolr_access_build_subquery($account) {
         $node_access_query->addFilter('access_node_' . apachesolr_site_hash() . '_' . $realm, $gid);
       }
     }
-    $node_access_query->addFilter('access__all', 0);
   }
+  // Everyone can access public content. Note that if the variable
+  // 'apachesolr_access_always_add_grants' is TRUE, no content from this site
+  // is considered "public". However, this condition may match documents in
+  // the Solr index supplied by other sites when multiple sites are indexing
+  // into the same index , i.e. multisite search.
+  $node_access_query->addFilter('access__all', 0);
   return $node_access_query;
 }
 
@@ -141,8 +151,30 @@ function apachesolr_access_node_access_records($node) {
  *
  */
 function apachesolr_access_form_alter(&$form, $form_state, $form_id) {
-  if ($form_id == 'node_configure_rebuild_confirm') {
-    $form['#submit'][] = 'apachesolr_access_rebuild_nodeaccess';
+  $form['#submit'][] = 'apachesolr_access_rebuild_nodeaccess';
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function apachesolr_access_form_apachesolr_environment_edit_form_alter(&$form, $form_state) {
+  $form['conf']['apachesolr_access_always_add_grants'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Add access grants even for public content'),
+    '#default_value' => empty($form['#environment']['conf']['apachesolr_access_always_add_grants']) ? 0 : 1,
+    '#description' => t('Normally should be disabled. Changing this value requires all content to be re-indexed. Useful for sites using Domamin Access or simliar node acess modules with grants that vary for anonymous users.'),
+  );
+  $form['actions']['save']['#submit'][] = 'apachesolr_access_environment_edit_form_submit';
+  $form['actions']['save_edit']['#submit'][] = 'apachesolr_access_environment_edit_form_submit';
+}
+
+/**
+ * Added button-level form submit function for apachesolr_environment_edit_form.
+ */
+function apachesolr_access_environment_edit_form_submit($form, &$form_state) {
+  $prior = empty($form['#environment']['conf']['apachesolr_access_always_add_grants']) ? 0 : 1;
+  if ($form_state['values']['conf']['apachesolr_access_always_add_grants'] != $prior) {
+    apachesolr_access_enable();
   }
 }
 
@@ -156,7 +188,7 @@ function apachesolr_access_form_alter(&$form, $form_state, $form_id) {
  * @param $form_state
  *
  */
-function apachesolr_access_rebuild_nodeaccess(&$form, $form_state) {
+function apachesolr_access_rebuild_nodeaccess($form, $form_state) {
   drupal_set_message(t('Solr search index will be rebuilt.'));
   // Clear last updated
   apachesolr_clear_last_index_position();

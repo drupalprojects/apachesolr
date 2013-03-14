@@ -139,6 +139,7 @@ function apachesolr_environment_edit_form(array $form, array &$form_state, array
   }
   $environment += array('env_id' => '', 'name' => '', 'url' => '', 'service_class' => '', 'conf' => array());
 
+  $form['#environment'] = $environment;
   $form['url'] = array(
     '#type' => 'textfield',
     '#title' => t('Solr server URL'),
