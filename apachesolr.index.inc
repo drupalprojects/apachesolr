@@ -1243,16 +1243,14 @@ function apachesolr_floatval($value) {
  */
 function apachesolr_nodereference_indexing_callback($entity, $field_name, $index_key, array $field_info) {
   $fields = array();
-  if (!empty($entity->{$field_name})) {
+  if (!empty($entity->{$field_name}) && array_key_exists(LANGUAGE_NONE, $entity->$field_name)) {
     $index_key = apachesolr_index_key($field_info);
-    foreach ($entity->$field_name as $field_references) {
-      foreach ($field_references as $reference) {
-        if ($index_value = (!empty($reference['nid'])) ? $reference['nid'] : FALSE) {
-          $fields[] = array(
-            'key' => $index_key,
-            'value' => $index_value,
-          );
-        }
+    foreach ($entity->{$field_name}[LANGUAGE_NONE] as $reference) {
+      if ($index_value = (!empty($reference['nid'])) ? $reference['nid'] : FALSE) {
+        $fields[] = array(
+          'key' => $index_key,
+          'value' => $index_value,
+        );
       }
     }
   }
@@ -1271,16 +1269,14 @@ function apachesolr_nodereference_indexing_callback($entity, $field_name, $index
  */
 function apachesolr_userreference_indexing_callback($entity, $field_name, $index_key, array $field_info) {
   $fields = array();
-  if (!empty($entity->$field_name)) {
+  if (!empty($entity->{$field_name}) && array_key_exists(LANGUAGE_NONE, $entity->$field_name)) {
     $index_key = apachesolr_index_key($field_info);
-    foreach ($entity->$field_name as $field_references) {
-      foreach ($field_references as $reference) {
-        if ($index_value = (isset($reference['uid']) && strlen($reference['uid'])) ? $reference['uid'] : FALSE) {
-          $fields[] = array(
-            'key' => $index_key,
-            'value' => $index_value,
-          );
-        }
+    foreach ($entity->{$field_name}[LANGUAGE_NONE] as $reference) {
+      if ($index_value = (isset($reference['uid']) && strlen($reference['uid'])) ? $reference['uid'] : FALSE) {
+        $fields[] = array(
+          'key' => $index_key,
+          'value' => $index_value,
+        );
       }
     }
   }
@@ -1299,7 +1295,7 @@ function apachesolr_userreference_indexing_callback($entity, $field_name, $index
  */
 function apachesolr_entityreference_indexing_callback($entity, $field_name, $index_key, $field_info) {
   $fields = array();
-  if (!empty($entity->{$field_name})) {
+  if (!empty($entity->{$field_name}) && array_key_exists(LANGUAGE_NONE, $entity->$field_name)) {
 
     // Gets entity type and index key. We need to prefix the ID with the entity
     // type so we know what entity we are dealing with in the mapping callback.
@@ -1307,14 +1303,12 @@ function apachesolr_entityreference_indexing_callback($entity, $field_name, $ind
     $index_key = apachesolr_index_key($field_info);
 
     // Iterates over all references and adds them to the fields.
-    foreach ($entity->$field_name as $entity_references) {
-      foreach ($entity_references as $reference) {
-        if ($id = (!empty($reference['target_id'])) ? $reference['target_id'] : FALSE) {
-          $fields[] = array(
-            'key' => $index_key,
-            'value' => $entity_type . ':' . $id,
-          );
-        }
+    foreach ($entity->{$field_name}[LANGUAGE_NONE] as $reference) {
+      if ($id = (!empty($reference['target_id'])) ? $reference['target_id'] : FALSE) {
+        $fields[] = array(
+          'key' => $index_key,
+          'value' => $entity_type . ':' . $id,
+        );
       }
     }
   }
