@@ -1,5 +1,9 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+
+Apache Solr integration 7.x-1.2, 2013-04-10
+-----------------------------
+#1966044 by pwolanin: Fix for Local params in search box unexpectedly affect Solr query parsing.
 #1950426 by mkalkbrenner: Fixed ERROR: multiple values encountered for non multiValued field.
 #1954302 by mkalkbrenner: Added Isolate some re-usable code from apachesolr_index_entity_to_documents().
 #1953976 by mkalkbrenner | j0rd: Fixed avoid use variable_set() in anything related to indexing content (because of performance).
