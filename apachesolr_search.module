@@ -238,6 +238,11 @@ function apachesolr_search_load_all_search_types() {
   }
   else {
     $search_types = array(
+      'custom' => array (
+        'name' => t('Custom Field'),
+        'default menu' => '',
+        'title callback' => 'apachesolr_search_get_value_title',
+       ),
       'tid' => array(
         'name' => apachesolr_field_name_map('tid'),
         'default menu' => 'taxonomy/term/%',
@@ -266,14 +271,15 @@ function apachesolr_search_load_all_search_types() {
 }
 
 /**
- * Used as a callback function to generate a title for the taxonomy term
- * depending on the input in the configuration screen
+ * Title callback function to generate a title for the taxonomy term.
+ *
  * @param integer $search_page_id
  * @param integer $value
+ *
  * @return String
  */
 function apachesolr_search_get_taxonomy_term_title($search_page_id = NULL, $value = NULL) {
-   $page_title = 'Search results for %value';
+   $page_title = 'Search results for term';
    if (isset($value) && isset($search_page_id)) {
      $search_page = apachesolr_search_page_load($search_page_id);
      $page_title = str_replace('%value', '!value', $search_page['page_title']);
@@ -281,21 +287,21 @@ function apachesolr_search_get_taxonomy_term_title($search_page_id = NULL, $valu
      if (!$term) {
        return NULL;
      }
-     $title = $term->name;
+     $value = $term->name;
    }
-   return t($page_title, array('!value' => $title));
+   return t($page_title, array('!value' => $value));
 }
 
 /**
- * Used as a callback function to generate a title for a user name depending
- * on the input in the configuration screen
+ * Title callback function to generate a title for a user name.
+ *
  * @param integer $search_page_id
  * @param integer $value
+ *
  * @return String
  */
 function apachesolr_search_get_user_title($search_page_id = NULL, $value = NULL) {
-  $page_title = 'Search results for %value';
-  $title = '';
+  $page_title = 'Search results for user';
   if (isset($value) && isset($search_page_id)) {
     $search_page = apachesolr_search_page_load($search_page_id);
     $page_title = str_replace('%value', '!value', $search_page['page_title']);
@@ -303,26 +309,26 @@ function apachesolr_search_get_user_title($search_page_id = NULL, $value = NULL)
     if (!$user) {
        return NULL;
      }
-    $title = $user->name;
+    $value = $user->name;
   }
-  return t($page_title, array('!value' => $title));
+  return t($page_title, array('!value' => $value));
 }
 
 /**
- * Used as a callback function to generate a title for a node/page depending
- * on the input in the configuration screen
+ * Title callback function to generate a title for a search page.
+ *
  * @param integer $search_page_id
- * @param integer $value
+ * @param string $value
+ *
  * @return String
  */
 function apachesolr_search_get_value_title($search_page_id = NULL, $value = NULL) {
-  $page_title = 'Search results for %value';
+  $page_title = 'Search results';
   if (isset($value)  && isset($search_page_id)) {
     $search_page = apachesolr_search_page_load($search_page_id);
     $page_title = str_replace('%value', '!value', $search_page['page_title']);
-    $title = $value;
   }
-  return t($page_title, array('!value' => $title));
+  return t($page_title, array('!value' => $value));
 }
 
 /**

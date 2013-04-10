@@ -288,7 +288,7 @@ function apachesolr_search_page_settings_form($form, &$form_state, $search_page 
   );
 
   $search_types = apachesolr_search_load_all_search_types();
-  $options = array('custom' => t('Custom Field'));
+  $options = array();
   foreach ($search_types as $id => $search_type) {
     $options[$id] = $search_type['name'];
   }
@@ -509,6 +509,9 @@ function apachesolr_search_page_settings_form_submit($form, &$form_state) {
   $search_page['settings'] = $settings;
   apachesolr_search_page_save($search_page);
 
+  // Menu rebuild needed to pick up search path.
+  variable_set('menu_rebuild_needed', TRUE);
+
   // Saves our values in the database, sets redirect path on success.
   drupal_set_message(t('The configuration options have been saved for %page.', array('%page' => $form_state['values']['label'])));
   if (isset($form_state['clicked_button']['#redirect'])) {
@@ -521,8 +524,6 @@ function apachesolr_search_page_settings_form_submit($form, &$form_state) {
   unset($_GET['destination']);
   drupal_static_reset('drupal_get_destination');
   drupal_get_destination();
-  // Menu rebuild needed to pick up search path.
-  menu_rebuild();
 }
 
 /**
