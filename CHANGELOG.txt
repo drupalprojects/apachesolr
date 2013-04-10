@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1966044 by pwolanin: Fix for Local params in search box unexpectedly affect Solr query parsing.
 #1909230 by wonder95: Fixed Bundle types ignored when marking content for reindexing.
 #1827320 by drumm: Fixed Upgrading from 6.x-3.x does not need apachesolr_update_7000-15.
 #1693092 by killua99, Nick_vh: Fixed function apachesolr_entity_update() and $status_callback()($id, $type) broken the node.

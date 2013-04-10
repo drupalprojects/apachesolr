@@ -975,6 +975,8 @@ function apachesolr_search_search_results($keys = NULL, $conditions = NULL, $sea
       }
       // Full text behavior. Triggers with a text search or a facet
       elseif (($keys || isset($conditions['f'])) || ($empty_search_behavior == 'results')) {
+        // Don't allow local params to pass through to EDismax from the url.
+        $keys = preg_replace('/^(?:{![^}]*}\s*)+/',' ', $keys);
         $params['q'] = $keys;
         // Hardcoded apachesolr name since we rely on this for the facets
         $page = isset($_GET['page']) ? $_GET['page'] : '';
