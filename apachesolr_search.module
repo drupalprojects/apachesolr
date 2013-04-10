@@ -901,7 +901,7 @@ function apachesolr_search_search_results($keys = NULL, $conditions = NULL, $sea
         // Don't allow local params to pass through to EDismax from the url.
         // We also remove any remaining leading {! since that causes a parse
         // error in Solr.
-        $keys = preg_replace('/^(?:{![^}]*}\s*)+(?:{!\s*)*/',' ', $keys);
+        $keys = preg_replace('/^(?:{![^}]*}\s*)*(?:{!\s*)*/',' ', $keys);
         $params['q'] = $keys;
         // Hardcoded apachesolr name since we rely on this for the facets
         $context['page_id'] = $search_page['page_id'];
