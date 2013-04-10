@@ -1243,7 +1243,9 @@ function apachesolr_floatval($value) {
  */
 function apachesolr_nodereference_indexing_callback($entity, $field_name, $index_key, array $field_info) {
   $fields = array();
-  if (!empty($entity->{$field_name}) && array_key_exists(LANGUAGE_NONE, $entity->$field_name)) {
+  // Druapl 7 core sets all fields to use LANGUAGE_NONE even if the entity
+  // (e.g. node) is flagged as being in a specific language.
+  if (!empty($entity->{$field_name}) && isset($entity->{$field_name}[LANGUAGE_NONE])) {
     $index_key = apachesolr_index_key($field_info);
     foreach ($entity->{$field_name}[LANGUAGE_NONE] as $reference) {
       if ($index_value = (!empty($reference['nid'])) ? $reference['nid'] : FALSE) {
@@ -1269,7 +1271,9 @@ function apachesolr_nodereference_indexing_callback($entity, $field_name, $index
  */
 function apachesolr_userreference_indexing_callback($entity, $field_name, $index_key, array $field_info) {
   $fields = array();
-  if (!empty($entity->{$field_name}) && array_key_exists(LANGUAGE_NONE, $entity->$field_name)) {
+  // Druapl 7 core sets all fields to use LANGUAGE_NONE even if the entity
+  // (e.g. node) is flagged as being in a specific language.
+  if (!empty($entity->{$field_name}) && isset($entity->{$field_name}[LANGUAGE_NONE])) {
     $index_key = apachesolr_index_key($field_info);
     foreach ($entity->{$field_name}[LANGUAGE_NONE] as $reference) {
       if ($index_value = (isset($reference['uid']) && strlen($reference['uid'])) ? $reference['uid'] : FALSE) {
