@@ -150,7 +150,7 @@ function apachesolr_access_node_access_records($node) {
  * @param string $form_id
  *
  */
-function apachesolr_access_form_alter(&$form, $form_state, $form_id) {
+function apachesolr_access_form_node_configure_rebuild_confirm_alter(&$form, $form_state, $form_id) {
   $form['#submit'][] = 'apachesolr_access_rebuild_nodeaccess';
 }
 
