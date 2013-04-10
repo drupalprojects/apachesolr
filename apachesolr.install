@@ -897,3 +897,21 @@ function apachesolr_update_7015() {
 function apachesolr_update_7016() {
   variable_del('apachesolr_update_from_6303');
 }
+
+/**
+ * Turn global variables in environment specific ones.
+ */
+function apachesolr_update_7017() {
+  $stored = variable_get('apachesolr_index_last', array());
+  foreach ($stored as $env_id => $entity_info) {
+    apachesolr_environment_variable_set($env_id, 'apachesolr_index_last', $entity_info);
+  }
+  variable_del('apachesolr_index_last');
+
+  $updated = variable_get('apachesolr_index_updated', array());
+  $optimized = variable_get('apachesolr_last_optimize', 0);
+  foreach ($updated as $env_id => $timestamp) {
+    apachesolr_environment_variable_set($env_id, 'apachesolr_index_updated', $timestamp);
+    apachesolr_environment_variable_set($env_id, 'apachesolr_last_optimize', $optimized);
+  }
+}

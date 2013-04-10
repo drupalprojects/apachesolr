@@ -842,34 +842,39 @@ function apachesolr_set_stats_message($text, $type = 'status', $repeat = FALSE) 
  * Returns last changed and last ID for an environment and entity type.
  */
 function apachesolr_get_last_index_position($env_id, $entity_type) {
-  $stored = variable_get('apachesolr_index_last', array());
-  return isset($stored[$env_id][$entity_type]) ? $stored[$env_id][$entity_type] : array('last_changed' => 0, 'last_entity_id' => 0);
+  $stored = apachesolr_environment_variable_get($env_id, 'apachesolr_index_last', array());
+  return isset($stored[$entity_type]) ? $stored[$entity_type] : array('last_changed' => 0, 'last_entity_id' => 0);
 }
 
 /**
  * Sets last changed and last ID for an environment and entity type.
  */
 function apachesolr_set_last_index_position($env_id, $entity_type, $last_changed, $last_entity_id) {
-  $stored = variable_get('apachesolr_index_last', array());
-  $stored[$env_id][$entity_type] = array('last_changed' => $last_changed, 'last_entity_id' => $last_entity_id);
-  variable_set('apachesolr_index_last', $stored);
+  $stored = apachesolr_environment_variable_get($env_id, 'apachesolr_index_last', array());
+  $stored[$entity_type] = array('last_changed' => $last_changed, 'last_entity_id' => $last_entity_id);
+  apachesolr_environment_variable_set($env_id, 'apachesolr_index_last', $stored);
 }
 
 /**
  * Clear a specific environment, or clear all.
  */
 function apachesolr_clear_last_index_position($env_id = NULL, $entity_type = NULL) {
-  $stored = variable_get('apachesolr_index_last', array());
-  if (empty($env_id)) {
-    $stored = array();
-  }
-  elseif ($entity_type) {
-    unset($stored[$env_id][$entity_type]);
+  if (!empty($env_id)) {
+    $stored = apachesolr_environment_variable_get($env_id, 'apachesolr_index_last', array());
+    if ($entity_type) {
+      unset($stored[$entity_type]);
+    }
+    else {
+      $stored = array();
+    }
+    apachesolr_environment_variable_set($env_id, 'apachesolr_index_last', $stored);
   }
   else {
-    unset($stored[$env_id]);
+    $environments = apachesolr_load_all_environments();
+    foreach (array_keys($environments) as $env_id) {
+      apachesolr_environment_variable_set($env_id, 'apachesolr_index_last', array());
+    }
   }
-  variable_set('apachesolr_index_last', $stored);
 }
 
 /**
@@ -878,14 +883,7 @@ function apachesolr_clear_last_index_position($env_id = NULL, $entity_type = NUL
  *   A timestamp or zero. If zero, the variable is deleted.
  */
 function apachesolr_set_last_index_updated($env_id, $timestamp = 0) {
-  $updated = variable_get('apachesolr_index_updated', array());
-  if ($timestamp > 0) {
-    $updated[$env_id] = $timestamp;
-  }
-  else {
-    unset($updated[$env_id]);
-  }
-  variable_set('apachesolr_index_updated', $updated);
+  apachesolr_environment_variable_set($env_id, 'apachesolr_index_updated', $timestamp);
 }
 
 /**
@@ -893,8 +891,7 @@ function apachesolr_set_last_index_updated($env_id, $timestamp = 0) {
  * @return integer (timestamp)
  */
 function apachesolr_get_last_index_updated($env_id) {
-  $updated = variable_get('apachesolr_index_updated', array());
-  return isset($updated[$env_id]) ? $updated[$env_id] : 0;
+  return apachesolr_environment_variable_get($env_id, 'apachesolr_index_updated', 0);
 }
 
 /**
@@ -914,10 +911,11 @@ function apachesolr_cron($env_id = NULL) {
 
   // Optimize the index (by default once a day).
   $optimize_interval = variable_get('apachesolr_optimize_interval', 60 * 60 * 24);
-  $last = variable_get('apachesolr_last_optimize', 0);
   $time = REQUEST_TIME;
 
   foreach($environments as $env_id) {
+    $last = apachesolr_environment_variable_get($env_id, 'apachesolr_last_optimize', 0);
+
     // Indexes in read-only mode do not change the index, so will not update, delete, or optimize during cron.
     if (apachesolr_environment_variable_get($env_id, 'apachesolr_read_only', APACHESOLR_READ_WRITE) == APACHESOLR_READ_ONLY) {
       continue;
@@ -942,7 +940,7 @@ function apachesolr_cron($env_id = NULL) {
       $solr = apachesolr_get_solr($env_id);
       if ($optimize_interval && ($time - $last > $optimize_interval)) {
         $solr->optimize(FALSE, FALSE);
-        variable_set('apachesolr_last_optimize', $time);
+        apachesolr_environment_variable_set($env_id, 'apachesolr_last_optimize', $time);
         apachesolr_set_last_index_updated($env_id, $time);
       }
       // Only clear the cache if the index changed.

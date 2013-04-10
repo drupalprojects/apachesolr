@@ -148,10 +148,12 @@ class DrupalApacheSolrNodeAccess extends DrupalWebTestCase {
     $env_id = apachesolr_default_environment();
     apachesolr_set_last_index_position($env_id, 'node', 1, 1);
     $empty = serialize(array());
-    $value = db_query('SELECT value FROM {variable} WHERE name = :name', array(':name' => 'apachesolr_index_last'))->fetchField();
+    $value = db_query('SELECT value FROM {apachesolr_environment_variable} WHERE env_id = :env_id AND name = :name',
+      array(':env_id' => $env_id, ':name' => 'apachesolr_index_last'))->fetchField();
     $this->assertNotEqual($value, $empty, 'value is not empty array');
     $this->drupalPost('admin/reports/status/rebuild', array(), t('Rebuild permissions'));
-    $value = db_query('SELECT value FROM {variable} WHERE name = :name', array(':name' => 'apachesolr_index_last'))->fetchField();
+    $value = db_query('SELECT value FROM {apachesolr_environment_variable} WHERE env_id = :env_id AND name = :name',
+      array(':env_id' => $env_id, ':name' => 'apachesolr_index_last'))->fetchField();
     $this->assertEqual($value, $empty, 'value is empty array');
   }
 }
