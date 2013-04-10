@@ -178,11 +178,12 @@ function apachesolr_index_status($env_id) {
  * displayed to underprivileged users in search results. The index user defaults
  * to a user ID of "0", which is the anonymous user.
  *
- * After the entity is loaded, it is converted to an array via the callback
- * specified in the entity type's info array. The array that the entity is
- * converted to is the model of the document sent to the Apache Solr server for
- * indexing. This function allows develoeprs to modify the document by
- * implementing the following hooks:
+ * After the entity is loaded, it will be handed over to
+ * apachesolr_convert_entity_to_documents() to be converted to an array via
+ * the callback specified in the entity type's info array. The array that the
+ * entity is converted to is the model of the document sent to the Apache Solr
+ * server for indexing. This function allows developers to modify the document
+ * by implementing the following hooks:
  * - apachesolr_index_document_build()
  * - apachesolr_index_document_build_ENTITY_TYPE()
  * - apachesolr_index_documents_alter()
@@ -232,6 +233,41 @@ function apachesolr_index_entity_to_documents($item, $env_id) {
     return FALSE;
   }
 
+  $documents = apachesolr_convert_entity_to_documents($entity, $entity_type, $env_id);
+
+  // Restore the user.
+  $user = $saved_user;
+  drupal_save_session(TRUE);
+
+  return $documents;
+}
+
+/**
+ * The given entity is converted to an array via the callback
+ * specified in the entity type's info array. The array that the entity is
+ * converted to is the model of the document sent to the Apache Solr server for
+ * indexing. This function allows developers to modify the document by
+ * implementing the following hooks:
+ * - apachesolr_index_document_build()
+ * - apachesolr_index_document_build_ENTITY_TYPE()
+ * - apachesolr_index_documents_alter()
+ *
+ * This function's code has been isolated from
+ * apachesolr_index_entity_to_documents() to a separate function to be re-used
+ * by apachesolr_multilingual_apachesolr_index_documents_alter().
+ *
+ * @param object $entity
+ *   The entity for which we want a document.
+ * @param string $entity_type
+ *   The type of entity we're processing.
+ * @param string $env_id
+ *   The machine name of the environment.
+ *
+ * @return array
+ *   An associative array of documents that are sent to the Apache Solr server
+ *   for indexing.
+ */
+function apachesolr_convert_entity_to_documents($entity, $entity_type, $env_id) {
   list($entity_id, $vid, $bundle) = entity_extract_ids($entity_type, $entity);
 
   // Create a new document, and do the bare minimum on it.
@@ -280,10 +316,6 @@ function apachesolr_index_entity_to_documents($item, $env_id) {
     $function = $module . '_apachesolr_index_documents_alter';
     $function($documents, $entity, $entity_type, $env_id);
   }
-
-  // Restore the user.
-  $user = $saved_user;
-  drupal_save_session(TRUE);
 
   return $documents;
 }

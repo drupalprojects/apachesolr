@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+#1954302 by mkalkbrenner: Added Isolate some re-usable code from apachesolr_index_entity_to_documents().
 #1953976 by mkalkbrenner | j0rd: Fixed avoid use variable_set() in anything related to indexing content (because of performance).
 #1966488 by Nick_vh, pwolanin: Fix and tests for apachesolr_index_add_tags_to_document not getting the correct body text.
 #1957070 by Nick_vh | Routh: Fixed 'Solr search index will be rebuilt." message appears at the top of every view. (Even when index has been completely rebuilt.).
