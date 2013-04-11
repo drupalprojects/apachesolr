@@ -1154,7 +1154,7 @@ function apachesolr_index_config_form(&$form_state, $env_id) {
 
   $form['config']['bundles'] = array(
     '#type' => 'markup',
-    '#markup' => t('Select the entity types and bundles that should be indexed.'),
+    '#value' => t('Select the content types that should be indexed.'),
   );
 
   // For future extensibility, when we have multiple cores.
@@ -1167,6 +1167,7 @@ function apachesolr_index_config_form(&$form_state, $env_id) {
   foreach (content_types() as $key => $info) {
     $options[$key] = $info['name'];
   }
+  asort($options);
 
   $form['config']['entities']['#tree'] = TRUE;
   $form['config']['entities']['node'] = array(
