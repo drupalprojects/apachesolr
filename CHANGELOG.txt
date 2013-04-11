@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1803512 by David_Rothstein | amanire: Fixed The OR operator returns no results for facets with colons in the value (such as entity reference facets).
 #1679392 by David_Rothstein, brianV: Move logic from apachesolr_default_node_facet_info() into a separate function so other modules can use it for non-node entities.
 #1828040 by david.gil, Nick_vh: Fixed Cannot access empty property in query_type_numeric_range().inc on line 77.
 #1825840 by firebird: Fixed Typo in menu description.
