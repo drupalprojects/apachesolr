@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1836262 by ianmthomasuk, Nick_vh: Added Allow indexing of a set number of items using drush.
 #1868870 by cpliakas | Nick_vh: Revert changes to interface cause fatal errors for modules that implement the interface.
 #1550964 by dirtabulous, Nick_vh, drzraf, rajivk, rjbrown99, j0rd | tinflute: Support Solr 4.0 schema.
 #1803512 by David_Rothstein | amanire: Fixed The OR operator returns no results for facets with colons in the value (such as entity reference facets).

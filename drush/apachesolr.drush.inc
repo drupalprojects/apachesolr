@@ -20,6 +20,9 @@ function apachesolr_drush_command() {
     'arguments' => array(
       'types' => dt('Optional. A space delimited list of content types to be deleted from the index.'),
     ),
+    'options' => array(
+      'environment-id' => 'The environment ID',
+    ),
     'examples' => array(
       'drush solr-delete-index node' => 'Delete all node content from the index.',
       'drush solr-delete-index node:article' => 'Delete all content of the article content type from the index.',
@@ -32,10 +35,17 @@ function apachesolr_drush_command() {
     'arguments' => array(
       'types' => dt('Optional. A space delimited list of content types to be marked for reindexing.'),
     ),
+    'options' => array(
+      'environment-id' => 'The environment ID',
+    ),
   );
   $items['solr-index'] = array(
     'callback' => 'apachesolr_drush_solr_index',
     'description' => dt('Reindexes content marked for (re)indexing.'),
+    'options' => array(
+      'environment-id' => 'The environment ID',
+      'limit' => 'The total number of documents to index',
+    ),
   );
   $items['solr-get-last-indexed'] = array(
     'callback' => 'apachesolr_drush_solr_get_last_indexed',
@@ -198,7 +208,10 @@ function apachesolr_drush_help($section) {
 function apachesolr_drush_solr_delete_index() {
   module_load_include('inc', 'apachesolr', 'apachesolr.index');
   $args = func_get_args();
-  $env_id = apachesolr_default_environment();
+  $env_id =  drush_get_option('environment-id');
+  if (empty($env_id)) {
+    $env_id = apachesolr_default_environment();
+  }
 
   if (count($args) > 0) {
     foreach ($args as $type) {
@@ -224,7 +237,10 @@ function apachesolr_drush_solr_delete_index() {
 function apachesolr_drush_solr_mark_for_reindex() {
   module_load_include('inc', 'apachesolr', 'apachesolr.index');
   $args = func_get_args();
-  $env_id = apachesolr_default_environment();
+  $env_id =  drush_get_option('environment-id');
+  if (empty($env_id)) {
+    $env_id = apachesolr_default_environment();
+  }
   if (count($args) > 0) {
     foreach ($args as $type) {
       apachesolr_index_mark_for_reindex($env_id, $type);
@@ -239,8 +255,12 @@ function apachesolr_drush_solr_mark_for_reindex() {
 function apachesolr_drush_solr_index() {
   module_load_include('inc', 'apachesolr', 'apachesolr.admin');
   module_load_include('inc', 'apachesolr', 'apachesolr.index');
-  $env_id = apachesolr_default_environment();
-  apachesolr_index_batch_index_remaining($env_id);
+  $env_id =  drush_get_option('environment-id');
+  if (empty($env_id)) {
+    $env_id = apachesolr_default_environment();
+  }
+  $total_limit = intval(drush_get_option('limit'));
+  apachesolr_index_batch_index_remaining($env_id, $total_limit);
   drush_backend_batch_process();
 }
 
