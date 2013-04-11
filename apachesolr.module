@@ -698,7 +698,7 @@ function apachesolr_node_type($op, $info) {
     }
 
     apachesolr_index_delete_bundles($env_id, 'node', array($info->type));
-    $callback = apachesolr_entity_get_callback($entity_type, 'bundles changed callback');
+    $callback = apachesolr_entity_get_callback('node', 'bundles changed callback');
     if (!empty($callback)) {
       call_user_func($callback, $env_id, $existing_bundles, $new_bundles);
     }

@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1900006 by Nick_vh, pwolanin: Fixed Undefined variable causes warning on node type uninstall.
 #1861544 by fizk: Fixed Incorrect doc for $field_map in SolrBaseQuery::getSolrsortUrlQuery.
 #1871866 backport minor UI change from 7.x
 #1836262 by ianmthomasuk, Nick_vh: Added Allow indexing of a set number of items using drush.
