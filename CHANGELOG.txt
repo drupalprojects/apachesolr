@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+#1917376 by kevin.dutra, pwolanin: Fix for Index configuration form lacks order.
 
 Apache Solr integration 7.x-1.2, 2013-04-10
 -----------------------------
