@@ -208,7 +208,7 @@ interface DrupalSolrQueryInterface {
    * Handles aliases for field to make nicer URLs.
    *
    * @param $field_map
-   *   An array keyed with aliases with the real Solr index field name as value.
+   *   An array keyed with real Solr index field names with the alias as value.
    *
    * @return DrupalSolrQueryInterface
    *   The called object.
