@@ -690,7 +690,7 @@ function apachesolr_bias_settings_page($environment = NULL) {
   // editing, as it is otherwise not transparent to the end user.
   $output['apachesolr_environment'] = theme('apachesolr_settings_title', $env_id);
 
-  // Adds content bias and type boost / exclusion forms.
+  // Adds content bias and type boost forms.
   $fields = apachesolr_search_get_fields($environment);
   $form = array();
   $form = drupal_get_form('apachesolr_search_bias_form', $env_id, $fields);
@@ -913,7 +913,7 @@ function apachesolr_search_type_boost_form($env_id) {
 
   $form['type_boost'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Type biasing and exclusion'),
+    '#title' => t('Type biasing'),
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
     '#group' => 'bias_tabs',
