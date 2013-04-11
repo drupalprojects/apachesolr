@@ -221,23 +221,21 @@ function apachesolr_search_page_settings_form(&$form_state, $search_page = NULL)
   $form['label'] = array(
     '#type' => 'textfield',
     '#title' => t('Label'),
-    '#description' => '',
+    '#description' => t('The human-readable name of the search page configuration.'),
     '#required' => TRUE,
     '#size' => 30,
     '#maxlength' => 32,
     '#default_value' => !empty($search_page['label']) ? $search_page['label'] : '',
-    '#description' => t('The human-readable name of the search page configuration.'),
   );
 
   $form['page_id'] = array(
     '#type' => 'textfield',
-    '#title' => t('Label'),
-    '#description' => '',
+    '#title' => t('Page ID'),
+    '#description' => t('A unique machine-readable identifier for the search page configuration. It must only contain lowercase letters, numbers, and underscores.'),
     '#required' => TRUE,
     '#size' => 30,
     '#maxlength' => 32,
     '#default_value' => !empty($search_page['page_id']) ? $search_page['page_id'] : '',
-    '#description' => t('A unique machine-readable identifier for the search page configuration. It must only contain lowercase letters, numbers, and underscores.'),
   );
 
   $form['description_enable'] = array(
