@@ -106,6 +106,12 @@ class DrupalApacheSolrService implements DrupalApacheSolrServiceInterface {
   protected $stats;
   protected $system_info;
 
+  /**
+   * Flag that denotes whether to use soft commits for Solr 4.x, defaults to FALSE.
+   *
+   * @var bool
+   */
+  protected $soft_commit = FALSE;
 
   /**
    * Call the /admin/ping servlet, to test the connection to the server.
@@ -136,6 +142,26 @@ class DrupalApacheSolrService implements DrupalApacheSolrServiceInterface {
     else {
       return FALSE;
     }
+  }
+
+  /**
+   * Flags whether to use soft commits for Solr 4.x.
+   *
+   * @param bool $soft_commit
+   *   Whether or not to use soft commits for Solr 4.x.
+   */
+  public function setSoftCommit($soft_commit) {
+    $this->soft_commit = (bool) $soft_commit;
+  }
+
+  /**
+   * Returns the flag that denotes whether to use soft commits for Solr 4.x.
+   *
+   * @return bool
+   *   Whether to use soft commits for Solr 4.x.
+   */
+  public function getSoftCommit() {
+    return $this->soft_commit;
   }
 
   /**
@@ -280,6 +306,7 @@ class DrupalApacheSolrService implements DrupalApacheSolrServiceInterface {
   public function getStatsSummary() {
     $stats = $this->getStats();
     $solr_version = $this->getSolrVersion();
+
     $summary = array(
      '@pending_docs' => '',
      '@autocommit_time_seconds' => '',
@@ -693,18 +720,16 @@ class DrupalApacheSolrService implements DrupalApacheSolrServiceInterface {
    *   block until a new searcher is opened and registered as the main query searcher, making the changes visible.
    * @param float $timeout
    *   Maximum expected duration of the commit operation on the server (otherwise, will throw a communication exception)
-   * @param boolean $softCommit
-   *   perform a soft commit - this will refresh the 'view' of the index in a more performant manner, but without "on-disk" guarantees.
    *
    * @return response object
    *
    * @throws Exception If an error occurs during the service call
    */
-  public function commit($optimize = true, $waitFlush = true, $waitSearcher = true, $timeout = 3600, $softCommit = false) {
+  public function commit($optimize = TRUE, $waitFlush = TRUE, $waitSearcher = TRUE, $timeout = 3600) {
     $optimizeValue = $optimize ? 'true' : 'false';
     $flushValue = $waitFlush ? 'true' : 'false';
     $searcherValue = $waitSearcher ? 'true' : 'false';
-    $softCommit = $softCommit ? 'true' : 'false';
+    $softCommit = $this->soft_commit ? 'true' : 'false';
 
     $solr_version = $this->getSolrVersion();
     if ($solr_version <= 3) {
@@ -779,17 +804,15 @@ class DrupalApacheSolrService implements DrupalApacheSolrServiceInterface {
    *   block until a new searcher is opened and registered as the main query searcher, making the changes visible.
    * @param float $timeout
    *   Maximum expected duration of the commit operation on the server (otherwise, will throw a communication exception)
-   * @param boolean $softCommit
-   *   perform a soft commit - this will refresh the 'view' of the index in a more performant manner, but without "on-disk" guarantees.
    *
    * @return response object
    *
    * @throws Exception If an error occurs during the service call
    */
-  public function optimize($waitFlush = true, $waitSearcher = true, $timeout = 3600, $softCommit = false) {
+  public function optimize($waitFlush = TRUE, $waitSearcher = TRUE, $timeout = 3600) {
     $flushValue = $waitFlush ? 'true' : 'false';
     $searcherValue = $waitSearcher ? 'true' : 'false';
-    $softCommit = $softCommit ? 'true' : 'false';
+    $softCommit = $this->soft_commit ? 'true' : 'false';
 
     $solr_version = $this->getSolrVersion();
     if ($solr_version <= 3) {

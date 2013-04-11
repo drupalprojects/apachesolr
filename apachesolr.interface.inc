@@ -448,7 +448,7 @@ interface DrupalApacheSolrServiceInterface {
    *
    * @throws Exception If an error occurs during the service call
    */
-  function commit($optimize = true, $waitFlush = true, $waitSearcher = true, $timeout = 3600, $softCommit = false);
+  function commit($optimize = true, $waitFlush = true, $waitSearcher = true, $timeout = 3600);
 
   /**
    * Create a delete document based on document ID
@@ -497,7 +497,7 @@ interface DrupalApacheSolrServiceInterface {
    *
    * @throws Exception If an error occurs during the service call
    */
-  function optimize($waitFlush = true, $waitSearcher = true, $timeout = 3600, $softCommit = false);
+  function optimize($waitFlush = true, $waitSearcher = true, $timeout = 3600);
 
   /**
    * Simple Search interface
