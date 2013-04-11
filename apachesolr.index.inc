@@ -835,7 +835,7 @@ function apachesolr_index_node_solr_reindex($env_id, $bundle = NULL) {
       // Mark all nodes of the specified content type for reindexing.
       $query = "INSERT INTO {{$indexer_table}} (entity_id, bundle, status, entity_type, changed) (
         SELECT n.nid AS entity_id, n.type AS bundle, n.status AS status, 'node' AS entity_type, %d AS changed
-        FROM node n WHERE n.type = '%s' AND status = 1)";
+        FROM {node} n WHERE n.type = '%s' AND status = 1)";
       db_query($query, array(APACHESOLR_REQUEST_TIME, $bundle));
     }
     else {
@@ -844,7 +844,7 @@ function apachesolr_index_node_solr_reindex($env_id, $bundle = NULL) {
       db_query("DELETE FROM {{$indexer_table}} WHERE entity_type = 'node' AND status = 1");
       $query = "INSERT INTO {{$indexer_table}} (entity_id, bundle, status, entity_type, changed) (
         SELECT n.nid AS entity_id, n.type AS bundle, n.status AS status, 'node' AS entity_type, %d AS changed
-        FROM node n WHERE status = 1)";
+        FROM {node} n WHERE status = 1)";
       db_query($query, array(APACHESOLR_REQUEST_TIME));
     }
 

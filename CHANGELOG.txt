@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1915316 by m.stenta: Fix for Indexing problem with prefixed node table.
 #1900006 by Nick_vh, pwolanin: Fixed Undefined variable causes warning on node type uninstall.
 #1861544 by fizk: Fixed Incorrect doc for $field_map in SolrBaseQuery::getSolrsortUrlQuery.
 #1871866 backport minor UI change from 7.x
