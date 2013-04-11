@@ -180,14 +180,14 @@ function apachesolr_menu() {
   $reports_path = 'admin/reports/apachesolr';
   $items[$reports_path] = array(
     'title'              => 'Apache Solr search index',
-    'description'        => 'Information about the contents of the index the server',
+    'description'        => 'Information about the contents of the index on the server',
     'page callback'      => 'apachesolr_index_report',
     'access arguments'   => array('access site reports'),
     'file'               => 'apachesolr.admin.inc',
   );
   $items[$reports_path . '/%apachesolr_environment'] = array(
     'title'              => 'Apache Solr search index',
-    'description'        => 'Information about the contents of the index the server',
+    'description'        => 'Information about the contents of the index on the server',
     'page callback'      => 'apachesolr_index_report',
     'page arguments'     => array(3),
     'access arguments'   => array('access site reports'),
