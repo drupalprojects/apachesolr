@@ -1587,6 +1587,7 @@
         <str name="name">default</str>
         <str name="field">content</str>
         <str name="spellcheckIndexDir">spellchecker</str>
+        <str name="buildOnOptimize">true</str>
       </lst>
     </searchComponent>
     </xi:fallback>

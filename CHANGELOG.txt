@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+#1985526 by pwolanin: Add back buildOnOptimize for the spellchecker.
 #799970  by pwolanin: pull in changes to common config in #1984442
 #1917376 by kevin.dutra, pwolanin: Fix for Index configuration form lacks order.
 
