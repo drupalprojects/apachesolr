@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#799970  by pwolanin: pull in changes to common config in #1984442
 #1922632 by pwolanin: remove obselete dependency on nodeaccess module.
 #1917376 by kevin.dutra, pwolanin: Fix for Index configuration form lacks description and order.
 #1917616 by kevin.dutra: Fix for Page ID field called "Label".
