@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1988100 by pwolanin: Add back qt=standard support
 #1988090 by pwolanin: Fix for highlighting should use STRONG not EM tags.
 #1985526 by pwolanin: Add back buildOnOptimize for the spellchecker.
 #799970  by pwolanin: pull in changes to common config in #1984442

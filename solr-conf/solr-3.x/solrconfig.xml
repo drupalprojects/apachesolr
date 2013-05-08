@@ -888,6 +888,14 @@
     </lst>
   </requestHandler>
 
+  <!-- A minimal query type for doing luene queries -->
+  <requestHandler name="standard" class="solr.SearchHandler">
+     <lst name="defaults">
+       <str name="echoParams">explicit</str>
+       <bool name="omitHeader">true</bool>
+     </lst>
+  </requestHandler>
+
   <!-- XML Update Request Handler.  
        
        http://wiki.apache.org/solr/UpdateXmlMessages
