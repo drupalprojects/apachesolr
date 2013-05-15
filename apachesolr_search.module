@@ -446,11 +446,14 @@ function apachesolr_search_block_info() {
   $blocks = apachesolr_search_load_all_mlt_blocks();
   foreach ($blocks as $delta => $settings) {
     $blocks[$delta] += array(
-      'info' => t('Apache Solr recommendations: !name', array('!name' => $settings['name'])));
+      'info' => t('Apache Solr recommendations: !name', array('!name' => $settings['name'])),
+      'cache' => BLOCK_CACHE_PER_PAGE,
+    );
   }
   // Add the sort block.
   $blocks['sort'] = array(
     'info' => t('Apache Solr Core: Sorting'),
+    'cache' => BLOCK_NO_CACHE,
   );
   return $blocks;
 }
