@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+#1814080 by pwolanin: stop cacheing the sort block for simplicity.
 #1992602 by drunken monkey: fix for Wrong field used for spellcheck index creation.
 #1988100 by pwolanin: Add back qt=standard support.
 #1988090 by pwolanin: Fix for highlighting should use STRONG not EM tags.
