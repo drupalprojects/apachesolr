@@ -1,5 +1,8 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1922810 by kevin.dutra: Fixed Admins do not get all results.
+#1902886 by Nick_vh | deverman: Search Shows Content Type Machine Name instead of human readable name.
+#1668454 by killua99, Nick_vh: For drupal installation in directory block_search() redirect wrong.
 #1814080 by pwolanin: fix block caching flags for apachesolr_search.
 #1992602 by drunken monkey: fix for Wrong field used for spellcheck index creation.
 #1988100 by pwolanin: Add back qt=standard support
