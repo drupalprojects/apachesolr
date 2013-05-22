@@ -828,10 +828,14 @@ function apachesolr_search_search_box_form_submit($form, &$form_state) {
     $keys = str_replace('+', '%2B', $keys);
   }
   $path = $form['#action'];
-  // Remove base_path
-  $base_path = '#^' . base_path() . '#';
-  if (preg_match($base_path, $path)) {
-    $path = preg_replace($base_path, '', $path);
+  // Create a regular expression string to find the base_path at the beginning
+  // of the string.
+  $base_path_regex = '#^' . base_path() . '#';
+  // Find the base_path in the path()
+  if (preg_match($base_path_regex, $path)) {
+    // Replace the beginning of the string with nothing. The regular expression
+    // avoids that we replace too much
+    $path = preg_replace($base_path_regex, '', $path);
   }
   // Set our path to the correct search page
   $form_state['redirect'] = $path . '/' .trim($keys);
