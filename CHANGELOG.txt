@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1927032 by mkalkbrenner, wonder95: Fixed Avoid spaces between words and punctution marks in search result snippets.
 #1918566 by wonder95, mkalkbrenner: Added Devel integration: debug index documents on all environments / indexes.
 #1922810 by kevin.dutra: Fixed Admins do not get all results.
 #1902886 by Nick_vh | deverman: Search Shows Content Type Machine Name instead of human readable name.

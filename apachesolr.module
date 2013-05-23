@@ -2152,6 +2152,18 @@ function apachesolr_clean_text($text) {
   $text = htmlspecialchars(html_entity_decode($text, ENT_QUOTES, 'UTF-8'), ENT_QUOTES, 'UTF-8');
   // Remove extra spaces.
   $text = preg_replace('/\s+/s', ' ', $text);
+  // Remove white spaces around punctuation marks probably added
+  // by the safety operations above. This is not a world wide perfect solution,
+  // but a rough attempt for at least US and Western Europe.
+  // Pc: Connector punctuation
+  // Pd: Dash punctuation
+  // Pe: Close punctuation
+  // Pf: Final punctuation
+  // Pi: Initial punctuation
+  // Po: Other punctuation, including ¿?¡!,.:;
+  // Ps: Open punctuation
+  $text = preg_replace('/\s(\p{Pc}|\p{Pd}|\p{Pe}|\p{Pf}|!|\?|,|\.|:|;)/s', '$1', $text);
+  $text = preg_replace('/(\p{Ps}|¿|¡)\s/s', '$1', $text);
   return $text;
 }
 
