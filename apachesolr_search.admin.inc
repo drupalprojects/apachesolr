@@ -424,9 +424,25 @@ function apachesolr_search_page_settings_form(&$form_state, $search_page = NULL)
   );
 
   // Cancel
+  $referer_uri = referer_uri();
+  $request_uri = request_uri();
+  // In case the API did not remove the query params, we remove it forcefully
+  $request_uri = strtok($request_uri, '?');
+  // Remove leading slash
+  $request_uri = ltrim($request_uri, '/');
+  $request_uri = url($request_uri, array('absolute' => 'true'));
+
+  // Redirect cancel link to the search pages if the referer is the same page or
+  // when there is no referer.
+  if (($referer_uri == $request_uri) || empty($referer_uri)) {
+    $cancel_link = url('admin/settings/apachesolr/search-pages', array('absolute' => TRUE));
+  }
+  else {
+    $cancel_link = $referer_uri;
+  }
   $form['actions']['cancel'] = array(
     '#type' => 'markup',
-    '#value' => l(t('Cancel'), referer_uri()),
+    '#value' => l(t('Cancel'), $cancel_link),
   );
 
   return $form;
