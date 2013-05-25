@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1992342 by wonder95: Fixed Modify apachesolr_date_default_indexing_callback() for structure of D6 date fields.
 #1931328 by Nick_vh | kevin.dutra: Fixed Cancel links do not always take you where you expect.
 #1927032 by mkalkbrenner, wonder95: Fixed Avoid spaces between words and punctution marks in search result snippets.
 #1918566 by wonder95, mkalkbrenner: Added Devel integration: debug index documents on all environments / indexes.

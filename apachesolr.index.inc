@@ -1046,30 +1046,29 @@ function apachesolr_date_default_indexing_callback($entity, $field_name, $index_
   $fields = array();
   if (!empty($entity->{$field_name})) {
     $field = $entity->$field_name;
-    list($lang, $values) = each($field);
-    // Construct a Solr-ready date string in UTC time zone based on the field's date string and time zone.
-    $tz = new DateTimeZone(isset($field['timezone']) ? $field['timezone'] : 'UTC');
+    foreach ($field as $value) {
+      // Construct a Solr-ready date string in UTC time zone based on the field's date string and time zone.
+      $tz = new DateTimeZone(isset($value['timezone']) ? $value['timezone'] : 'UTC');
 
-    // $fields may end up having two values; one for the start date
-    // and one for the end date.
-    foreach ($values as $value) {
+      // $fields may end up having two values; one for the start date
+      // and one for the end date.
       if ($date = date_create($value['value'], $tz)) {
         $index_value = apachesolr_date_iso($date->format('U'));
         $fields[] = array(
           'key' => $index_key,
           'value' => $index_value,
         );
-      }
 
-      if (isset($value['value2'])) {
-        if ($date = date_create($value['value2'], $tz)) {
-          $index_value = apachesolr_date_iso($date->format('U'));
-          $fields[] = array(
-            // The value2 element is the end date. Therefore it gets indexed
-            // into its own Solr field.
-            'key' => $index_key . '_end',
-            'value' => $index_value,
-          );
+        if (isset($value['value2'])) {
+          if ($date = date_create($value['value2'], $tz)) {
+            $index_value = apachesolr_date_iso($date->format('U'));
+            $fields[] = array(
+              // The value2 element is the end date. Therefore it gets indexed
+              // into its own Solr field.
+              'key' => $index_key . '_end',
+              'value' => $index_value,
+            );
+          }
         }
       }
     }
