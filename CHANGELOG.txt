@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1955616 by hussainweb: Fix for Error in SQL syntax during cron run.
 #1854112 by pwolanin: Fix for Call to undefined function field_info_fields().
 #1992342 by wonder95: Fixed Modify apachesolr_date_default_indexing_callback() for structure of D6 date fields.
 #1931328 by Nick_vh | kevin.dutra: Fixed Cancel links do not always take you where you expect.
