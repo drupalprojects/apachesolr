@@ -1301,7 +1301,7 @@ function apachesolr_search_add_boost_params(DrupalSolrQueryInterface $query) {
   list($changed_steepness, $changed_boost) = explode(':', $changed_settings);
   if ($changed_boost) {
     $ab = 4 / $changed_steepness;
-    $params['bf'][] = "recip(ms(NOW,ds_created),3.16e-11,$ab,$ab)^$changed_boost";
+    $params['bf'][] = "recip(ms(NOW,ds_last_comment_or_change),3.16e-11,$ab,$ab)^$changed_boost";
   }
   // Boost for nodes with sticky bit set.
   if ($sticky_boost) {
