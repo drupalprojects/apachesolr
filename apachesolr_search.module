@@ -1678,32 +1678,40 @@ function apachesolr_search_theme_registry_alter(&$theme_registry) {
 }
 
 /**
+ * Preprocess function for theme_apachesolr_search_snippets().
+ */
+function apachesolr_search_preprocess_apachesolr_search_snippets(&$vars) {
+  // Flatten the multidimensional array of snippets into a one-dimensional,
+  // ordered array.
+  $vars['flattened_snippets'] = array();
+  $snippets = $vars['snippets'];
+  if (is_array($snippets)) {
+    // Prioritize the 'content' and 'teaser' keys if they are present.
+    foreach (array('content', 'teaser') as $key) {
+      if (isset($snippets[$key])) {
+        $vars['flattened_snippets'] = array_merge($vars['flattened_snippets'], $snippets[$key]);
+        unset($snippets[$key]);
+      }
+    }
+    // Add any remaining snippets from the array. Each snippet can either be a
+    // string or an array itself; see apachesolr_search_process_response().
+    foreach ($snippets as $snippet) {
+      $vars['flattened_snippets'] = array_merge($vars['flattened_snippets'], is_array($snippet) ? $snippet : array($snippet));
+    }
+  }
+
+  // Ensure unique search snippets.
+  $vars['flattened_snippets'] = array_unique($vars['flattened_snippets']);
+}
+
+/**
  * Theme the highlighted snippet text for a search entry.
  *
  * @param array $vars
  *
  */
 function theme_apachesolr_search_snippets($vars) {
-  $result = '';
-  if (is_array($vars['snippets'])) {
-    $snippets = $vars['snippets'];
-    if (isset($snippets['content'])) {
-      $result .= implode(' ... ', $snippets['content']);
-      unset($snippets['content']);
-    }
-    if (isset($snippets['teaser'])) {
-      $result .= (strlen($result) > 0) ? ' ... ' : '';
-      $result .= implode(' ... ', $snippets['teaser']);
-      unset($snippets['teaser']);
-    }
-    if (count($snippets)) {
-      $result .= (strlen($result) > 0) ? ' ... ' : '';
-      foreach ($snippets as $snippet) {
-        $result .= implode(' ... ', $snippet);
-      }
-    }
-  }
-  return $result . ' ...';
+  return implode(' ... ', $vars['flattened_snippets']) . ' ...';
 }
 
 /**
