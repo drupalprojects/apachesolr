@@ -2180,21 +2180,21 @@ function apachesolr_fields_list_facet_map_callback($facets, $options) {
   $map = array();
   $allowed_values = array();
   // @see list_field_formatter_view()
-  $fields = field_info_fields();
+  $fields = content_fields();
   $field_name = $options['field']['field_name'];
   if (isset($fields[$field_name])) {
     $allowed_values = list_allowed_values($fields[$field_name]);
   }
   foreach ($facets as $key) {
     if (isset($allowed_values[$key])) {
-      $map[$key]['#markup'] = field_filter_xss($allowed_values[$key]);
+      $map[$key]['#value'] = filter_xss($allowed_values[$key]);
     }
     elseif ($key == '_empty_' && $options['facet missing allowed']) {
       // Facet missing.
-      $map[$key]['#markup'] = theme('facetapi_facet_missing', array('field_name' => $options['display_name']));
+      $map[$key]['#value'] = theme('facetapi_facet_missing', array('field_name' => $options['display_name']));
     }
     else {
-      $map[$key]['#markup'] = field_filter_xss($key);
+      $map[$key]['#value'] = filter_xss($key);
     }
     // The value has already been filtered.
     $map[$key]['#html'] = TRUE;
@@ -2213,21 +2213,21 @@ function apachesolr_nodereference_map_callback($facets, $options) {
   $map = array();
   $allowed_values = array();
   // @see list_field_formatter_view()
-  $fields = field_info_fields();
+  $fields = content_fields();
   $field_name = $options['field']['field_name'];
   if (isset($fields[$field_name])) {
-    $allowed_values = node_reference_potential_references($fields[$field_name]);
+    $allowed_values = _nodereference_potential_references($fields[$field_name]);
   }
   foreach ($facets as $key) {
     if (isset($allowed_values[$key])) {
-      $map[$key]['#markup'] = field_filter_xss($allowed_values[$key]['title']);
+      $map[$key]['#value'] = filter_xss($allowed_values[$key]['title']);
     }
     elseif ($key == '_empty_' && $options['facet missing allowed']) {
       // Facet missing.
-      $map[$key]['#markup'] = theme('facetapi_facet_missing', array('field_name' => $options['display_name']));
+      $map[$key]['#value'] = theme('facetapi_facet_missing', array('field_name' => $options['display_name']));
     }
     else {
-      $map[$key]['#markup'] = field_filter_xss($key);
+      $map[$key]['#value'] = filter_xss($key);
     }
     // The value has already been filtered.
     $map[$key]['#html'] = TRUE;
@@ -2246,21 +2246,21 @@ function apachesolr_userreference_map_callback($facets, $options) {
   $map = array();
   $allowed_values = array();
   // @see list_field_formatter_view()
-  $fields = field_info_fields();
+  $fields = content_fields();
   $field_name = $options['field']['field_name'];
   if (isset($fields[$field_name])) {
     $allowed_values = user_reference_potential_references($fields[$field_name]);
   }
   foreach ($facets as $key) {
     if (isset($allowed_values[$key])) {
-      $map[$key]['#markup'] = field_filter_xss($allowed_values[$key]['title']);
+      $map[$key]['#value'] = filter_xss($allowed_values[$key]['title']);
     }
     elseif ($key == '_empty_' && $options['facet missing allowed']) {
       // Facet missing.
-      $map[$key]['#markup'] = theme('facetapi_facet_missing', array('field_name' => $options['display_name']));
+      $map[$key]['#value'] = theme('facetapi_facet_missing', array('field_name' => $options['display_name']));
     }
     else {
-      $map[$key]['#markup'] = field_filter_xss($key);
+      $map[$key]['#value'] = filter_xss($key);
     }
     // The value has already been filtered.
     $map[$key]['#html'] = TRUE;
