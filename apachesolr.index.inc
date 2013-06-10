@@ -648,6 +648,9 @@ function apachesolr_index_delete_entity_from_index($env_id, $entity_type, $entit
   if ($failed) {
     return FALSE;
   }
+  if (apachesolr_environment_variable_get($env_id, 'apachesolr_read_only', APACHESOLR_READ_WRITE) == APACHESOLR_READ_ONLY) {
+    return FALSE;
+  }
   try {
     $solr = apachesolr_get_solr($env_id);
     $document_id = apachesolr_document_id($entity_id, $entity_type);
