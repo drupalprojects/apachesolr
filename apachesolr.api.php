@@ -206,11 +206,11 @@ function hook_apachesolr_query_alter(DrupalSolrQueryInterface $query) {
  * Allows a module to modify the delete query.
  *
  * @param string $query
- *   Defaults to *:*
- *   This is not an instance of DrupalSolrQueryInterface, it is the raw query that is being sent to Solr
+ *   This is not an instance of DrupalSolrQueryInterface, it is the raw query
+ *   that is being sent to Solr. Defaults to "*:*".
  */
-function hook_apachesolr_delete_by_query_alter($query) {
-  // use the site hash so that you only delete this site's content
+function hook_apachesolr_delete_by_query_alter(&$query) {
+  // Use the site hash so that you only delete this site's content.
   if ($query == '*:*') {
     $query = 'hash:' . apachesolr_site_hash();
   }
