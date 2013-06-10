@@ -47,7 +47,6 @@ function apachesolr_search_init() {
     $paths[$path] = $path;
     $path = drupal_strtolower($_GET['q']);
     $paths[$path] = $path;
-    $path = drupal_strtolower(drupal_get_path_alias(current_path()));
 
     // Do not continue if the current path is the default search path.
     foreach ($paths as $path) {
