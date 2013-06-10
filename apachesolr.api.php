@@ -198,10 +198,11 @@ function hook_apachesolr_query_alter($query) {
  * Allows a module to modify the delete query.
  *
  * @param string $query
- *   Defaults to *:*
+ *   This is not an instance of DrupalSolrQueryInterface, it is the raw query
+ *   that is being sent to Solr. Defaults to "*:*".
  */
-function hook_apachesolr_delete_by_query_alter($query) {
-  // use the site hash so that you only delete this site's content
+function hook_apachesolr_delete_by_query_alter(&$query) {
+  // Use the site hash so that you only delete this site's content.
   if ($query == '*:*') {
     $query = 'hash:' . apachesolr_site_hash();
   }
@@ -209,7 +210,8 @@ function hook_apachesolr_delete_by_query_alter($query) {
     $query .= ' AND hash:' . apachesolr_site_hash();
   }
 }
-/*
+
+/**
  * This is the place to look for the replacement to hook_apachesolr_node_exclude
  * You should define a replacement for the status callback and return
  * FALSE for entities which you do not want to appear in the index and TRUE for
