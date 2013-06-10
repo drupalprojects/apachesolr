@@ -531,7 +531,51 @@ function apachesolr_common_node_facets() {
     ),
   );
 
+  if (module_exists('book')) {
+    $facets['book'] = array(
+      'label' => t('Book'),
+      'description' => t('Filter by the book that the node belongs to.'),
+      'field' => 'is_book_bid',
+      'map callback' => 'apachesolr_map_book',
+      'facet mincount allowed' => TRUE,
+      'dependency plugins' => array('bundle', 'role'),
+    );
+  }
+
   return $facets;
+}
+
+/**
+ * FacetAPI mapping callback.
+ */
+function apachesolr_map_book(array $values) {
+  $map = array();
+  if (!empty($values)) {
+    foreach (book_get_books() as $bid => $book) {
+      if (in_array($bid, $values)) {
+        $map[$bid] = $book['title'];
+      }
+    }
+  }
+  return $map;
+}
+
+/**
+ * Implements hook_form_[form_id]_alter().
+ *
+ * Mark a node for re-indexing when the book outline form is saved.
+ */
+function apachesolr_form_book_outline_form_alter(&$form, $form_state) {
+  $form['#submit'][] = 'apachesolr_mark_book_outline_node';
+}
+
+/**
+ * Submit handler for the book outline form.
+ *
+ * Marks the node for re-indexing.
+ */
+function apachesolr_mark_book_outline_node($form, $form_state) {
+  apachesolr_mark_entity('node', $form['#node']->nid);
 }
 
 /**
