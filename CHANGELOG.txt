@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1984530 by blazindrop: Remove non-existent ctools export callbacks.
 #2006602 by David_Rothstein: Fix for Documents are deleted from the Solr index in read-only environments.
 #1965204 by jantoine, pwolanin: fix for Facets on * as path breaks search, mutiple queries run.
 #1937598 by kevin.dutra: Fix for Update date boost not applied.
