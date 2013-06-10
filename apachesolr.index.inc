@@ -976,11 +976,15 @@ function apachesolr_index_node_solr_reindex($env_id, $bundle = NULL) {
  *
  * @param $entity_id
  * @param $entity_type
+ * @param $entity
+ *   In the case where the status is being checked while the entity is being
+ *   saved, this contains the full entity object. In other cases, it will be
+ *   NULL.
  *
  * @return int
  *   The status of the node
  */
-function apachesolr_index_node_status_callback($entity_id, $entity_type) {
+function apachesolr_index_node_status_callback($entity_id, $entity_type, $entity = NULL) {
   // Make sure we have a boolean value.
   // Anything different from 1 becomes zero
   $entity = entity_load($entity_type, array($entity_id));

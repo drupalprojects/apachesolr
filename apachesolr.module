@@ -1906,9 +1906,13 @@ function apachesolr_entity_update($entity, $type) {
     if (is_array($status_callbacks)) {
       foreach($status_callbacks as $status_callback) {
         if (is_callable($status_callback)) {
-          // by placing $status in front we prevent calling any other callback
-          // after one status callback returned false
-          $status = $status && $status_callback($id, $type);
+          // By placing $status in front we prevent calling any other callback
+          // after one status callback returned false.
+          // The entity being saved is passed to the status callback in
+          // addition to $id in case the callback needs to examine properties
+          // such as the current node revision which cannot be determined by
+          // loading a fresh copy of the entity.
+          $status = $status && $status_callback($id, $type, $entity);
         }
       }
     }
