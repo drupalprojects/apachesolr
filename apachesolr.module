@@ -2207,6 +2207,15 @@ function apachesolr_fields_list_facet_map_callback($facets, $options) {
   if (isset($fields[$field_name])) {
     $allowed_values = list_allowed_values($fields[$field_name]);
   }
+  if ($fields[$field_name]['type'] == 'list_boolean') {
+    // Convert boolean allowed value keys (0, 1, TRUE, FALSE) to
+    // Apache Solr representations (string).
+    foreach($allowed_values as $key => $value) {
+      $strkey = $key ? 'true' : 'false';
+      $allowed_values[$strkey] = $value;
+      unset($allowed_values[$key]);
+    }
+  }
   foreach ($facets as $key) {
     if (isset($allowed_values[$key])) {
       $map[$key]['#markup'] = field_filter_xss($allowed_values[$key]);
