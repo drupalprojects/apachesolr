@@ -1798,7 +1798,7 @@ function apachesolr_entity_info_alter(&$entity_info) {
   $default_entity_info['node']['index_table'] = 'apachesolr_index_entities_node';
   $default_entity_info['node']['cron_check'] = 'apachesolr_index_node_check_table';
   // apachesolr_search implements a new callback for every entity type
-  // $default_entity_info['node']['apachesolr']['result callback'] = 'apachesolr_search_node_result';
+  // $default_entity_info['node']['result callback'] = 'apachesolr_search_node_result';
   //Allow implementations of HOOK_apachesolr_entity_info to modify these default indexers
   drupal_alter('apachesolr_entity_info', $default_entity_info);
 

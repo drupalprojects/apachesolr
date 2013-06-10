@@ -1411,7 +1411,7 @@ function apachesolr_search_get_search_suggestions($env_id) {
 function apachesolr_search_apachesolr_entity_info_alter(&$entity_info) {
   // First set defaults so that we don't need to worry about NULL keys.
   foreach (array_keys($entity_info) as $type) {
-    $entity_info[$type]['result callback'] = '';
+    $entity_info[$type] += array('result callback' => '');
   }
   // Now set those values that we know.  Other modules can do so
   // for their own entities if they want.

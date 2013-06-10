@@ -295,7 +295,7 @@ function hook_apachesolr_entity_info_alter(array &$entity_info) {
   // See apachesolr_index_node_check_table
   $entity_info['node']['cron_check'] = 'apachesolr_index_node_check_table';
   // Specific output processing for the results
-  $entity_info['node']['apachesolr']['result callback'] = 'apachesolr_search_node_result';
+  $entity_info['node']['result callback'] = 'apachesolr_search_node_result';
 
   // BUNDLE SPECIFIC OVERRIDES
   // The following can be overridden on a per-bundle basis.
