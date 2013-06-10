@@ -42,8 +42,18 @@ function apachesolr_search_init() {
 
     // Converts current path to lowercase for case insensitive matching.
     $paths = array();
-    $paths[] = drupal_strtolower(drupal_get_path_alias(current_path()));
-    $paths[] = drupal_strtolower(current_path());
+    $path = drupal_strtolower(drupal_get_path_alias(current_path()));
+    // Use the path as the key to keep entries unique.
+    $paths[$path] = $path;
+    $path = drupal_strtolower(current_path());
+    $paths[$path] = $path;
+
+    // Do not continue if the current path is the default search path.
+    foreach ($paths as $path) {
+      if (drupal_match_path($path, $search_page['search_path'] . '*')) {
+        return;
+      }
+    }
 
     $facet_pages = apachesolr_environment_variable_get($search_page['env_id'], 'apachesolr_search_facet_pages', '');
 
@@ -65,6 +75,8 @@ function apachesolr_search_init() {
               $context['page_id'] = $search_page_id;
               $context['search_type'] = 'apachesolr_search_show_facets';
               apachesolr_search_run_empty('apachesolr', $params, $search_page['search_path'], $solr, $context);
+              // Exit the foreach loop if this has run.
+              break;
             }
           }
           catch (Exception $e) {
