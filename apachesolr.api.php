@@ -307,7 +307,7 @@ function hook_apachesolr_entity_info_alter(array &$entity_info) {
 
 
 /**
- * The is invoked by apachesolr_search.module for each document returned in a
+ * This is invoked by apachesolr_search.module for each document returned in a
  * search. This has been introduced in 6.x-beta7 as a replacement for the call
  * to HOOK_nodeapi().
  *
