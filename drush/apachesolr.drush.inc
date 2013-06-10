@@ -41,7 +41,7 @@ function apachesolr_drush_command() {
   );
   $items['solr-index'] = array(
     'callback' => 'apachesolr_drush_solr_index',
-    'description' => dt('Reindexes content marked for (re)indexing. You must supply the -l (--uri) parameter if $base_url is not set in settings.php.'),
+    'description' => dt('Reindexes content marked for (re)indexing.'),
     'options' => array(
       'environment-id' => 'The environment ID',
       'limit' => 'The total number of documents to index',
@@ -268,13 +268,6 @@ function apachesolr_drush_solr_mark_for_reindex() {
 function apachesolr_drush_solr_index() {
   module_load_include('inc', 'apachesolr', 'apachesolr.admin');
   module_load_include('inc', 'apachesolr', 'apachesolr.index');
-
-  $front = url(NULL, array('absolute' => TRUE));
-  if ($front == 'http://default') {
-    drush_set_error('APACHESOLR_ERROR', 'You must set the site uri via the -l (or --uri) option so that links are correctly indexed');
-    return;
-  }
-
   $env_id =  drush_get_option('environment-id');
   if (empty($env_id)) {
     $env_id = apachesolr_default_environment();
