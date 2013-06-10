@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1965204 by jantoine, pwolanin: fix for Facets on * as path breaks search, mutiple queries run.
 #1937598 by kevin.dutra: Fix for Update date boost not applied.
 #1955616 by hussainweb: Fix for Error in SQL syntax during cron run.
 #1854112 by pwolanin: Fix for Call to undefined function field_info_fields().
