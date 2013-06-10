@@ -518,6 +518,9 @@ function apachesolr_index_delete_index($env_id, $entity_type = NULL, $bundle = N
     $solr->deleteByQuery($query);
     $solr->commit();
 
+    // Log the query used for deletion.
+    watchdog('Apache Solr', 'Deleted documents from index with query @query', array('@query' => $query), WATCHDOG_INFO);
+
     if (!empty($entity_type)) {
       $rebuild_callback = apachesolr_entity_get_callback($entity_type, 'reindex callback');
       if (is_callable($rebuild_callback)) {
@@ -558,6 +561,9 @@ function apachesolr_index_delete_bundles($env_id, $entity_type, array $excluded_
       // content:  $query = 'hash:' . apachesolr_site_hash()
       drupal_alter('apachesolr_delete_by_query', $query);
       $solr->deleteByQuery($query);
+
+      // Log the query used for deletion.
+      watchdog('Apache Solr', 'Deleted documents from index with query @query', array('@query' => $query), WATCHDOG_INFO);      
     }
     if ($excluded_bundles) {
       $solr->commit();
@@ -595,6 +601,8 @@ function apachesolr_index_delete_entity_from_index($env_id, $entity_type, $entit
     $query = "id:$document_id OR sm_parent_document_id:$document_id";
     $solr->deleteByQuery($query);
     apachesolr_set_last_index_updated($env_id, APACHESOLR_REQUEST_TIME);
+    // Log the query used for deletion.
+    watchdog('Apache Solr', 'Deleted documents from index with query @query', array('@query' => $query), WATCHDOG_INFO); 
     return TRUE;
   }
   catch (Exception $e) {
