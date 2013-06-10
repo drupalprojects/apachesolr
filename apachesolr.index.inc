@@ -1028,7 +1028,7 @@ function apachesolr_term_reference_indexing_callback($node, $field_name, $index_
         // hierarchy at all.
         // If the term is singular, then we cannot add another value to the
         // document as the field is single
-        if ($field_info['multiple'] == true) {
+        if ($field_info['multiple']) {
           $fields[] = array(
             'key' => $index_key,
             'value' => $ancestor->tid,
