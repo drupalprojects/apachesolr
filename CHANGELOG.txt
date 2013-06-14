@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1946132 by mkalkbrenner: Fix for Invalid arguments passed to theme_apachesolr_search_snippets().
 #2013805 by janusman: Add watchdog logging for index deletes.
 #1757470 by j0rd: Fix for Boolean field type facet mapping.
 #1933080 by mr.baileys: fix for API docs for hook_apachesolr_delete_by_query().
