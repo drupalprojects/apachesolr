@@ -328,21 +328,25 @@ function apachesolr_search_page_settings_form($form, &$form_state, $search_page 
     '#default_value' => !empty($search_page['settings']['apachesolr_search_custom_enable'])  ? TRUE : FALSE
   );
 
+  if (!$core_search) {
+    $additional_help_text = t('E.g. "bundle:blog, is_uid:(1 OR 2 OR %). % will be replaced by the value of % in the path"');
+  }
+  else {
+    $additional_help_text = t('E.g. "bundle:blog, is_uid:(1 OR 2)"');
+  }
+  $t_args = array('!additional_help_text' => $additional_help_text);
   $form['info']['filters'] = array(
     '#title' => t('Custom filters'),
     '#type' => 'textfield',
     '#required' => FALSE,
     '#maxlength' => 255,
-    '#description' => t('A comma-separated list of lucene filter queries to apply by default.'),
+    '#description' => t('A comma-separated list of lucene filter queries to apply by default.') . ' ' . $additional_help_text,
     '#default_value' => !empty($search_page['settings']['fq'])  ? implode(', ', $search_page['settings']['fq']) : '',
     '#dependency' => array(
       'edit-custom-filter-enable' => array(1),
       'edit-search-type' => array('custom'),
     ),
   );
-  if (!$core_search) {
-    $form['info']['filters']['#description'] .= ' ' . t('E.g. "bundle:blog, is_uid:(1 OR 2 OR %). % will be replaced by the value of % in the path"');
-  }
 
   $form['advanced'] = array(
     '#title' => t('Advanced Search Page Options'),
@@ -377,7 +381,6 @@ function apachesolr_search_page_settings_form($form, &$form_state, $search_page 
     '#type' => 'checkbox',
     '#title' => t('Enable the search box on the page'),
     '#description' => t('Display a search box on the page.'),
-    '#access' => !$core_search,
     '#default_value' => $default_value,
   );
 
