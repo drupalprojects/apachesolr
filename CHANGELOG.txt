@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#1974076 by Nick_vh, pwolanin: Allow search pages to suppress the search form box on core search pages also.
 #1965210 by pwolanin: fix for More Like This blocks configuration page broken by Solr 3.x vs 4.x schema key positions.
 #1918434 by pwolanin, ajw: fix negative filter queries in validFilterValue().
 #1946132 by mkalkbrenner: Fix for Invalid arguments passed to theme_apachesolr_search_snippets().
