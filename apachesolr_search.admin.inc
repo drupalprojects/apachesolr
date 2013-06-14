@@ -842,7 +842,7 @@ function apachesolr_search_field_bias_form($fields, $env_id) {
     );
     foreach ($fields as $field_name => $field) {
       // Only indexed feids are searchable.
-      if ($field->schema{0} == 'I') {
+      if (strpos($field->schema, 'I') !== FALSE) {
         // By default we only show text fields.  Use hook_form_alter to change.
         // We use filter_xss to make sure links are allowed
         $form['field_bias'][$field_name] = array(
@@ -970,7 +970,8 @@ function apachesolr_search_mlt_get_fields() {
     $solr = apachesolr_get_solr();
     $fields = $solr->getFields();
     foreach ($fields as $field_name => $field) {
-      if ($field->schema{4} == 'V') {
+      // 'V' appears in different positions in different Solr versions.
+      if (strpos($field->schema, 'V') !== FALSE) {
         $rows[$field_name] = apachesolr_field_name_map($field_name);
       }
     }
