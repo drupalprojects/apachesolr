@@ -442,7 +442,7 @@ function _apachesolr_index_process_entity_get_document($entity, $entity_type) {
   $languages = language_list();
   $url_options = array('absolute' => TRUE);
   if (isset($entity->language) && isset($languages[$entity->language])) {
-    $url_options = $url_options + array('language' => $languages[$entity->language]);
+    $url_options['language'] = $languages[$entity->language];
   }
 
   $document->id = apachesolr_document_id($entity_id, $entity_type);
