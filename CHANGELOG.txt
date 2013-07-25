@@ -3,7 +3,7 @@ Apache Solr integration 7.x-1.x, xxxx-xx-xx
 
 Apache Solr integration 7.x-1.4, 2013-07-25
 -----------------------------
-#2050747 by pwolanin: fi for Anonymous user names are not indexed correctly, empty facet value causes Solr error.
+#2050747 by pwolanin: fix for Anonymous user names are not indexed correctly, empty facet value causes Solr error.
 #1565766 by j0rd: follow-up to not re-load the entity if it's passed in.
 #2032987 by rupertj: fix for entity_get_info() called but result never used.
 #1977832 by blazindrop: fix for Hidden fields in displays are still indexed.
