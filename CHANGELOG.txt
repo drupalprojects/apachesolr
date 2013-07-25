@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+#2032987 by rupertj: fix for entity_get_info() called but result never used.
 #1977832 by blazindrop: fix for Hidden fields in displays are still indexed.
 #1807552 by pwolanin: fix for regression: urls must be rendered at display time in search results.
 #1974076 by Nick_vh, pwolanin: Allow search pages to suppress the search form box on core search pages also.

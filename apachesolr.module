@@ -2006,7 +2006,6 @@ function apachesolr_entity_delete($entity, $entity_type) {
   $env_id = apachesolr_default_environment();
 
   // Delete the entity's entry from a fictional table of all entities.
-  $info = entity_get_info($entity_type);
   list($entity_id) = entity_extract_ids($entity_type, $entity);
   apachesolr_remove_entity($env_id, $entity_type, $entity_id);
 }
