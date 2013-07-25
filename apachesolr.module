@@ -2103,7 +2103,8 @@ function apachesolr_entity_fields($entity_type = 'node') {
         // Set display name
         $display_name = array();
         foreach ($field['bundles'][$entity_type] as $bundle) {
-          if (empty($instances[$bundle][$field_name]['display']['search_index']) || $instances[$bundle][$field_name]['display']['search_index'] != 'hidden') {
+          $field_display = isset($instances[$bundle][$field_name]['display']) ? $instances[$bundle][$field_name]['display'] : array();
+          if (empty($field_display['search_index']) || (isset($field_display['search_index']['type']) && $field_display['search_index']['type'] != 'hidden')) {
             $row['display_name'] = $instances[$bundle][$field_name]['label'];
             $row['bundles'][] = $bundle;
           }
