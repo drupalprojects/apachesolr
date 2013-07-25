@@ -993,17 +993,17 @@ function apachesolr_index_node_solr_reindex($env_id, $bundle = NULL) {
  *   The status of the node
  */
 function apachesolr_index_node_status_callback($entity_id, $entity_type, $entity = NULL) {
-  // Make sure we have a boolean value.
-  // Anything different from 1 becomes zero
-  $entity = entity_load($entity_type, array($entity_id));
-  $entity = $entity ? reset($entity) : FALSE;
-
+  if ($entity === NULL) {
+    $entity = entity_load($entity_type, array($entity_id));
+    $entity = $entity ? reset($entity) : FALSE;
+  }
   if (empty($entity)) {
     // If the object failed to load, just stop.
     return FALSE;
   }
-  $status = ($entity->status == 1 ? 1 : 0);
-  return $status;
+  // Make sure we have an integer value.
+  // Anything different from 1 becomes zero
+  return ($entity->status == 1 ? 1 : 0);
 }
 
 /**

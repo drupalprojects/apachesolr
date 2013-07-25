@@ -1,5 +1,9 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+
+Apache Solr integration 7.x-1.4, 2013-07-25
+-----------------------------
+#1565766 by j0rd: follow-up to not re-load the entity if it's passed in.
 #2032987 by rupertj: fix for entity_get_info() called but result never used.
 #1977832 by blazindrop: fix for Hidden fields in displays are still indexed.
 #1807552 by pwolanin: fix for regression: urls must be rendered at display time in search results.
