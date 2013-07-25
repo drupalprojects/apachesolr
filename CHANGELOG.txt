@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#2050747 by pwolanin: fix for Anonymous user names are not indexed correctly, empty facet value causes Solr error.
 #1807552 by pwolanin: fix for regression: urls must be rendered at display time in search results.
 #1974076 by Nick_vh, pwolanin: Allow search pages to suppress the search form box on core search pages also.
 #1965210 by pwolanin: fix for More Like This blocks configuration page broken by Solr 3.x vs 4.x schema key positions.
