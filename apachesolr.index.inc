@@ -816,10 +816,15 @@ function apachesolr_index_node_solr_document(ApacheSolrDocument $document, $node
   }
 
   // Author information
-  $document->ss_name = $node->name;
-  // We want the name to be searchable for keywords.
-  $document->tos_name = $node->name;
-
+  if ($node->uid == 0 || strlen($node->name) == 0) {
+    // @see user_validate_name(). !'0' === TRUE.
+    $document->ss_name = '0';
+  }
+  else {
+    $document->ss_name = $node->name;
+    // We want the name to be searchable for keywords.
+    $document->tos_name = $node->name;
+  }
   // Index formatted username so it can be searched and sorted on.
   $account = (object) array('uid' => $node->uid, 'name' => $node->name);
   $username = format_username($account);
