@@ -2242,7 +2242,7 @@ function apachesolr_fields_list_facet_map_callback($facets, $options) {
     if (isset($allowed_values[$key])) {
       $map[$key]['#value'] = filter_xss($allowed_values[$key]);
     }
-    elseif ($key == '_empty_' && $options['facet missing allowed']) {
+    elseif ($key === '_empty_' && !empty($options['facet missing allowed'])) {
       // Facet missing.
       $map[$key]['#value'] = theme('facetapi_facet_missing', array('field_name' => $options['display_name']));
     }
@@ -2275,7 +2275,7 @@ function apachesolr_nodereference_map_callback($facets, $options) {
     if (isset($allowed_values[$key])) {
       $map[$key]['#value'] = filter_xss($allowed_values[$key]['title']);
     }
-    elseif ($key == '_empty_' && $options['facet missing allowed']) {
+    elseif ($key === '_empty_' && !empty($options['facet missing allowed'])) {
       // Facet missing.
       $map[$key]['#value'] = theme('facetapi_facet_missing', array('field_name' => $options['display_name']));
     }
@@ -2308,7 +2308,7 @@ function apachesolr_userreference_map_callback($facets, $options) {
     if (isset($allowed_values[$key])) {
       $map[$key]['#value'] = filter_xss($allowed_values[$key]['title']);
     }
-    elseif ($key == '_empty_' && $options['facet missing allowed']) {
+    elseif ($key === '_empty_' && !empty($options['facet missing allowed'])) {
       // Facet missing.
       $map[$key]['#value'] = theme('facetapi_facet_missing', array('field_name' => $options['display_name']));
     }
