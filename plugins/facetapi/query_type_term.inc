@@ -52,7 +52,7 @@ class ApacheSolrFacetapiTerm extends FacetapiQueryType implements FacetapiQueryT
     if (FACETAPI_OPERATOR_OR != $operator) {
       foreach ($active as $value => $item) {
         // Handle facet missing:
-        if ($value == '_empty_' && !empty($settings->settings['facet_missing'])) {
+        if ($value === '_empty_' && !empty($settings->settings['facet_missing'])) {
           $query->addFilter($this->facet['field'], '[* TO *]', TRUE);
         }
         elseif (strlen($value)) {
