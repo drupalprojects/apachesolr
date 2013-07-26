@@ -1208,7 +1208,7 @@ function apachesolr_search_basic_params(DrupalSolrQueryInterface $query = NULL) 
         'bundle',
         'bundle_name',
         'label',
-        'language',
+        'ss_language',
         'is_comment_count',
         'ds_created',
         'ds_changed',
@@ -1444,8 +1444,8 @@ function apachesolr_search_process_response($response, DrupalSolrQueryInterface 
       $fields = (array) $doc;
       // Define our url options. They depend on the document language.
       $url_options = array('absolute' => TRUE);
-      if (isset($doc->language) && isset($languages[$doc->language])) {
-        $url_options['language'] = $languages[$doc->language];
+      if (isset($doc->ss_language) && isset($languages[$doc->ss_language])) {
+        $url_options['language'] = $languages[$doc->ss_language];
       }
       $result = array(
         // link is a required field, so handle it centrally.
