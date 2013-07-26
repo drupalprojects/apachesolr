@@ -456,10 +456,10 @@ function _apachesolr_index_process_entity_get_document($entity, $entity_type) {
 
   if (empty($entity->language)) {
     // 'und' is the language-neutral code in Drupal 7.
-    $document->language = LANGUAGE_NONE;
+    $document->ss_language = LANGUAGE_NONE;
   }
   else {
-    $document->language = $entity->language;
+    $document->ss_language = $entity->language;
   }
 
   $path = entity_uri($entity_type, $entity);
@@ -472,7 +472,7 @@ function _apachesolr_index_process_entity_get_document($entity, $entity_type) {
     if (function_exists('drupal_get_path_alias')) {
       // Add any path alias to the index, looking first for language specific
       // aliases but using language neutral aliases otherwise.
-      $output = drupal_get_path_alias($document->path, $document->language);
+      $output = drupal_get_path_alias($document->path, $document->ss_language);
       if ($output && $output != $document->path) {
         $document->path_alias = $output;
       }
@@ -802,19 +802,6 @@ function apachesolr_index_node_solr_document(ApacheSolrDocument $document, $node
     $document->teaser = truncate_utf8($document->content, 300, TRUE);
   }
 
-  // Path aliases can have important information about the content.
-  // Add them to the index as well.
-  if (function_exists('drupal_get_path_alias')) {
-    // Add any path alias to the index, looking first for language specific
-    // aliases but using language neutral aliases otherwise.
-    $language = empty($node->language) ? NULL : $node->language;
-    $path = 'node/' . $node->nid;
-    $output = drupal_get_path_alias($path, $language);
-    if ($output && $output != $path) {
-      $document->path_alias = $output;
-    }
-  }
-
   // Author information
   if ($node->uid == 0 || strlen($node->name) == 0) {
     // @see user_validate_name(). !'0' === TRUE.
@@ -836,15 +823,6 @@ function apachesolr_index_node_solr_document(ApacheSolrDocument $document, $node
   $document->bs_promote = $node->promote;
   $document->is_tnid = $node->tnid;
   $document->bs_translate = $node->translate;
-
-  // Language specific checks
-  if (empty($node->language)) {
-    // 'und' is the language-neutral code in Drupal 7.
-    $document->ss_language = LANGUAGE_NONE;
-  }
-  else {
-    $document->ss_language = $node->language;
-  }
 
   // Timestamp of the node
   $document->ds_created = apachesolr_date_iso($node->created);
