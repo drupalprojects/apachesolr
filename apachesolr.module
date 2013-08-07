@@ -1187,6 +1187,10 @@ function apachesolr_get_solr($env_id = NULL) {
       }
       // Takes advantage of auto-loading.
       $solr = new $class($environments[$env_id]['url'], $env_id);
+      $soft_commit = apachesolr_environment_variable_get($env_id, 'apachesolr_soft_commit', FALSE);
+      if ($soft_commit) {
+        $solr->setSoftCommit($soft_commit);
+      }
       $solr_cache[$env_id] = $solr;
     }
     return $solr_cache[$env_id];
