@@ -1825,6 +1825,21 @@ function apachesolr_facet_form_validate($form, &$form_state) {
 }
 
 /**
+ * Implements hook_module_implements_alter().
+ */
+function apachesolr_module_implements_alter(&$implementations, $hook) {
+  // This module's hook_entity_info_alter() implementation should run last
+  // since it needs to examine the list of bundles for each entity type, which
+  // may have been changed in earlier hook_entity_info_alter() implementations
+  // (for example, the File Entity module does this for file entities).
+  if ($hook == 'entity_info_alter') {
+    $group = $implementations['apachesolr'];
+    unset($implementations['apachesolr']);
+    $implementations['apachesolr'] = $group;
+  }
+}
+
+/**
  * Implements hook_entity_info_alter().
  */
 function apachesolr_entity_info_alter(&$entity_info) {
