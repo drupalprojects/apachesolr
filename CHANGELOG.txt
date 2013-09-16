@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+#1852088 by pwolanin | brianV: Fixed Apachesolr search results come back with $doc->url starting with 'default'.
 #2089845 by Nick_vh: Fixed When indexing, the module pings solr way too much.
 #2033913 by Nick_vh | epieddy: Fixed Small error in schema.xml.
 #1974124 by Nick_vh: Fixed Allow a more configurable soft commit status so we can start taking advantage of Solr 4."
