@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+#2072211 by pwolanin: Document the behavior of apachesolr_access() relative to hook_node_access().
 #1852088 by pwolanin | brianV: Fixed Apachesolr search results come back with $doc->url starting with 'default'.
 #2089845 by Nick_vh: Fixed When indexing, the module pings solr way too much.
 #2033913 by Nick_vh | epieddy: Fixed Small error in schema.xml.
