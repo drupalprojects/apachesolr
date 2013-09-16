@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+#2089845 by Nick_vh: Fixed When indexing, the module pings solr way too much.
 #2033913 by Nick_vh | epieddy: Fixed Small error in schema.xml.
 #1974124 by Nick_vh: Fixed Allow a more configurable soft commit status so we can start taking advantage of Solr 4."
 #2014067 by David_Rothstein: Fixed File types provided by the File Entity module are not always recognized by Apache Solr.

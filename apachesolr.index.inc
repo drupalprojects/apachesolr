@@ -35,6 +35,20 @@
  */
 function apachesolr_index_entities($env_id, $limit) {
   $documents_submitted = 0;
+
+  try {
+    // Get the $solr object
+    $solr = apachesolr_get_solr($env_id);
+    // If there is no server available, don't continue.
+    if (!$solr->ping(variable_get('apachesolr_ping_timeout', 4))) {
+      throw new Exception(t('No Solr instance available during indexing.'));
+    }
+  }
+  catch (Exception $e) {
+    watchdog('Apache Solr', nl2br(check_plain($e->getMessage())), NULL, WATCHDOG_ERROR);
+    return FALSE;
+  }
+
   foreach (entity_get_info() as $entity_type => $info) {
     // With each pass through the callback, retrieve the next group of nids.
     $rows = apachesolr_index_get_entities_to_index($env_id, $entity_type, $limit);
@@ -330,18 +344,9 @@ function apachesolr_convert_entity_to_documents($entity, $entity_type, $env_id) 
  * @throws Exception
  */
 function apachesolr_index_send_to_solr($env_id, array $documents) {
-  try {
-    // Get the $solr object
-    $solr = apachesolr_get_solr($env_id);
-    // If there is no server available, don't continue.
-    if (!$solr->ping(variable_get('apachesolr_ping_timeout', 4))) {
-      throw new Exception(t('No Solr instance available during indexing.'));
-    }
-  }
-  catch (Exception $e) {
-    watchdog('Apache Solr', nl2br(check_plain($e->getMessage())), NULL, WATCHDOG_ERROR);
-    return FALSE;
-  }
+  // Get the $solr object
+  $solr = apachesolr_get_solr($env_id);
+
   // Do not index when we do not have any documents to send
   // Send TRUE because this is not an error
   if (empty($documents)) {
