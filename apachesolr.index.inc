@@ -155,27 +155,7 @@ function apachesolr_index_status($env_id) {
     $query = db_select($table, 'asn')->condition('asn.status', 1)->condition('asn.bundle', $bundles);
     $total += $query->countQuery()->execute()->fetchField();
 
-    // Get $last_entity_id and $last_changed.
-    $last_index_position = apachesolr_get_last_index_position($env_id, $entity_type);
-    $last_entity_id = $last_index_position['last_entity_id'];
-    $last_changed = $last_index_position['last_changed'];
-
-    // Find the remaining entities to index for this entity type.
-    $query = db_select($table, 'aie')
-      ->condition('aie.bundle', $bundles)
-      ->condition('aie.status', 1)
-      ->condition(db_or()
-        ->condition('aie.changed', $last_changed, '>')
-        ->condition(db_and()
-          ->condition('aie.changed', $last_changed, '<=')
-          ->condition('aie.entity_id', $last_entity_id, '>')))
-      ->addTag('apachesolr_index_' . $entity_type);
-
-
-    if ($table == 'apachesolr_index_entities') {
-      // Other, entity-specific tables don't need this condition.
-      $query->condition('aie.entity_type', $entity_type);
-    }
+    $query = _apachesolr_index_get_next_set_query($env_id, $entity_type);
     $remaining += $query->countQuery()->execute()->fetchField();
   }
   return array('remaining' => $remaining, 'total' => $total);
@@ -506,32 +486,7 @@ function apachesolr_index_get_entities_to_index($env_id, $entity_type, $limit) {
     return $rows;
   }
 
-  $table = apachesolr_get_indexer_table($entity_type);
-  // Get $last_entity_id and $last_changed.
-  $last_index_position = apachesolr_get_last_index_position($env_id, $entity_type);
-  $last_entity_id = $last_index_position['last_entity_id'];
-  $last_changed = $last_index_position['last_changed'];
-
-  // Find the next batch of entities to index for this entity type.  Note that
-  // for ordering we're grabbing the oldest first and then ordering by ID so
-  // that we get a definitive order.
-  // Also note that we fetch ALL fields from the indexer table
-  $query = db_select($table, 'aie')
-    ->fields('aie')
-    ->condition('aie.bundle', $bundles)
-    ->condition(db_or()
-      ->condition('aie.changed', $last_changed, '>')
-      ->condition(db_and()
-        ->condition('aie.changed', $last_changed, '<=')
-        ->condition('aie.entity_id', $last_entity_id, '>')))
-    ->orderBy('aie.changed', 'ASC')
-    ->orderBy('aie.entity_id', 'ASC')
-    ->addTag('apachesolr_index_' . $entity_type);
-
-  if ($table == 'apachesolr_index_entities') {
-    // Other, entity-specific tables don't need this condition.
-    $query->condition('aie.entity_type', $entity_type);
-  }
+  $query = _apachesolr_index_get_next_set_query($env_id, $entity_type);
   $query->range(0, $limit);
   $records = $query->execute();
 
@@ -601,6 +556,45 @@ function apachesolr_index_delete_index($env_id, $entity_type = NULL, $bundle = N
   catch (Exception $e) {
     watchdog('Apache Solr', nl2br(check_plain($e->getMessage())), NULL, WATCHDOG_ERROR);
   }
+}
+
+/**
+ * Internal function to avoid duplicating logic that identifies entities
+ * still due to be indexed
+ *
+ * @param string $env_id Environment ID
+ * @param string $entity_type
+ * @return SelectQuery
+ */
+function _apachesolr_index_get_next_set_query($env_id, $entity_type) {
+  $table = apachesolr_get_indexer_table($entity_type);
+  // Get $last_entity_id and $last_changed.
+  $last_index_position = apachesolr_get_last_index_position($env_id, $entity_type);
+  $last_entity_id = $last_index_position['last_entity_id'];
+  $last_changed = $last_index_position['last_changed'];
+
+  // Find the next batch of entities to index for this entity type.  Note that
+  // for ordering we're grabbing the oldest first and then ordering by ID so
+  // that we get a definitive order.
+  // Also note that we fetch ALL fields from the indexer table
+  $query = db_select($table, 'aie')
+    ->fields('aie')
+    ->condition('aie.bundle', $bundles)
+    ->condition('aie.status', 1)
+    ->condition(db_or()
+      ->condition('aie.changed', $last_changed, '>')
+      ->condition(db_and()
+        ->condition('aie.changed', $last_changed, '<=')
+        ->condition('aie.entity_id', $last_entity_id, '>')))
+    ->orderBy('aie.changed', 'ASC')
+    ->orderBy('aie.entity_id', 'ASC')
+    ->addTag('apachesolr_index_' . $entity_type);
+
+  if ($table == 'apachesolr_index_entities') {
+    // Other, entity-specific tables don't need this condition.
+    $query->condition('aie.entity_type', $entity_type);
+  }
+  return $query;
 }
 
 /**
