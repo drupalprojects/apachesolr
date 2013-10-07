@@ -573,6 +573,14 @@ class SolrBaseQuery extends SolrFilterSubQuery implements DrupalSolrQueryInterfa
         $this->solrsort['#direction'] = $matches[2];
         $this->params['sort'] = array($sortstring);
       }
+      else {
+        watchdog(
+          'Apache Solr',
+          t('Ignoring sort %sort as it is not available to this query'),
+          array('%sort' => $sortstring),
+          WATCHDOG_WARNING
+        );
+      }
     }
   }
 
