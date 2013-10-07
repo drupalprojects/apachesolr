@@ -66,10 +66,12 @@ function apachesolr_search_init() {
           try {
             if (!empty($search_page['search_path'])) {
               $solr = apachesolr_get_solr($search_page['env_id']);
+              $conditions = apachesolr_search_conditions_default($search_page);
+
               // Initializes params for empty query.
               $params = array(
                 'spellcheck' => 'false',
-                'fq' => array(),
+                'fq' => isset($conditions['fq']) ? $conditions['fq'] : array(),
                 'rows' => 1,
               );
               $context['page_id'] = $search_page_id;

@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+#1916558 by jwalz: Fixed Custom Filters are ignored in facet blocks on non-search paths.
 #2008832 by Nick_vh, j0rd: Added Allow to optionally turn of 'successful" actions in watchdog.
 #1952296 by David_Rothstein, zerolab, SamChez: Added Date facet granularity support.
 #1930686 by kevin.dutra: Fixed Multiple search pages can have the same path.
