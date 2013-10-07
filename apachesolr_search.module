@@ -1351,9 +1351,9 @@ function apachesolr_search_process_response($response, DrupalSolrQueryInterface 
       );
 
       // Call entity-type-specific callbacks for extra handling.
-      $function = apachesolr_entity_get_callback($doc->entity_type, 'result callback', $bundle);
-      if (is_callable($function)) {
-        $function($doc, $result, $extra);
+      $result_callback = apachesolr_entity_get_callback($doc->entity_type, 'result callback', $bundle);
+      if (is_callable($result_callback)) {
+        $result_callback($doc, $result, $extra);
       }
 
       $result['extra'] = $extra;
@@ -1363,8 +1363,8 @@ function apachesolr_search_process_response($response, DrupalSolrQueryInterface 
   }
   // Hook to allow modifications of the retrieved results
   foreach (module_implements('apachesolr_process_results') as $module) {
-    $function = $module . '_apachesolr_process_results';
-    $function($results, $query);
+    $process_results_callback = $module . '_apachesolr_process_results';
+    $process_results_callback($results, $query);
   }
   return $results;
 }

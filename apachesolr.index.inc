@@ -288,11 +288,11 @@ function apachesolr_convert_entity_to_documents($entity, $entity_type, $env_id) 
   $document = _apachesolr_index_process_entity_get_document($entity, $entity_type);
 
   //Get the callback array to add stuff to the document
-  $callbacks = apachesolr_entity_get_callback($entity_type, 'document callback', $bundle);
+  $document_callbacks = apachesolr_entity_get_callback($entity_type, 'document callback', $bundle);
   $documents = array();
-  foreach ($callbacks as $callback) {
+  foreach ($document_callbacks as $document_callback) {
     // Call a type-specific callback to add stuff to the document.
-    $documents = array_merge($documents, $callback($document, $entity, $entity_type, $env_id));
+    $documents = array_merge($documents, $document_callback($document, $entity, $entity_type, $env_id));
   }
 
   //do this for all possible documents that were returned by the callbacks
@@ -535,11 +535,14 @@ function apachesolr_index_get_entities_to_index($env_id, $entity_type, $limit) {
   $query->range(0, $limit);
   $records = $query->execute();
 
-  $status_callbacks = apachesolr_entity_get_callback($entity_type, 'status callback');
+  $status_callbacks = array();
   foreach ($records as $record) {
+    if (!isset($status_callbacks[$record->bundle])) {
+      $status_callbacks[$record->bundle] = apachesolr_entity_get_callback($entity_type, 'status callback', $record->bundle);
+    }
     // Check status and status callbacks before sending to the index
-    if (is_array($status_callbacks)) {
-      foreach($status_callbacks as $status_callback) {
+    if (is_array($status_callbacks[$record->bundle])) {
+      foreach ($status_callbacks[$record->bundle] as $status_callback) {
         if (is_callable($status_callback)) {
           // by placing $status in front we prevent calling any other callback
           // after one status callback returned false
@@ -587,9 +590,9 @@ function apachesolr_index_delete_index($env_id, $entity_type = NULL, $bundle = N
     watchdog('Apache Solr', 'Deleted documents from index with query @query', array('@query' => $query), WATCHDOG_INFO);
 
     if (!empty($entity_type)) {
-      $rebuild_callback = apachesolr_entity_get_callback($entity_type, 'reindex callback');
-      if (is_callable($rebuild_callback)) {
-        $rebuild_callback($env_id, $bundle);
+      $reindex_callback = apachesolr_entity_get_callback($entity_type, 'reindex callback');
+      if (is_callable($reindex_callback)) {
+        $reindex_callback($env_id, $bundle);
       }
     }
     else {
