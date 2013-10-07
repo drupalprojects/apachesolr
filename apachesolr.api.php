@@ -187,6 +187,10 @@ function hook_apachesolr_field_name_map_alter(array &$map) {
  *
  * @param DrupalSolrQueryInterface $query
  *   An object implementing DrupalSolrQueryInterface. No need for &.
+ *
+ * @see /admin/reports/apachesolr
+ * - This report displays the active solr index fields and can help you
+ *   create Solr filters based on the data currently in your system
  */
 function hook_apachesolr_query_alter(DrupalSolrQueryInterface $query) {
   // I only want to see articles by the admin.
@@ -200,6 +204,22 @@ function hook_apachesolr_query_alter(DrupalSolrQueryInterface $query) {
 
   // Only search titles.
   $query->replaceParam('qf', 'label');
+
+  // Restrict results to a single content type (use machine name).
+  $query->addFilter('bundle', 'my_content_type');
+
+  // Exclude results by setting the third argument of addFilter to TRUE.
+  // This filter will return all content types EXCEPT my_content_type nodes.
+  $query->addFilter('bundle', 'my_content_type', TRUE);
+
+  // Restrict results to several content types (use machine names).
+  // You could also solve this using the SolrFilterSubQuery object and append it
+  // to the original query.
+  $content_types = array(
+    'content_type_1',
+    'content_type_2',
+  );
+  $query->addFilter('bundle', '('. implode(' OR ', $content_types) .')');
 }
 
 /**
