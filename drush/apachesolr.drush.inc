@@ -224,21 +224,25 @@ function apachesolr_drush_solr_delete_index() {
     foreach ($args as $type) {
       $parts = explode(':', $type);
       if (count($parts) === 1) {
-        apachesolr_index_delete_index($env_id, $type);
+        $success = apachesolr_index_delete_index($env_id, $type);
       }
       elseif (count($parts) == 2) {
-        apachesolr_index_delete_index($env_id, $parts[0], $parts[1]);
+        $success = apachesolr_index_delete_index($env_id, $parts[0], $parts[1]);
       }
       else {
-        drush_set_error('The syntax for each type is either entity or entity:bundle');
+        drush_set_error(dt('The syntax for each type is either entity or entity:bundle'));
       }
     }
   }
   else {
-    apachesolr_index_delete_index($env_id);
+    $success = apachesolr_index_delete_index($env_id);
   }
-
-  drush_print(t('Deleted the Solr index'));
+  if ($success) {
+    drush_print(dt('Deleted the Solr index'));
+  }
+  else {
+    drush_set_error(dt('An error occured while trying to delete the index.'));
+  }
 }
 
 /**

@@ -1126,8 +1126,12 @@ function apachesolr_index_action_form_delete_confirm_submit(array $form, array &
   }
   // Rebuild our tracking table.
   module_load_include('inc', 'apachesolr', 'apachesolr.index');
-  apachesolr_index_delete_index($env_id);
-  drupal_set_message(t('The index has been deleted.'));
+  if (apachesolr_index_delete_index($env_id)) {
+    drupal_set_message(t('The index has been deleted.'));
+  }
+  else {
+    drupal_set_message(t('An error occured while trying to delete the index.'), 'error');
+  }
 }
 
 /**

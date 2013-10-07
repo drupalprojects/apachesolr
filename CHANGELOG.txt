@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+#2006602 by pwolanin, David_Rothstein: Fixed Documents are deleted from the Solr index in read-only environments.
 #1916558 by jwalz: Fixed Custom Filters are ignored in facet blocks on non-search paths.
 #2008832 by Nick_vh, j0rd: Added Allow to optionally turn of 'successful" actions in watchdog.
 #1952296 by David_Rothstein, zerolab, SamChez: Added Date facet granularity support.
