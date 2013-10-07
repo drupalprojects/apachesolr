@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+#1881878 by thsutton: Added Include source field ID in facet admin interface.
 #1365304 by brianV, deviantintegral, Nick_vh: Fixed Date field minimum/maximum range callbacks don't handle some cases; cause Solr exceptions.
 #1834862 by rupl: Improve documentation of hook_apachesolr_query_alter().
 #1825426 by cpliakas: Added an API function apachesolr_get_field_mappings().

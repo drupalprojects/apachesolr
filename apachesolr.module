@@ -380,7 +380,10 @@ function apachesolr_entity_field_facets($entity_type) {
           'label' => check_plain($field_info['display_name']),
           'dependency plugins' => $field_info['dependency plugins'],
           'field api name' => $field_info['field']['field_name'],
-          'description' => t('Filter by field of type @type.', array('@type' => $field_info['field']['type'])),
+          'description' => t('Filter by field @field of type @type.', array(
+            '@type' => $field_info['field']['type'],
+            '@field' => $field_info['field']['field_name'],
+          )),
           'map callback' => $field_info['map callback'],
           'map options' => $field_info,
           'hierarchy callback' => $field_info['hierarchy callback'],
