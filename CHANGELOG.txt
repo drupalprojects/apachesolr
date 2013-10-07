@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+#1827868 by ianmthomasuk, Nick_vh: Added Improve usability of admin interface when using multiple environments.
 #1433366 by Darren Oh | becw: Added Text field values not mapped in field_apachesolr_field_mappings().
 #1881878 by thsutton: Added Include source field ID in facet admin interface.
 #1365304 by brianV, deviantintegral, Nick_vh: Fixed Date field minimum/maximum range callbacks don't handle some cases; cause Solr exceptions.
