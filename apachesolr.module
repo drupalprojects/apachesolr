@@ -1036,8 +1036,8 @@ function apachesolr_set_facetapi_breadcrumb(FacetapiAdapter $adapter, array $rea
     list(, $env_id) = explode('@', $adapter->getSearcher());
     // Appends additional breadcrumb items.
     $breadcrumb = drupal_get_breadcrumb();
-    $breadcrumb[] = l(t('Apache Solr search environment edit'), 'admin/config/search/apachesolr/settings/' . $env_id);
-    $breadcrumb[] = l($realm['label'], 'admin/config/search/apachesolr/settings/' . $env_id . '/facets/' . $realm['name']);
+    $breadcrumb[] = l(t('Apache Solr search environment edit'), 'admin/config/search/apachesolr/env-' . $env_id);
+    $breadcrumb[] = l($realm['label'], 'admin/config/search/apachesolr/env-' . $env_id . '/facets/' . $realm['name']);
     drupal_set_breadcrumb($breadcrumb);
   }
 }
@@ -2761,13 +2761,14 @@ function theme_apachesolr_sort_list($vars) {
  * Themes the title for settings pages.
  */
 function theme_apachesolr_settings_title($vars) {
+  dsm($vars);
   $output = '';
 
   // Gets environment information, builds header with nested link to the environment's
   // edit page. Skips building title if environment info could not be retrieved.
   if ($environment = apachesolr_environment_load($vars['env_id'])) {
     $url = url(
-      'admin/config/search/apachesolr/settings/',
+      'admin/config/search/apachesolr/env-' . $vars['env_id'],
       array('query' => array('destination' => current_path()))
     );
     $output .= '<h3>';

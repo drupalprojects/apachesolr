@@ -538,6 +538,13 @@ function apachesolr_settings(array $form, array &$form_state) {
     '#default_value' => variable_get('apachesolr_failure', 'apachesolr:show_error'),
   );
 
+  $form['advanced']['apachesolr_watchdog_successes'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Log successful Apache Solr Search actions'),
+    '#description' => t('Watchdog will log successful adds and indexes.'),
+    '#default_value' => variable_get('apachesolr_watchdog_successes', TRUE),
+  );
+
   return system_settings_form($form);
 }
 
@@ -991,11 +998,11 @@ function apachesolr_index_action_form_reset_submit(array $form, array &$form_sta
 function apachesolr_index_action_form_cron_submit(array $form, array &$form_state) {
   if (!empty($form_state['build_info']['args'][0])) {
     $env_id = $form_state['build_info']['args'][0];
-    $form_state['redirect'] = 'admin/config/search/apachesolr/settings/' . $env_id . '/index';
+    $form_state['redirect'] = 'admin/config/search/apachesolr/env-' . $env_id . '/index';
   }
   else {
     $env_id = apachesolr_default_environment();
-    $form_state['redirect'] = 'admin/config/search/apachesolr';
+    $form_state['redirect'] = 'admin/config/search/apachesolr/settings';
   }
   apachesolr_cron($env_id);
   drupal_set_message(t('Apachesolr cron succesfully executed'));
@@ -1012,9 +1019,8 @@ function apachesolr_index_action_form_cron_submit(array $form, array &$form_stat
  *
  * @return mixed
  */
-function apachesolr_index_action_form_remaining_confirm(array $form, array &$form_state, array $environment) {
+function apachesolr_index_action_form_remaining_confirm(array $form, array &$form_state, $env_id) {
   // Drupal may have called hook_load if there was a %wildcard menu params, but we just want the env_id
-  $env_id = is_array($environment) ? $environment['env_id'] : $environment;
   return confirm_form($form,
     t('Are you sure you want index all remaining content?'),
     'admin/config/search/apachesolr/env-' . $env_id . '/index',
@@ -1030,13 +1036,13 @@ function apachesolr_index_action_form_remaining_confirm(array $form, array &$for
  * @param array $form_state
  */
 function apachesolr_index_action_form_remaining_confirm_submit(array $form, array &$form_state) {
-  if (!empty($form_state['build_info']['args'][0]['env_id'])) {
-    $env_id = $form_state['build_info']['args'][0]['env_id'];
-    $form_state['redirect'] = 'admin/config/search/apachesolr/settings/' . $env_id . '/index';
+  if (!empty($form_state['build_info']['args'][0])) {
+    $env_id = $form_state['build_info']['args'][0];
+    $form_state['redirect'] = 'admin/config/search/apachesolr/env-' . $env_id . '/index';
   }
   else {
     $env_id = apachesolr_default_environment();
-    $form_state['redirect'] = 'admin/config/search/apachesolr';
+    $form_state['redirect'] = 'admin/config/search/apachesolr/settings';
   }
   apachesolr_index_batch_index_remaining($env_id);
 }
@@ -1052,9 +1058,8 @@ function apachesolr_index_action_form_remaining_confirm_submit(array $form, arra
  *
  * @return mixed
  */
-function apachesolr_index_action_form_reset_confirm(array $form, array &$form_state, array $environment) {
+function apachesolr_index_action_form_reset_confirm(array $form, array &$form_state, $env_id) {
   // Drupal may have called hook_load if there was a %wildcard menu params, but we just want the env_id
-  $env_id = is_array($environment) ? $environment['env_id'] : $environment;
   return confirm_form($form,
     t('Are you sure you want to queue content for reindexing?'),
     'admin/config/search/apachesolr/env-' . $env_id . '/index',
@@ -1070,13 +1075,13 @@ function apachesolr_index_action_form_reset_confirm(array $form, array &$form_st
  * @param array $form_state
  */
 function apachesolr_index_action_form_reset_confirm_submit(array $form, array &$form_state) {
-  if (!empty($form_state['build_info']['args'][0]['env_id'])) {
-    $env_id = $form_state['build_info']['args'][0]['env_id'];
-    $form_state['redirect'] = 'admin/config/search/apachesolr/settings/' . $env_id . '/index';
+  if (!empty($form_state['build_info']['args'][0])) {
+    $env_id = $form_state['build_info']['args'][0];
+    $form_state['redirect'] = 'admin/config/search/apachesolr/env-' . $env_id . '/index';
   }
   else {
     $env_id = apachesolr_default_environment();
-    $form_state['redirect'] = 'admin/config/search/apachesolr';
+    $form_state['redirect'] = 'admin/config/search/apachesolr/settings';
   }
   module_load_include('inc', 'apachesolr', 'apachesolr.index');
   apachesolr_index_mark_for_reindex($env_id);
@@ -1094,9 +1099,8 @@ function apachesolr_index_action_form_reset_confirm_submit(array $form, array &$
  *
  * @return array output of confirm_form()
  */
-function apachesolr_index_action_form_delete_confirm(array $form, array &$form_state, array $environment) {
+function apachesolr_index_action_form_delete_confirm(array $form, array &$form_state, $env_id) {
   // Drupal may have called hook_load if there was a %wildcard menu params, but we just want the env_id
-  $env_id = is_array($environment) ? $environment['env_id'] : $environment;
   return confirm_form($form,
     t('Are you sure you want to clear your index?'),
     'admin/config/search/apachesolr/env-' . $env_id . '/index',
@@ -1112,13 +1116,13 @@ function apachesolr_index_action_form_delete_confirm(array $form, array &$form_s
  * @param array $form_state
  */
 function apachesolr_index_action_form_delete_confirm_submit(array $form, array &$form_state) {
-  if (!empty($form_state['build_info']['args'][0]['env_id'])) {
-    $env_id = $form_state['build_info']['args'][0]['env_id'];
-    $form_state['redirect'] = 'admin/config/search/apachesolr/settings/' . $env_id . '/index';
+  if (!empty($form_state['build_info']['args'][0])) {
+    $env_id = $form_state['build_info']['args'][0];
+    $form_state['redirect'] = 'admin/config/search/apachesolr/env-' . $env_id . '/index';
   }
   else {
     $env_id = apachesolr_default_environment();
-    $form_state['redirect'] = 'admin/config/search/apachesolr';
+    $form_state['redirect'] = 'admin/config/search/apachesolr/settings';
   }
   // Rebuild our tracking table.
   module_load_include('inc', 'apachesolr', 'apachesolr.index');
