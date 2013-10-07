@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+#1825426 by cpliakas: Added an API function apachesolr_get_field_mappings().
 #1827216 by ianmthomasuk, ciss, Nick_vh: Fixed Bundle specific overrides for status callback and document callback ignored.
 #2072211 by pwolanin: Document the behavior of apachesolr_access() relative to hook_node_access().
 #1708200 by ianmthomasuk: Added Improve error reporting for invalid sorts and invalid solr responses.
