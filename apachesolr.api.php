@@ -444,3 +444,15 @@ function hook_apachesolr_index_document_build_ENTITY_TYPE(ApacheSolrDocument $do
 function hook_apachesolr_index_documents_alter(array &$documents, $entity, $entity_type, $env_id) {
   // Do whatever altering you need here
 }
+
+
+/**
+ * Modify the returned spellings suggestions. The environment is available
+ * as an argument so the search query can be retrieved if necessary
+ *
+ * @param array $suggestions
+ * @param string $env_id
+ */
+function hook_apachesolr_suggestions_alter(&$suggestions, $env_id) {
+  // Modify the suggestions here
+}

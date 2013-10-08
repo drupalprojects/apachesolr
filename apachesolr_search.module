@@ -1392,14 +1392,21 @@ function apachesolr_search_get_search_suggestions($env_id) {
     // Get spellchecker suggestions into an array.
     if (!empty($response->spellcheck->suggestions)) {
       $suggestions = get_object_vars($response->spellcheck->suggestions);
+      // allow the suggestions to be altered before processing
+      drupal_alter('apachesolr_suggestions', $suggestions, $env_id);
+
       if ($suggestions) {
         $replacements = array();
         // Get the original query and retrieve all words with suggestions.
         foreach ($suggestions as $word => $value) {
-          $replacements[$word] = $value->suggestion[0];
+          $suggestion = $value->suggestion;
+          // We need to check if it's an object as setting the spellcheck.extendedResults query parameter to true makes words
+          // objects instead of strings.
+          $replacements[$word] = is_object($suggestion[0]) ? $suggestion[0]->word : $suggestion[0];
         }
         // Replace the keyword with the suggested keyword.
         $suggested_keyword = strtr($keyword, $replacements);
+
         // Show only if suggestion is different than current query.
         if ($keyword != $suggested_keyword) {
           $suggestions_output[] = $suggested_keyword;
