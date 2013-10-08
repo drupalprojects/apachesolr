@@ -2769,7 +2769,6 @@ function theme_apachesolr_sort_list($vars) {
  * Themes the title for settings pages.
  */
 function theme_apachesolr_settings_title($vars) {
-  dsm($vars);
   $output = '';
 
   // Gets environment information, builds header with nested link to the environment's
