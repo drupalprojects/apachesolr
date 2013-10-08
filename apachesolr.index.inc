@@ -823,6 +823,9 @@ function apachesolr_index_node_solr_document(ApacheSolrDocument $document, $node
   $build = node_view($node, 'search_index', $language);
   // Remove useless html crap out of the render.
   unset($build['#theme']);
+  // Allow cache if it's present
+  $build['#cache'] = true;
+  // Render it into html
   $text = drupal_render($build);
   $document->content = apachesolr_clean_text($text);
 

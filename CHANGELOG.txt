@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+#2093031 by Nick_vh: Fixed Speed up indexing process significantly : make use of the filter cache.
 #1925026 by blazindrop: Added Allow modules to modify query used to select nodes for reindexing.
 #2012244 by Nick_vh, joseph.zhao: Added In Drupal 7, using short summary in the teaser.
 #1938976 by ajw, Nick_vh: Fixed Escape sort strings to support function sorts like geodist().
