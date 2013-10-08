@@ -152,7 +152,11 @@ function apachesolr_index_status($env_id) {
     }
 
     $table = apachesolr_get_indexer_table($entity_type);
-    $query = db_select($table, 'asn')->condition('asn.status', 1)->condition('asn.bundle', $bundles);
+    $query = db_select($table, 'aie')
+      ->condition('aie.status', 1)
+      ->condition('aie.bundle', $bundles)
+      ->addTag('apachesolr_index_' . $entity_type);
+
     $total += $query->countQuery()->execute()->fetchField();
 
     // Get $last_entity_id and $last_changed.
@@ -1363,12 +1367,12 @@ function apachesolr_index_node_check_table() {
   // We do not check more nodes than double the cron limit per time
   // Update or delete at most this many in each Solr query.
   $limit = variable_get('apachesolr_cron_mass_limit', 500);
-  $query = db_select($table, 'aien')
+  $query = db_select($table, 'aie')
     ->fields('n', array('nid', 'status'))
-    ->where('aien.status <> n.status')
+    ->where('aie.status <> n.status')
     ->range(0, ($limit * 2))
     ->addTag('apachesolr_index_node');
-  $query->innerJoin('node', 'n', 'n.nid = aien.entity_id');
+  $query->innerJoin('node', 'n', 'n.nid = aie.entity_id');
   $nodes = $query->execute()->fetchAllAssoc('nid');
 
   $node_lists = array_chunk($nodes, $limit, TRUE);

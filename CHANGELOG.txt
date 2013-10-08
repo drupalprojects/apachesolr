@@ -1,6 +1,7 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
 #1925026 by blazindrop: Added Allow modules to modify query used to select nodes for reindexing.
+#2012244 by Nick_vh, joseph.zhao: Added In Drupal 7, using short summary in the teaser.
 #1938976 by ajw, Nick_vh: Fixed Escape sort strings to support function sorts like geodist().
 #1361854 by acbramley, Nick_vh, wiifm: Added Ability to control the 'Did you mean?' by asking Solr for spellcheck.extendedResults.
 #1828134 by ianmthomasuk, Nick_vh: Fixed apachesolr_entity_delete() should apply to all writable environments.
