@@ -1515,9 +1515,7 @@ function apachesolr_do_query(DrupalSolrQueryInterface $current_query) {
     return array(NULL, array());
   }
 
-
   $keys = $query->getParam('q');
-
   if (strlen($keys) == 0 && ($filters = $query->getFilters())) {
     // Move the fq params to q.alt for better performance. Only suitable
     // when using dismax or edismax, so we keep this out of the query class itself
@@ -2005,15 +2003,25 @@ function apachesolr_get_indexer_table($type) {
 
 /**
  * Implements hook_entity_delete().
+ * 
+ * Delete the entity's entry from a fictional table of all entities.
  */
 function apachesolr_entity_delete($entity, $entity_type) {
-  $env_id = apachesolr_default_environment();
-
-  // Delete the entity's entry from a fictional table of all entities.
   list($entity_id) = entity_extract_ids($entity_type, $entity);
-  apachesolr_remove_entity($env_id, $entity_type, $entity_id);
+  // Get all environments and delete it from their table and index
+  $environments = apachesolr_load_all_environments();
+  foreach ($environments as $environment) {
+    apachesolr_remove_entity($environment['env_id'], $entity_type, $entity_id);
+  }
 }
 
+/**
+ * Remove a specific entity from a given Solr environment.
+ * 
+ * @param string $env_id
+ * @param string $entity_type
+ * @param string $entity_id
+ */
 function apachesolr_remove_entity($env_id, $entity_type, $entity_id) {
   module_load_include('inc', 'apachesolr', 'apachesolr.index');
 
