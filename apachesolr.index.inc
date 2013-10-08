@@ -595,6 +595,7 @@ function _apachesolr_index_get_next_set_query($env_id, $entity_type) {
   $last_index_position = apachesolr_get_last_index_position($env_id, $entity_type);
   $last_entity_id = $last_index_position['last_entity_id'];
   $last_changed = $last_index_position['last_changed'];
+  $bundles = apachesolr_get_index_bundles($env_id, $entity_type);
 
   // Find the next batch of entities to index for this entity type.  Note that
   // for ordering we're grabbing the oldest first and then ordering by ID so
