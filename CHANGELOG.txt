@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+#2106693 by wulff: Fixed Drush help refers to non-existent command.
 #2011492 by ianmthomasuk: Added Remove duplicated indexing code. (2/2)
 #2093031 by Nick_vh: Fixed Speed up indexing process significantly : make use of the filter cache.
 #1925026 by blazindrop: Added Allow modules to modify query used to select nodes for reindexing.

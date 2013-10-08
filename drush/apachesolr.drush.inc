@@ -114,7 +114,7 @@ function apachesolr_drush_command() {
   $items['solr-variable-get'] = array(
     'description' => 'Get a list of Apache Solr environment variable names and values.',
     'arguments' => array(
-      'name' => 'A string to filter the variables by. Variables that have any part of their name matching the string will b listed.',
+      'name' => 'A string to filter the variables by. Variables that have any part of their name matching the string will be listed.',
     ),
     'examples' => array(
       'drush solr-vget' => 'List all variables and values.',
@@ -128,7 +128,7 @@ function apachesolr_drush_command() {
     'aliases' => array('solr-vget'),
   );
   $items['solr-variable-set'] = array(
-    'description' => "Set an Apache Solr environment variable.",
+    'description' => 'Set an Apache Solr environment variable.',
     'arguments' => array(
       'name' => 'The name of a variable or the first few letters of its name.',
       'value' => 'The value to assign to the variable. Use \'-\' to read the object from STDIN.',
@@ -148,7 +148,7 @@ function apachesolr_drush_command() {
     'aliases' => array('solr-vset'),
   );
   $items['solr-variable-delete'] = array(
-    'description' => "Delete an Apache Solr environment variable.",
+    'description' => 'Delete an Apache Solr environment variable.',
     'arguments' => array(
       'name' => 'The name of a variable or the first few letters of its name.',
     ),
@@ -162,7 +162,7 @@ function apachesolr_drush_command() {
     ),
     'examples' => array(
       'drush solr-vdel apachesolr_read_only --id=solr2' => 'Delete the apachesolr_read_only variable for the solr2 environment.',
-      'drush solr-vdel apa' => 'Choose from a list of variables beginning with "u" to delete.',
+      'drush solr-vdel apa' => 'Choose from a list of variables beginning with "apa" to delete.',
       'drush solr-vdel -y --exact apachesolr_read_only' => 'Delete variable, skipping confirmation.',
     ),
     'aliases' => array('solr-vdel'),
@@ -195,7 +195,7 @@ function apachesolr_drush_help($section) {
         Reindexing is done on future cron runs.");
     case 'drush:solr-index':
       return dt("Reindexes content marked for (re)indexing. If you want to reindex all content or content
-         of a specific type, use solr-reindex first to mark that content.");
+         of a specific type, use solr-mark-all first to mark that content.");
     case 'drush:solr-search':
       return dt('Executes a search against the site\'s Apache Solr search index and returns the results.');
     case 'error:APACHESOLR_ENV_ID_ERROR':
