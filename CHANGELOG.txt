@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+#1938976 by ajw, Nick_vh: Fixed Escape sort strings to support function sorts like geodist().
 #1361854 by acbramley, Nick_vh, wiifm: Added Ability to control the 'Did you mean?' by asking Solr for spellcheck.extendedResults.
 #1828134 by ianmthomasuk, Nick_vh: Fixed apachesolr_entity_delete() should apply to all writable environments.
 #2006602 by pwolanin, David_Rothstein: Fixed Documents are deleted from the Solr index in read-only environments.
