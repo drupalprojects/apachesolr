@@ -815,7 +815,8 @@ function apachesolr_index_node_solr_document(ApacheSolrDocument $document, $node
   $document->label = apachesolr_clean_text($node->title);
 
   // Build the node body.
-  $build = node_view($node, 'search_index', !empty($node->language) ? $node->language : LANGUAGE_NONE);
+  $language = !empty($node->language) ? $node->language : LANGUAGE_NONE;
+  $build = node_view($node, 'search_index', $language);
   // Remove useless html crap out of the render.
   unset($build['#theme']);
   $text = drupal_render($build);
@@ -826,7 +827,15 @@ function apachesolr_index_node_solr_document(ApacheSolrDocument $document, $node
     $document->teaser = apachesolr_clean_text($node->teaser);
   }
   else {
-    $document->teaser = truncate_utf8($document->content, 300, TRUE);
+    // If there is no node teaser we will have to generate the teaser
+    // ourselves. We have to be careful to not leak the author and other
+    // information that is normally also not visible.
+    if (isset($node->body[$language][0]['safe_summary'])) {
+      $document->teaser = apachesolr_clean_text($node->body[$language][0]['safe_summary']);
+    }
+    else {
+      $document->teaser = truncate_utf8($document->content, 300, TRUE);
+    }
   }
 
   // Author information
