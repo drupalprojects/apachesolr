@@ -392,7 +392,7 @@ class DrupalSolrNodeTestCase extends DrupalWebTestCase {
 
   public static function getInfo() {
     return array(
-      'name' => 'Solr Node add, deletion, and document building tests',
+      'name' => 'Solr Node add, deletion, indexing and document building tests',
       'description' => 'Tests if we can succesfully add and delete nodes',
       'group' => 'ApacheSolr',
     );
@@ -471,6 +471,88 @@ class DrupalSolrNodeTestCase extends DrupalWebTestCase {
         ->fetchField();
       $this->assertEqual($count, 0, t('No more nodes left in the node table.'));
     }
+  }
+
+  function testApacheSolrNodeReindex() {
+    // Login as basic user to perform initial content creation.
+    // Create an admin user that can bypass revision moderation.
+    $permissions = array(
+      'access content',
+      'search content',
+      'administer nodes',
+      'administer search',
+      'access content overview',
+      'bypass node access',
+    );
+    $admin_user = $this->drupalCreateUser($permissions);
+
+    $this->drupalLogin($admin_user);
+
+    // enable our bundles to be indexed, and clear caches
+    apachesolr_index_set_bundles('solr', 'node', array('page', 'article'));
+    entity_info_cache_clear();
+    apachesolr_environments_clear_cache();
+
+    // Define types of node bundles that we want to index
+    $types = array('page', 'article');
+
+    // Create 20 nodes (10 times 2)
+    foreach ($types as $type) {
+      for ($i = 0; $i < 5; $i++) {
+        $edit = array();
+        // Create a node of the type $type.
+        $edit['uid'] = $admin_user->uid;
+        $edit['type'] = $type;
+        $edit['title'] = $this->randomName(16);
+        $node = $this->drupalCreateNode($edit);
+      }
+    }
+
+    // Set a static timestamp
+    $timestamp = 1382019301;
+
+    $env_id = apachesolr_default_environment();
+
+    // Clear the last timestamp so we know that our nodes have to be indexed.
+    apachesolr_environment_variable_set($env_id, 'apachesolr_index_last', array());
+
+    // Set apachesolr_index_entities_node.changed to the same value
+    // (REQUEST_TIME).
+    $table = apachesolr_get_indexer_table('node');
+    db_update($table)
+        ->fields(array('changed' => $timestamp, 'status' => 1))
+        ->execute();
+    // Fake that we actually indexed before
+    apachesolr_set_last_index_position($env_id, 'node', $timestamp + 1, 10);
+    
+    // Set the changed date to after our previous index cycle
+    db_update($table)
+        ->fields(array('changed' => $timestamp + 10, 'status' => 1))
+        ->condition('entity_id', 9, '<=')
+        ->execute();
+
+    // Get the next 5 entities to index.
+    $set = apachesolr_index_get_entities_to_index($env_id, 'node', 5);
+    $count = count($set);
+    $this->assertEqual($count, 5, t('We found 5 entities to index.'));
+
+    // Mark the last item from that 5 as last indexed.
+    $last_row = end($set);
+    apachesolr_set_last_index_position($env_id, 'node', $last_row->changed, $last_row->entity_id);
+
+    // Get the next batch of 5 and this should be 4 items.
+    $set = apachesolr_index_get_entities_to_index($env_id, 'node', 4);
+    $count = count($set);
+    $this->assertEqual($count, 4, t('We found 4 entities to index.'));
+
+    // Mark the last item from that 4 as last indexed.
+    $last_row = end($set);
+    apachesolr_set_last_index_position($env_id, 'node', $last_row->changed, $last_row->entity_id);
+
+    // Get the next batch of 5 and this should be 0 items
+    $set = apachesolr_index_get_entities_to_index($env_id, 'node', 5);
+    $count = count($set);
+    $this->assertEqual($count, 0, t('We found 0 entities to index.'));
   }
 
   function testNodeToDocument() {

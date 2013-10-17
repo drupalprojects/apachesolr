@@ -52,6 +52,11 @@ function apachesolr_index_entities($env_id, $limit) {
   foreach (entity_get_info() as $entity_type => $info) {
     // With each pass through the callback, retrieve the next group of nids.
     $rows = apachesolr_index_get_entities_to_index($env_id, $entity_type, $limit);
+    // If there are none for this entity type - ignore it and go to the next
+    // entity type.
+    if (!count($rows)) {
+      continue;
+    }
     $documents = array();
     foreach ($rows as $row) {
       $row_documents = apachesolr_index_entities_document($row, $entity_type, $env_id);
@@ -61,20 +66,23 @@ function apachesolr_index_entities($env_id, $limit) {
     $indexed = apachesolr_index_send_to_solr($env_id, $documents);
     if ($indexed !== FALSE) {
       $documents_submitted += count($documents);
-      $index_position = apachesolr_get_last_index_position($env_id, $entity_type);
-      $max_changed = $index_position['last_changed'];
-      $max_entity_id = $index_position['last_entity_id'];
-      foreach ($rows as $row) {
-        if (!empty($row->status)) {
-          if ($row->changed > $max_changed) {
-            $max_changed = $row->changed;
-          }
-          if ($row->entity_id > $max_entity_id) {
-            $max_entity_id = $row->entity_id;
-          }
-        }
+      // Check who's the last in line
+      $last_row = end($rows);
+
+      // set our last position to the entity id and changed value so we can
+      // keep track where we left off
+      if (!empty($last_row->changed) && !empty($last_row->entity_id)) {
+        apachesolr_set_last_index_position($env_id, $entity_type, $last_row->changed, $last_row->entity_id);
       }
-      apachesolr_set_last_index_position($env_id, $entity_type, $max_changed, $max_entity_id);
+      else {
+        $message = 'Failure recording indexing progress. Last entity id processed: %entity_id with timestamp %last_changed';
+        $variables = array(
+          '%entity_id' => $last_row->entity_id,
+          '%last_changed' => $last_row->changed,
+        );
+        // Add it to watchdog
+        watchdog('Apache Solr', $message, $variables, WATCHDOG_ERROR);
+      }
       apachesolr_set_last_index_updated($env_id, REQUEST_TIME);
     }
   }
@@ -593,9 +601,10 @@ function _apachesolr_index_get_next_set_query($env_id, $entity_type) {
   $table = apachesolr_get_indexer_table($entity_type);
   // Get $last_entity_id and $last_changed.
   $last_index_position = apachesolr_get_last_index_position($env_id, $entity_type);
+  $bundles = apachesolr_get_index_bundles($env_id, $entity_type);
+
   $last_entity_id = $last_index_position['last_entity_id'];
   $last_changed = $last_index_position['last_changed'];
-  $bundles = apachesolr_get_index_bundles($env_id, $entity_type);
 
   // Find the next batch of entities to index for this entity type.  Note that
   // for ordering we're grabbing the oldest first and then ordering by ID so
@@ -607,9 +616,16 @@ function _apachesolr_index_get_next_set_query($env_id, $entity_type) {
     ->condition('aie.status', 1)
     ->condition(db_or()
       ->condition('aie.changed', $last_changed, '>')
+      // Tie breaker for entities that were changed at exactly
+      // the same second as the last indexed entity
       ->condition(db_and()
-        ->condition('aie.changed', $last_changed, '<=')
-        ->condition('aie.entity_id', $last_entity_id, '>')))
+        ->condition('aie.changed', $last_changed, '=')
+        ->condition('aie.entity_id', $last_entity_id, '>')
+      )
+    )
+    // It is important that everything is indexed in order of changed date and
+    // then on entity_id because otherwise the conditions above will not match
+    // correctly
     ->orderBy('aie.changed', 'ASC')
     ->orderBy('aie.entity_id', 'ASC')
     ->addTag('apachesolr_index_' . $entity_type);
