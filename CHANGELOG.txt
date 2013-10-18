@@ -1,5 +1,6 @@
 Apache Solr integration 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#2072211 by pwolanin: Document the behavior of apachesolr_access() relative to hook_node_access().
 #2033913 by Nick_vh | epieddy: Fixed Small error in schema.xml.
 #1807552 by pwolanin: further fixes to use the right language field.
 #1896470 by Nick_vh, mkalkbrenner: Fixed Integrate Apache Solr Common Configurations for Solr 3.x and 4.x (Highlighting broken).
