@@ -25,7 +25,7 @@ function hook_apachesolr_default_environment($env_id, $old_env_id) {
  * handles just list fields and taxonomy term reference fields, such as:
  *
  * $mappings['list_text'] = array(
- *   'indexing_callback' => 'apachesolr_fields_list_indexing_callback',
+ *   'indexing_callback' => array('apachesolr_fields_list_indexing_callback'),
  *   'index_type' => 'string',
  *   'map callback' => 'apachesolr_fields_list_display_callback',
  *   'facets' => TRUE,
@@ -53,7 +53,7 @@ function hook_apachesolr_field_mappings() {
   $mappings = array(
     // Example for a field API type. See extensive documentation below
     'number_float' => array(
-      'indexing_callback' => 'apachesolr_fields_default_indexing_callback',
+      'indexing_callback' => array('apachesolr_fields_default_indexing_callback'),
       'index_type' => 'tfloat',
       'facets' => TRUE,
       'query types' => array('term', 'numeric_range'),
@@ -67,7 +67,7 @@ function hook_apachesolr_field_mappings() {
         // REQUIRED FIELDS //
         // Function callback to return the value that will be put in to
         // the solr index
-        'indexing_callback' => 'apachesolr_fields_default_indexing_callback',
+        'indexing_callback' => array('apachesolr_fields_default_indexing_callback'),
 
         // NON REQUIRED FIELDS //
         // See apachesolr_index_key() for the correct type. Defaults string
@@ -125,7 +125,7 @@ function hook_apachesolr_field_mappings() {
 function hook_apachesolr_field_mappings_alter(array &$mappings, $entity_type) {
   // Enable indexing for text fields
   $mappings['text'] = array(
-    'indexing_callback' => 'apachesolr_fields_default_indexing_callback',
+    'indexing_callback' => array('apachesolr_fields_default_indexing_callback'),
     'map callback' => '',
     'index_type' => 'string',
     'facets' => TRUE,

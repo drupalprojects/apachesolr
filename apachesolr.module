@@ -1751,8 +1751,15 @@ function apachesolr_index_key($field) {
       $type_prefix = 's'; // String
   }
   $sm = !empty($field['multiple']) ? 'm_' : 's_';
-  // Block deltas are limited to 32 chars.
-  return substr($type_prefix . $sm . $field['name'], 0, 32);
+
+  // Legacy: Block deltas are limited to 32 chars. Keep it like this for backwards compatibility
+  $apachesolr_field_length_limit = variable_get('apachesolr_field_length_limit', '32');
+  if ($apachesolr_field_length_limit <= 0) {
+    return $type_prefix . $sm . $field['name'];
+  }
+  else {
+    return substr($type_prefix . $sm . $field['name'], 0, $apachesolr_field_length_limit);
+  }
 }
 
 /**
@@ -2192,14 +2199,20 @@ function field_apachesolr_index_document_build(ApacheSolrDocument $document, $en
         // See if the node has fields that can be indexed
         if (isset($entity->{$field_name})) {
           // Got a field.
-          $function = $field_info['indexing_callback'];
-          if ($function && function_exists($function)) {
-            // NOTE: This function should always return an array.  One
-            // entity field may be indexed to multiple Solr fields.
-            $fields = $function($entity, $field_name, $index_key, $field_info);
-            foreach ($fields as $field) {
-              // It's fine to use this method also for single value fields.
-              $document->setMultiValue($field['key'], $field['value']);
+          $functions = $field_info['indexing_callback'];
+
+          if (!is_array($functions)) {
+            $functions = array($functions);
+          }
+          foreach ($functions as $function) {
+            if ($function && function_exists($function)) {
+              // NOTE: This function should always return an array.  One
+              // entity field may be indexed to multiple Solr fields.
+              $fields = $function($entity, $field_name, $index_key, $field_info);
+              foreach ($fields as $field) {
+                // It's fine to use this method also for single value fields.
+                $document->setMultiValue($field['key'], $field['value']);
+              }
             }
           }
         }
@@ -2488,7 +2501,7 @@ function apachesolr_hook_info() {
 function field_apachesolr_field_mappings() {
   $mappings = array(
     'list_integer' => array(
-      'indexing_callback' => 'apachesolr_fields_default_indexing_callback',
+      'indexing_callback' => array('apachesolr_fields_default_indexing_callback'),
       'map callback' => 'apachesolr_fields_list_facet_map_callback',
       'index_type' => 'integer',
       'facets' => TRUE,
@@ -2497,7 +2510,7 @@ function field_apachesolr_field_mappings() {
       'facet missing allowed' => TRUE,
     ),
     'list_float' => array(
-      'indexing_callback' => 'apachesolr_fields_default_indexing_callback',
+      'indexing_callback' => array('apachesolr_fields_default_indexing_callback'),
       'map callback' => 'apachesolr_fields_list_facet_map_callback',
       'index_type' => 'float',
       'facets' => TRUE,
@@ -2506,21 +2519,21 @@ function field_apachesolr_field_mappings() {
       'facet missing allowed' => TRUE,
     ),
     'list_text' => array(
-      'indexing_callback' => 'apachesolr_fields_default_indexing_callback',
+      'indexing_callback' => array('apachesolr_fields_default_indexing_callback'),
       'map callback' => 'apachesolr_fields_list_facet_map_callback',
       'index_type' => 'string',
       'facets' => TRUE,
       'facet missing allowed' => TRUE,
     ),
     'list_boolean' => array(
-      'indexing_callback' => 'apachesolr_fields_default_indexing_callback',
+      'indexing_callback' => array('apachesolr_fields_default_indexing_callback'),
       'map callback' => 'apachesolr_fields_list_facet_map_callback',
       'index_type' => 'boolean',
       'facets' => TRUE,
       'facet missing allowed' => TRUE,
     ),
     'number_integer' => array(
-      'indexing_callback' => 'apachesolr_fields_default_indexing_callback',
+      'indexing_callback' => array('apachesolr_fields_default_indexing_callback'),
       'index_type' => 'tint',
       'facets' => TRUE,
       'query types' => array('term', 'numeric_range'),
@@ -2528,7 +2541,7 @@ function field_apachesolr_field_mappings() {
       'facet mincount allowed' => TRUE,
     ),
     'number_decimal' => array(
-      'indexing_callback' => 'apachesolr_fields_default_indexing_callback',
+      'indexing_callback' => array('apachesolr_fields_default_indexing_callback'),
       'index_type' => 'tfloat',
       'facets' => TRUE,
       'query types' => array('term', 'numeric_range'),
@@ -2536,7 +2549,7 @@ function field_apachesolr_field_mappings() {
       'facet mincount allowed' => TRUE,
     ),
     'number_float' => array(
-      'indexing_callback' => 'apachesolr_fields_default_indexing_callback',
+      'indexing_callback' => array('apachesolr_fields_default_indexing_callback'),
       'index_type' => 'tfloat',
       'facets' => TRUE,
       'query types' => array('term', 'numeric_range'),
@@ -2546,7 +2559,7 @@ function field_apachesolr_field_mappings() {
     'taxonomy_term_reference' => array(
       'map callback' => 'facetapi_map_taxonomy_terms',
       'hierarchy callback' => 'facetapi_get_taxonomy_hierarchy',
-      'indexing_callback' => 'apachesolr_term_reference_indexing_callback',
+      'indexing_callback' => array('apachesolr_term_reference_indexing_callback'),
       'index_type' => 'integer',
       'facet_block_callback' => 'apachesolr_search_taxonomy_facet_block',
       'facets' => TRUE,
@@ -2555,7 +2568,7 @@ function field_apachesolr_field_mappings() {
       'facet mincount allowed' => TRUE,
     ),
     'text' => array(
-      'indexing_callback' => 'apachesolr_fields_default_indexing_callback',
+      'indexing_callback' => array('apachesolr_fields_default_indexing_callback'),
       'index_type' => 'string',
       'facets' => TRUE,
       'facet missing allowed' => TRUE,
@@ -2571,7 +2584,7 @@ function field_apachesolr_field_mappings() {
 function date_apachesolr_field_mappings() {
   $mappings = array();
   $default = array(
-    'indexing_callback' => 'apachesolr_date_default_indexing_callback',
+    'indexing_callback' => array('apachesolr_date_default_indexing_callback'),
     'index_type' => 'date',
     'facets' => TRUE,
     'query types' => array('date'),
@@ -2587,7 +2600,7 @@ function date_apachesolr_field_mappings() {
 
   // DATESTAMP fields need a different callback.
   $mappings['datestamp'] = $default;
-  $mappings['datestamp']['indexing_callback'] = 'apachesolr_datestamp_default_indexing_callback';
+  $mappings['datestamp']['indexing_callback'] = array('apachesolr_datestamp_default_indexing_callback');
 
   return $mappings;
 }
@@ -2668,7 +2681,7 @@ function apachesolr_get_max_date(array $facet) {
 function node_reference_apachesolr_field_mappings() {
   $mappings = array(
     'node_reference' => array(
-      'indexing_callback' => 'apachesolr_nodereference_indexing_callback',
+      'indexing_callback' => array('apachesolr_nodereference_indexing_callback'),
       'index_type' => 'integer',
       'map callback' => 'apachesolr_nodereference_map_callback',
       'facets' => TRUE,
@@ -2685,7 +2698,7 @@ function node_reference_apachesolr_field_mappings() {
 function user_reference_apachesolr_field_mappings() {
   $mappings = array(
     'user_reference' => array(
-      'indexing_callback' => 'apachesolr_userreference_indexing_callback',
+      'indexing_callback' => array('apachesolr_userreference_indexing_callback'),
       'index_type' => 'integer',
       'map callback' => 'apachesolr_userreference_map_callback',
       'facets' => TRUE,
@@ -2701,7 +2714,7 @@ function user_reference_apachesolr_field_mappings() {
 function entityreference_apachesolr_field_mappings() {
   $mappings = array(
     'entityreference' => array(
-      'indexing_callback' => 'apachesolr_entityreference_indexing_callback',
+      'indexing_callback' => array('apachesolr_entityreference_indexing_callback'),
       'map callback' => 'apachesolr_entityreference_facet_map_callback',
       'index_type' => 'string',
       'facets' => TRUE,

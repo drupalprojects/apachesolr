@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+#2118947 by Nick_vh: Added Allow mapping to accept multiple index_callbacks().
 #1828014 by ianthomas_uk, Nick_vh, DeFr: Fixed Mass re-indexation can miss (a lot of) content.
 #2106693 by wulff: Fixed Drush help refers to non-existent command.
 #2011492 by ianmthomasuk: Added Remove duplicated indexing code. (2/2)
