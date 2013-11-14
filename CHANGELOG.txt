@@ -1,5 +1,6 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+#2008832 by Nick_vh, j0rd: Re-apply added Allow turning off 'successful" actions in watchdog.
 
 Apache Solr integration 7.x-1.5, 10-23-2013
 -----------------------------

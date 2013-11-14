@@ -523,6 +523,13 @@ function apachesolr_settings(array $form, array &$form_state) {
     '#default_value' => variable_get('apachesolr_failure', 'apachesolr:show_error'),
   );
 
+  $form['advanced']['apachesolr_watchdog_successes'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Log successful Apache Solr Search actions'),
+    '#description' => t('Watchdog will log successful adds and indexes.'),
+    '#default_value' => variable_get('apachesolr_watchdog_successes', TRUE),
+  );
+
   return system_settings_form($form);
 }
 
