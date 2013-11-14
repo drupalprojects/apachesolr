@@ -345,20 +345,15 @@ function apachesolr_index_send_to_solr($env_id, array $documents) {
     return TRUE;
   }
   // Send the document off to Solr.
-  $log_success = variable_get('apachesolr_watchdog_successes', TRUE);
-  if ($log_success) {
-    watchdog('Apache Solr', 'Adding @count documents.', array('@count' => count($documents)));
-  }
+  watchdog('Apache Solr', 'Adding @count documents.', array('@count' => count($documents)));
   try {
     $docs_chunk = array_chunk($documents, 20);
     foreach ($docs_chunk as $docs) {
       $solr->addDocuments($docs);
     }
-    if ($log_success) {
-      watchdog('Apache Solr', 'Indexing succeeded on @count documents', array(
-        '@count' => count($documents),
-      ), WATCHDOG_INFO);
-    }
+    watchdog('Apache Solr', 'Indexing succeeded on @count documents', array(
+      '@count' => count($documents),
+    ), WATCHDOG_INFO);
     return count($documents);
   }
   catch (Exception $e) {

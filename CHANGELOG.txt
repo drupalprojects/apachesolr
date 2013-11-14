@@ -15,7 +15,7 @@ Apache Solr integration 7.x-1.5, 10-23-2013
 #1828134 by ianmthomasuk, Nick_vh: Fixed apachesolr_entity_delete() should apply to all writable environments.
 #2006602 by pwolanin, David_Rothstein: Fixed Documents are deleted from the Solr index in read-only environments.
 #1916558 by jwalz: Fixed Custom Filters are ignored in facet blocks on non-search paths.
-#2008832 by Nick_vh, j0rd: Added Allow to optionally turn of 'successful" actions in watchdog.
+#2008832 by Nick_vh, j0rd: Added Allow to optionally turn off 'successful" actions in watchdog.
 #1952296 by David_Rothstein, zerolab, SamChez: Added Date facet granularity support.
 #1930686 by kevin.dutra: Fixed Multiple search pages can have the same path.
 REVERTED: #1827868 by ianmthomasuk, Nick_vh: Added Improve usability of admin interface when using multiple environments.
