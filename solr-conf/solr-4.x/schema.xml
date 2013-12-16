@@ -181,7 +181,7 @@
                 catenateWords="1"
                 catenateNumbers="1"
                 catenateAll="0"
-                splitOnCaseChange="1"
+                splitOnCaseChange="0"
                 preserveOriginal="1"/>
         <filter class="solr.LengthFilterFactory" min="2" max="100" />
         <filter class="solr.LowerCaseFilterFactory"/>
@@ -204,7 +204,7 @@
                 catenateWords="0"
                 catenateNumbers="0"
                 catenateAll="0"
-                splitOnCaseChange="1"
+                splitOnCaseChange="0"
                 preserveOriginal="1"/>
         <filter class="solr.LengthFilterFactory" min="2" max="100" />
         <filter class="solr.LowerCaseFilterFactory"/>
@@ -362,6 +362,11 @@
         The format used is $document->id = $site_hash . '/' . $entity_type . '/' . $entity->id;
     -->
     <field name="id" type="string" indexed="true" stored="true" required="true" />
+
+    <!-- Add Solr Cloud version field as mentioned in
+         http://wiki.apache.org/solr/SolrCloud#Required_Config
+    -->
+    <field name="_version_" type="long" indexed="true" stored="true" multiValued="false"/>
 
     <!-- Search Api specific fields -->
     <!-- item_id contains the entity ID, e.g. a node's nid. -->
