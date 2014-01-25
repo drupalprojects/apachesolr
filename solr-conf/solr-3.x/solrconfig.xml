@@ -20,7 +20,7 @@
      For more details about configurations options that may appear in
      this file, see http://wiki.apache.org/solr/SolrConfigXml.
 -->
-<config name="drupal-4.1-solr-3.x">
+<config name="drupal-4.2-solr-3.x">
   <!-- In all configuration below, a prefix of "solr." for class names
        is an alias that causes solr to search appropriate packages,
        including org.apache.solr.(search|update|request|core|analysis)
@@ -1077,7 +1077,7 @@
   <!-- Solr Replication
 
        The SolrReplicationHandler supports replicating indexes from a
-       "master" used for indexing and "salves" used for queries.
+       "master" used for indexing and "slaves" used for queries.
 
        http://wiki.apache.org/solr/SolrReplication 
 
@@ -1090,7 +1090,7 @@
          <str name="enable">${solr.replication.master:false}</str>
          <str name="replicateAfter">commit</str>
          <str name="replicateAfter">startup</str>
-         <str name="confFiles">${solr.replication.confFiles:schema.xml,protwords.txt,stopwords.txt,synonyms.txt,elevate.xml}</str>
+         <str name="confFiles">${solr.replication.confFiles:schema.xml,mapping-ISOLatin1Accent.txt,protwords.txt,stopwords.txt,synonyms.txt,elevate.xml}</str>
        </lst>
        <lst name="slave">
          <str name="enable">${solr.replication.slave:false}</str>
