@@ -2190,7 +2190,7 @@ function apachesolr_get_field_mappings($entity_type) {
         $mappings[$key] += $defaults;
       }
       else {
-        foreach (array_keys($field_mappings[$key]) as $field_key) {
+        foreach (array_keys($field_mappings[$entity_type][$key]) as $field_key) {
           $mappings[$key][$field_key] += $defaults;
         }
       }
