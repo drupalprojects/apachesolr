@@ -744,15 +744,18 @@ function apachesolr_index_node_solr_document(ApacheSolrDocument $document, $node
   // None of these get added unless they are explicitly in our schema.xml
   $document->label = apachesolr_clean_text($node->title);
 
-  $node->build_mode = NODE_BUILD_SEARCH_INDEX;
-  $node = node_build_content($node, FALSE, FALSE);
-  $node->body = drupal_render($node->content);
-
-  $document->content = apachesolr_clean_text($node->body);
+  // The call to node_build_content() below will modify the
+  // node object. Therefor we need to clone the node object first.
+  $build = drupal_clone($node);
+  $build->build_mode = NODE_BUILD_SEARCH_INDEX;
+  $build = node_build_content($build, FALSE, FALSE);
+  // Render it into html
+  $text = drupal_render($build->content);
+  $document->content = apachesolr_clean_text($text);
 
   // Adding the teaser
-  if (isset($node->teaser)) {
-    $document->teaser = apachesolr_clean_text($node->teaser);
+  if (isset($build->teaser)) {
+    $document->teaser = apachesolr_clean_text($build->teaser);
   }
   else {
     $document->teaser = truncate_utf8($document->content, 300, TRUE);
