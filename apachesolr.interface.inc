@@ -4,6 +4,27 @@
  * The interface for all 'query' objects.
  */
 interface DrupalSolrQueryInterface {
+
+  /**
+   * Get query name.
+   */
+  function getName();
+
+  /**
+   * Get query searcher name (for facetapi, views, pages, etc).
+   */
+  function getSearcher();
+
+  /**
+   * Get context values.
+   */
+  function getContext();
+
+  /**
+   * Set context value.
+   */
+  function addContext(array $context);
+
   /**
    * Returns all filters matching $name, if set; otherwise, returns all filters.
    *

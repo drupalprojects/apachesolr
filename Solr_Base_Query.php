@@ -275,11 +275,13 @@ class SolrBaseQuery extends SolrFilterSubQuery implements DrupalSolrQueryInterfa
    */
   protected $name;
 
+  protected $context = array();
+
   // Makes sure we always have a valid sort.
   protected $solrsort = array('#name' => 'score', '#direction' => 'desc');
   // A flag to allow the search to be aborted.
   public $abort_search = FALSE;
-  
+
   // A flag to check if need to retrieve another page of the result set
   public $page = 0;
 
@@ -301,11 +303,12 @@ class SolrBaseQuery extends SolrFilterSubQuery implements DrupalSolrQueryInterfa
    * @param $base_path
    *   The search base path (without the keywords) for this query, without trailing slash.
    */
-  function __construct($name, $solr, array $params = array(), $sortstring = '', $base_path = '') {
+  function __construct($name, $solr, array $params = array(), $sortstring = '', $base_path = '', $context = array()) {
     parent::__construct();
     $this->name = $name;
     $this->solr = $solr;
-    $this->addParams($params);
+    $this->addContext((array) $context);
+    $this->addParams((array) $params);
     $this->available_sorts = $this->defaultSorts();
     $this->sortstring = trim($sortstring);
     $this->parseSortString();
@@ -334,6 +337,25 @@ class SolrBaseQuery extends SolrFilterSubQuery implements DrupalSolrQueryInterfa
    */
   public function getSearcher() {
     return $this->name . '@' . $this->solr->getId();
+  }
+
+  /**
+   * Get context values.
+   */
+  public function getContext() {
+    return $this->context;
+  }
+
+  /**
+   * Set context value.
+   */
+  public function addContext(array $context) {
+    foreach ($context as $k => $v) {
+      $this->context[$k] = $v;
+    }
+    // The env_id must match that of the actual $solr object
+    $this->context['env_id'] = $this->solr->getId();
+    return $this->context;
   }
 
   protected $single_value_params = array(

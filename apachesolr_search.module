@@ -72,7 +72,9 @@ function apachesolr_search_init() {
                 'fq' => array(),
                 'rows' => 1,
               );
-              apachesolr_search_run_empty('apachesolr', $params, $search_page['search_path'], $solr);
+              $context['page_id'] = $search_page_id;
+              $context['search_type'] = 'apachesolr_search_show_facets';
+              apachesolr_search_run_empty('apachesolr', $params, $search_page['search_path'], $solr, $context);
               // Exit the foreach loop if this has run.
               break;
             }
@@ -486,7 +488,9 @@ function apachesolr_search_block_view($delta = '') {
       $env_id = (!empty($block['mlt_env_id'])) ? $block['mlt_env_id'] : '';
       try {
         $solr = apachesolr_get_solr($env_id);
-        $docs = apachesolr_search_mlt_suggestions($block, apachesolr_document_id($node->nid), $solr);
+        $context['search_type'] = 'apachesolr_search_mlt';
+        $context['block_id'] = $delta;
+        $docs = apachesolr_search_mlt_suggestions($block, apachesolr_document_id($node->nid), $solr, $context);
         if (!empty($docs)) {
           $suggestions['subject'] = check_plain($block['name']);
           $suggestions['content'] = theme('apachesolr_search_mlt_recommendation_block', $docs, $delta);
@@ -673,7 +677,7 @@ function apachesolr_search_mlt_block_load($block_id) {
  *
  * @return An array of response documents, or NULL
  */
-function apachesolr_search_mlt_suggestions($settings, $id, $solr = NULL) {
+function apachesolr_search_mlt_suggestions($settings, $id, $solr = NULL, $context = array()) {
 
   try {
     $fields = array(
@@ -694,7 +698,7 @@ function apachesolr_search_mlt_suggestions($settings, $id, $solr = NULL) {
       'rows' => $settings['num_results'],
     );
     // We can optionally specify a Solr object.
-    $query = apachesolr_drupal_query('apachesolr_mlt', $params, '', '', $solr);
+    $query = apachesolr_drupal_query('apachesolr_mlt', $params, '', '', $solr, $context);
 
     foreach ($fields as $form_key => $name) {
       if (!empty($settings[$form_key])) {
@@ -985,7 +989,9 @@ function apachesolr_search_search_results($keys = NULL, $conditions = NULL, $sea
       if (!$keys && !isset($conditions['f']) && ($empty_search_behavior == 'browse' || $empty_search_behavior == 'blocks')) {
         // Pass empty search behavior as string on to apachesolr_search_search_page()
         // Hardcoded apachesolr name since we rely on this for the facets
-        apachesolr_search_run_empty('apachesolr', $params, $search_page['search_path'], $solr);
+        $context['page_id'] = $search_page['page_id'];
+        $context['search_type'] = 'apachesolr_search_browse';
+        apachesolr_search_run_empty('apachesolr', $params, $search_page['search_path'], $solr, $context);
         $results['apachesolr_search_browse'] = $empty_search_behavior;
 
         if ($empty_search_behavior == 'browse') {
@@ -1003,7 +1009,9 @@ function apachesolr_search_search_results($keys = NULL, $conditions = NULL, $sea
         // Hardcoded apachesolr name since we rely on this for the facets
         $page = isset($_GET['page']) ? $_GET['page'] : '';
         $page = check_plain($page);
-        $results = apachesolr_search_run('apachesolr', $params, $solrsort, $search_page['search_path'], $page, $solr);
+        $context['page_id'] = $search_page['page_id'];
+        $context['search_type'] = 'apachesolr_search_results';
+        $results = apachesolr_search_run('apachesolr', $params, $solrsort, $search_page['search_path'], $page, $solr, $context);
       }
     }
     catch (Exception $e) {
@@ -1125,8 +1133,8 @@ function theme_apachesolr_search_browse_blocks($blocks) {
 /**
  * Execute a search with zero results rows so as to populate facets.
  */
-function apachesolr_search_run_empty($name, array $params = array(), $base_path = '', $solr) {
-  $query = apachesolr_drupal_query($name, $params, '', $base_path, $solr);
+function apachesolr_search_run_empty($name, array $params = array(), $base_path = '', $solr = NULL, $context = array()) {
+  $query = apachesolr_drupal_query($name, $params, '', $base_path, $solr, $context);
   $query->addParam('rows', '0');
   $solr_id = $query->solr('getId');
   list($final_query, $response) = apachesolr_do_query($query);
@@ -1152,11 +1160,11 @@ function apachesolr_search_run_empty($name, array $params = array(), $base_path 
  *
  * @throws Exception
  */
-function apachesolr_search_run($name, array $params = array(), $solrsort = '', $base_path = '', $page = 0, DrupalApacheSolrServiceInterface $solr = NULL) {
+function apachesolr_search_run($name, array $params = array(), $solrsort = '', $base_path = '', $page = 0, DrupalApacheSolrServiceInterface $solr = NULL, $context = array()) {
   // Merge the default params into the params sent in.
   $params += apachesolr_search_basic_params();
   // This is the object that knows about the query coming from the user.
-  $query = apachesolr_drupal_query($name, $params, $solrsort, $base_path, $solr);
+  $query = apachesolr_drupal_query($name, $params, $solrsort, $base_path, $solr, $context);
 
   if ($query->getParam('q')) {
     apachesolr_search_add_spellcheck_params($query);

@@ -1723,7 +1723,7 @@ function apachesolr_static_response_cache($searcher, $response = NULL) {
  *
  * @throws Exception
  */
-function apachesolr_drupal_query($name, array $params = array(), $solrsort = '', $base_path = '', $solr = NULL) {
+function apachesolr_drupal_query($name, array $params = array(), $solrsort = '', $base_path = '', $solr = NULL, $context = array()) {
   if (!interface_exists('DrupalSolrQueryInterface')) {
     require_once(dirname(__FILE__) . '/apachesolr.interface.inc');
   }
@@ -1738,7 +1738,7 @@ function apachesolr_drupal_query($name, array $params = array(), $solrsort = '',
   if (empty($solr)) {
     $solr = apachesolr_get_solr();
   }
-  return new $class($name, $solr, $params, $solrsort, $base_path);
+  return new $class($name, $solr, $params, $solrsort, $base_path, $context);
 }
 
 /**

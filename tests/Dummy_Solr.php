@@ -434,5 +434,28 @@ class DummySolr implements DrupalApacheSolrServiceInterface {
    */
   function optimize($waitFlush = true, $waitSearcher = true, $timeout = 3600, $softCommit = false) {
   }
-}
 
+  /**
+   * Get query name.
+   */
+  function getName() {
+  }
+
+  /**
+   * Get query searcher name (for facetapi, views, pages, etc).
+   */
+  function getSearcher() {
+  }
+
+  /**
+   * Get context values.
+   */
+  function getContext() {
+  }
+
+  /**
+   * Set context value.
+   */
+  function addContext(array $context) {
+  }
+}
