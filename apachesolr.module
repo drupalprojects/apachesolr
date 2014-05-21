@@ -2610,7 +2610,7 @@ function apachesolr_l($text, $path, $options = array()) {
 function theme_apachesolr_sort_link($vars) {
   $icon = '';
   if ($vars['direction']) {
-    $icon = ' ' . theme('tablesort_indicator', array('style' => $vars['direction']));
+    $icon = ' ' . theme('tablesort_indicator', $vars['direction']);
   }
   if ($vars['active']) {
     if (isset($vars['options']['attributes']['class'])) {
