@@ -812,12 +812,12 @@ function apachesolr_index_node_solr_document(ApacheSolrDocument $document, $node
   $extra = array();
   $excludes = variable_get('apachesolr_exclude_nodeapi_types', array());
   $exclude_nodeapi = isset($excludes[$node->type]) ? $excludes[$node->type] : array();
-  foreach (module_implements('node_update_index') as $module) {
+  foreach (module_implements('nodeapi') as $module) {
     // Invoke nodeapi if this module has not been excluded, for example,
     // exclude 'comment' for a type to skip indexing its comments.
     if (empty($exclude_nodeapi[$module])) {
-      $function = $module . '_node_update_index';
-      if ($output = $function($node)) {
+      $function = $module . '_nodeapi';
+      if ($output = $function($node, 'update index', NULL, NULL)) {
         $extra[$module] = $output;
       }
     }
