@@ -1058,7 +1058,7 @@ function apachesolr_index_content_text_indexing_callback($entity, $field_name, $
   if (isset($entity->{$field_name})) {
     $index_key = apachesolr_index_key($field_info);
     foreach ($entity->$field_name as $field) {
-      if ($index_value = (isset($field['safe']) && strlen($field['safe'])) ? $field['safe'] : FALSE) {
+      if ($index_value = (isset($field['safe']) && strlen($field['safe'])) ? apachesolr_clean_text($field['safe']) : FALSE) {
         $fields[] = array(
           'key' => $index_key,
           'value' => $index_value,
