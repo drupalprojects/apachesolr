@@ -63,6 +63,7 @@ Apache Solr integration 6.x-3.x, xxxx-xx-xx
 #1966488 by Nick_vh, pwolanin, mkalkbrenner: apachesolr_index_add_tags_to_document not getting the correct body text and not working as expected
 #1918270 by kevin.dutra: Editing search page id creates new search page
 #1962082 by LiuShaz, Josh Waihi: apachesolr_index_nodeapi_mass_delete() doesn't work
+#2106693 by wulff: Drush help refers to non-existent command
 
 Apache Solr integration 6.x-3.0-rc, 2012-10-22
 ------------------------------
