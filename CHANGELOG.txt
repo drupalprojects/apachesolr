@@ -61,6 +61,7 @@ Apache Solr integration 6.x-3.x, xxxx-xx-xx
 #1958034 by kevin.dutra: Sort direction image does not change
 #1955840 by kevin.dutra: Comments (and other "extra" data) are not indexed
 #1966488 by Nick_vh, pwolanin, mkalkbrenner: apachesolr_index_add_tags_to_document not getting the correct body text and not working as expected
+#1918270 by kevin.dutra: Editing search page id creates new search page
 
 Apache Solr integration 6.x-3.0-rc, 2012-10-22
 ------------------------------

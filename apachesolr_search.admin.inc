@@ -228,6 +228,14 @@ function apachesolr_search_page_settings_form(&$form_state, $search_page = NULL)
     '#default_value' => !empty($search_page['label']) ? $search_page['label'] : '',
   );
 
+  if (empty($search_page['page_id'])) {
+    $key = '#default_value';
+    $disabled = FALSE;
+  }
+  else {
+    $key = '#value';
+    $disabled = TRUE;
+  }
   $form['page_id'] = array(
     '#type' => 'textfield',
     '#title' => t('Page ID'),
@@ -235,7 +243,8 @@ function apachesolr_search_page_settings_form(&$form_state, $search_page = NULL)
     '#required' => TRUE,
     '#size' => 30,
     '#maxlength' => 32,
-    '#default_value' => !empty($search_page['page_id']) ? $search_page['page_id'] : '',
+    $key => $search_page['page_id'],
+    '#disabled' => $disabled, // Cannot be edited if already set.
   );
 
   $form['description_enable'] = array(
