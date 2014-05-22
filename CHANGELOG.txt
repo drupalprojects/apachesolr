@@ -55,6 +55,12 @@ Apache Solr integration 6.x-3.x, xxxx-xx-xx
 #2268477 by mkalkbrenner: apachesolr_index_node_solr_document() breaks node object for further usage
 #1954302 by mkalkbrenner: Added Isolate some re-usable code from apachesolr_index_entity_to_documents().
 #1918012 by mkalkbrenner: Solr query needs to be aware of more context such as Search Page ID
+#1918030 by mkalkbrenner, pwolanin: Allow contrib modules to add custom settings to search pages
+#1433366 by mkalkbrenner: apply apachesolr_clean_text() on text fields provided by content.module
+#1825426 by cpliakas, mkalkbrenner: Add an API function apachesolr_get_field_mappings()
+#1958034 by kevin.dutra: Sort direction image does not change
+#1955840 by kevin.dutra: Comments (and other "extra" data) are not indexed
+#1966488 by Nick_vh, pwolanin, mkalkbrenner: apachesolr_index_add_tags_to_document not getting the correct body text and not working as expected
 
 Apache Solr integration 6.x-3.0-rc, 2012-10-22
 ------------------------------
