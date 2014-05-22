@@ -1249,7 +1249,7 @@ function apachesolr_index_node_check_table() {
   }
 
   // Check for deleted content that wasn't deleted from the index.
-  $result = db_query("SELECT aien.entity_id FROM {{$table}} aien LEFT JOIN {node} n ON n.nid = aien.entity_id WHERE n.nid = NULL LIMIT 0, %d", array($limit*2));
+  $result = db_query("SELECT aien.entity_id AS nid FROM {{$table}} aien LEFT JOIN {node} n ON n.nid = aien.entity_id WHERE n.nid = NULL LIMIT 0, %d", array($limit*2));
   $nodes = array();
   while($record = db_fetch_array($result)) {
     $nodes[$record['nid']] = $record;
