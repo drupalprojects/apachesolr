@@ -725,7 +725,6 @@ function apachesolr_config_files_overview($environment = NULL) {
         break;
       }
       // Get data from the files.
-      $name =  $item->attributes();
       $name = ((string)$item->attributes()) ? (string)$item->attributes() : t('No name found');
       $files[$item_id]['name'] = l($name, 'admin/reports/apachesolr/' . $env_id . '/conf/' . $name);
 
