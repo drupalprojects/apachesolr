@@ -777,7 +777,7 @@ function apachesolr_config_files_overview(array $environment = array()) {
     foreach ($items as $item_id => $item) {
       // Do not list directories. Always a bool
       if (isset($item->bool)) {
-        break;
+        continue;
       }
       // Get data from the files.
       $name = ((string)$item->attributes()) ? (string)$item->attributes() : t('No name found');
