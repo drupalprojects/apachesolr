@@ -1648,6 +1648,36 @@ function apachesolr_search_facetapi_realm_settings_form_submit(&$form, &$form_st
 }
 
 /**
+ * Implements hook_context_plugins()
+ */
+function apachesolr_search_context_plugins() {
+  $plugins = array();
+  $plugins['apachesolr_context_page_condition'] = array(
+    'handler' => array(
+      'path' => drupal_get_path('module', 'apachesolr') .'/plugins/context',
+      'file' => 'apachesolr_context_page_condition.inc',
+      'class' => 'apachesolr_context_page_condition',
+      'parent' => 'context_condition',
+    ),
+  );
+  return $plugins;
+}
+
+/**
+ * Implements hook_context_registry().
+ */
+function apachesolr_search_context_registry() {
+  return array(
+    'conditions' => array(
+      'apachesolr_page' => array(
+        'title' => t('Apachesolr search page'),
+        'plugin' => 'apachesolr_context_page_condition',
+      ),
+    ),
+  );
+}
+
+/**
  * Implements hook_theme().
  */
 function apachesolr_search_theme() {

@@ -14,6 +14,10 @@ function apachesolr_search_custom_page($page_id, $keys = '', $path_replacer = NU
     drupal_set_message(t('This search page cannot be found'), 'error');
     return drupal_not_found();
   }
+  // Activate context, if we have any.
+  if ((module_exists('context')) && ($plugin = context_get_plugin('condition', 'apachesolr_page'))) {
+    $plugin->execute($search_page);
+  }
   // Add our replacement value in the conditions array
   if (!empty($path_replacer)) {
     $search_page['settings']['apachesolr_search_path_replacer'] = $path_replacer;
