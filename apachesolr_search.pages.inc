@@ -14,7 +14,7 @@ function apachesolr_search_custom_page($page_id, $keys = '', $path_replacer = NU
     drupal_set_message(t('This search page cannot be found'), 'error');
     return drupal_not_found();
   }
-  // Activate context, if we have any.
+  // Activate the page context, if the module is enabled.
   if ((module_exists('context')) && ($plugin = context_get_plugin('condition', 'apachesolr_page'))) {
     $plugin->execute($search_page);
   }
