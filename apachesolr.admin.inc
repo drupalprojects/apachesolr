@@ -984,7 +984,7 @@ function apachesolr_index_action_form_cron_submit(array $form, array &$form_stat
     $form_state['redirect'] = 'admin/config/search/apachesolr';
   }
   apachesolr_cron($env_id);
-  drupal_set_message(t('Apachesolr cron succesfully executed'));
+  drupal_set_message(t('Apachesolr cron successfully executed'));
 }
 
 /**
