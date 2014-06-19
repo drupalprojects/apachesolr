@@ -1357,6 +1357,14 @@ function apachesolr_environment_save($environment) {
   module_load_include('inc', 'apachesolr', 'apachesolr.index');
   $default = array('env_id' => '', 'name' => '', 'url' => '', 'service_class' => '');
 
+  // If the environment has been saved to the database before, we need to make
+  // sure we don't loose anything when saving it; therefore, load the existing
+  // environment and merge its' data with the new one.
+  $old_environment = apachesolr_environment_load($environment['env_id']);
+  if (!empty($old_environment['in_code_only']) && $environment != $old_environment) {
+    $environment = drupal_array_merge_deep($old_environment, $environment);
+  }
+
   $conf = isset($environment['conf']) ? $environment['conf'] : array();
   $index_bundles = isset($environment['index_bundles']) ? $environment['index_bundles'] : array();
   // Remove any unexpected fields.
@@ -1412,6 +1420,7 @@ function apachesolr_environment_variable_get($env_id, $name, $default = NULL) {
  * @see variable_set()
  */
 function apachesolr_environment_variable_set($env_id, $name, $value) {
+  apachesolr_environment_save_to_database($env_id);
   db_merge('apachesolr_environment_variable')
     ->key(array('env_id' => $env_id, 'name' => $name))
     ->fields(array('value' => serialize($value)))
@@ -1425,11 +1434,31 @@ function apachesolr_environment_variable_set($env_id, $name, $value) {
  * @see variable_del()
  */
 function apachesolr_environment_variable_del($env_id, $name) {
+  apachesolr_environment_save_to_database($env_id);
   db_delete('apachesolr_environment_variable')
     ->condition('env_id', $env_id)
     ->condition('name', $name)
     ->execute();
   apachesolr_environments_clear_cache();
+}
+
+/**
+ * Makes sure that the given environment has been saved to the database.
+ *
+ * This is a required step before any environment-related data is modified or
+ * deleted. It ensures that ctools exportables can properly determine whether
+ * something has been overridden.
+ *
+ * @param string $env_id
+ *   The environment ID.
+ *
+ * @see https://www.drupal.org/node/1439564#comment-8727467
+ */
+function apachesolr_environment_save_to_database($env_id) {
+  $environment = apachesolr_environment_load($env_id);
+  if (!empty($environment['in_code_only'])) {
+    apachesolr_environment_save($environment);
+  }
 }
 
 /**
