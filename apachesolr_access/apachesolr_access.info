@@ -4,5 +4,4 @@ dependencies[] = apachesolr
 package = Search Toolkit
 core = 7.x
 
-files[] = apachesolr_access.module
 files[] = tests/apachesolr_access.test
