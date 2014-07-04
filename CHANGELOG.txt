@@ -66,6 +66,7 @@ Apache Solr integration 6.x-3.x, xxxx-xx-xx
 #2106693 by wulff: Drush help refers to non-existent command
 #1923764 by kevin.dutra, mkalkbrenner: tos_name_formatted missing from field name map
 #2288867 by larowlan: Search results built twice when using search pages with a search box
+#2293861 by mkalkbrenner: Custom CCK fields not indexed and therefore not searchable
 
 Apache Solr integration 6.x-3.0-rc, 2012-10-22
 ------------------------------

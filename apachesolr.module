@@ -2193,6 +2193,9 @@ function apachesolr_get_field_mappings($entity_type) {
  * Implements hook_apachesolr_index_document_build() on behalf of content module.
  */
 function content_apachesolr_index_document_build(ApacheSolrDocument $document, $entity, $entity_type) {
+  // Let field modules sanitize their data for output.
+  _content_field_invoke('sanitize', $entity);
+
   $indexed_fields = apachesolr_entity_fields($entity_type);
   foreach ($indexed_fields as $index_key => $nodefields) {
     if (!empty($nodefields)) {
