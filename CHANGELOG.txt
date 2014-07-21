@@ -68,6 +68,7 @@ Apache Solr integration 6.x-3.x, xxxx-xx-xx
 #2288867 by larowlan: Search results built twice when using search pages with a search box
 #2293861 by mkalkbrenner: Custom CCK fields not indexed and therefore not searchable
 #2011492 by ianthomas_uk, Nick_vh, Mark_, mkalkbrenner: Remove duplicated indexing code
+#1795870 by hitfactory, tim_dj, alejandro_oses: fix to search path on serach box form submit when using i18n prefix
 
 Apache Solr integration 6.x-3.0-rc, 2012-10-22
 ------------------------------
