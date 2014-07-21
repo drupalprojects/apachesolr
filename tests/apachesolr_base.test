@@ -419,8 +419,8 @@ class DrupalSolrNodeTestCase extends DrupalWebTestCase {
 
   public static function getInfo() {
     return array(
-      'name' => 'Solr Node add and deletion tests',
-      'description' => 'Solr Node add, deletion, and document building tests',
+      'name' => 'Solr Node Add, Deletion and Indexing Tests',
+      'description' => 'Solr Node add, deletion, indexing and document building tests',
       'group' => 'ApacheSolr',
     );
   }
@@ -486,7 +486,7 @@ class DrupalSolrNodeTestCase extends DrupalWebTestCase {
 
       // Check that the node has been created.
       $node = $this->drupalGetNodeByTitle($edit['title']);
-      $this->assertTrue($node, t('Created article @type found in database.', array('@type' => $type)));
+      $this->assertTrue($node, t('Created story @type found in database.', array('@type' => $type)));
 
       // Check that the node has status 1
       $query = "SELECT status FROM {{$table}} WHERE entity_id = %d";
@@ -509,12 +509,77 @@ class DrupalSolrNodeTestCase extends DrupalWebTestCase {
     }
   }
 
+  function testApacheSolrNodeReindex() {
+    // Login as admin user to perform initial content creation.
+    $this->drupalLogin($this->admin_user);
+
+    // Define types of node bundles that we want to index
+    $types = array('page', 'story');
+
+    // enable our bundles to be indexed, and clear caches
+    apachesolr_index_set_bundles('solr', 'node', $types);
+    content_clear_type_cache();
+    apachesolr_environments_clear_cache();
+
+    // Create 10 nodes (5 times 2)
+    foreach ($types as $type) {
+      for ($i = 0; $i < 5; $i++) {
+        $edit = array();
+        // Create a node of the type $type.
+        $edit['uid'] = $this->admin_user->uid;
+        $edit['type'] = $type;
+        $edit['title'] = $this->randomName(16);
+        $node = $this->drupalCreateNode($edit);
+      }
+    }
+
+    // Set a static timestamp
+    $timestamp = 1382019301;
+
+    $env_id = apachesolr_default_environment();
+
+    // Clear the last timestamp so we know that our nodes have to be indexed.
+    apachesolr_environment_variable_set($env_id, 'apachesolr_index_last', array());
+
+    // Set apachesolr_index_entities_node.changed to the same value
+    // (REQUEST_TIME).
+    $table = apachesolr_get_indexer_table('node');
+    db_query("UPDATE {{$table}} SET changed = %d, status = 1", $timestamp);
+    // Fake that we actually indexed before
+    apachesolr_set_last_index_position($env_id, 'node', $timestamp + 1, 10);
+
+    // Set the changed date to after our previous index cycle
+    db_query("UPDATE {{$table}} SET changed = %d + 10, status = 1 WHERE entity_id <= 9", $timestamp);
+    // Get the next 5 entities to index.
+    $set = apachesolr_index_get_entities_to_index($env_id, 'node', 5);
+    $count = count($set);
+    $this->assertEqual($count, 5, t('We found 5 entities to index.'));
+
+    // Mark the last item from that 5 as last indexed.
+    $last_row = end($set);
+    apachesolr_set_last_index_position($env_id, 'node', $last_row->changed, $last_row->entity_id);
+
+    // Get the next batch of 5 and this should be 4 items.
+    $set = apachesolr_index_get_entities_to_index($env_id, 'node', 4);
+    $count = count($set);
+    $this->assertEqual($count, 4, t('We found 4 entities to index.'));
+
+    // Mark the last item from that 4 as last indexed.
+    $last_row = end($set);
+    apachesolr_set_last_index_position($env_id, 'node', $last_row->changed, $last_row->entity_id);
+
+    // Get the next batch of 5 and this should be 0 items
+    $set = apachesolr_index_get_entities_to_index($env_id, 'node', 5);
+    $count = count($set);
+    $this->assertEqual($count, 0, t('We found 0 entities to index.'));
+  }
+
   function testNodeToDocument() {
     // enable our bundles to be indexed, and clear caches
-    apachesolr_index_set_bundles('solr', 'node', array('article'));
+    apachesolr_index_set_bundles('solr', 'node', array('story'));
     apachesolr_environments_clear_cache();
     $edit = array();
-    // Create a node of the type article.
+    // Create a node of the type story.
     $type = 'story';
     $edit['uid'] = 1;
     $edit['type'] = $type;

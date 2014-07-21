@@ -25,8 +25,8 @@ function apachesolr_drush_command() {
     ),
     'examples' => array(
       'drush solr-delete-index node' => 'Delete all node content from the index.',
-      'drush solr-delete-index node:article' => 'Delete all content of the article content type from the index.',
-      'drush solr-delete-index node:article node:blog' => 'Delete all content of the article and blog content types from the index.',
+      'drush solr-delete-index node:story' => 'Delete all content of the story content type from the index.',
+      'drush solr-delete-index node:story node:blog' => 'Delete all content of the story and blog content types from the index.',
     ),
   );
   $items['solr-mark-all'] = array(

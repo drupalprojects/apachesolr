@@ -38,29 +38,35 @@ function apachesolr_index_entities($env_id, $limit) {
   $entity_type = 'node';
   // With each pass through the callback, retrieve the next group of nids.
   $rows = apachesolr_index_get_entities_to_index($env_id, $entity_type, $limit);
-  $documents = array();
-  foreach ($rows as $row) {
-    $row_documents = apachesolr_index_entities_document($row, $entity_type, $env_id);
-    $documents = array_merge($documents, $row_documents);
-  }
-  $indexed = apachesolr_index_send_to_solr($env_id, $documents);
-  if ($indexed !== FALSE) {
-    $documents_submitted += count($documents);
-    $index_position = apachesolr_get_last_index_position($env_id, $entity_type);
-      $max_changed = $index_position['last_changed'];
-      $max_entity_id = $index_position['last_entity_id'];
-      foreach ($rows as $row) {
-        if (!empty($row->status)) {
-          if ($row->changed > $max_changed) {
-            $max_changed = $row->changed;
-          }
-          if ($row->entity_id > $max_entity_id) {
-            $max_entity_id = $row->entity_id;
-          }
-        }
+  // If there are none for this entity type - ignore it.
+  if (count($rows)) {
+    $documents = array();
+    foreach ($rows as $row) {
+      $row_documents = apachesolr_index_entities_document($row, $entity_type, $env_id);
+      $documents = array_merge($documents, $row_documents);
+    }
+    $indexed = apachesolr_index_send_to_solr($env_id, $documents);
+    if ($indexed !== FALSE) {
+      $documents_submitted += count($documents);
+      // Check who's the last in line
+      $last_row = end($rows);
+
+      // set our last position to the entity id and changed value so we can
+      // keep track where we left off
+      if (!empty($last_row->changed) && !empty($last_row->entity_id)) {
+        apachesolr_set_last_index_position($env_id, $entity_type, $last_row->changed, $last_row->entity_id);
       }
-      apachesolr_set_last_index_position($env_id, $entity_type, $max_changed, $max_entity_id);
+      else {
+        $message = 'Failure recording indexing progress. Last entity id processed: %entity_id with timestamp %last_changed';
+        $variables = array(
+          '%entity_id' => $last_row->entity_id,
+          '%last_changed' => $last_row->changed,
+        );
+        // Add it to watchdog
+        watchdog('Apache Solr', $message, $variables, WATCHDOG_ERROR);
+      }
       apachesolr_set_last_index_updated($env_id, APACHESOLR_REQUEST_TIME);
+    }
   }
   return $documents_submitted;
 }
@@ -475,6 +481,7 @@ function apachesolr_index_get_entities_to_index($env_id, $entity_type, $limit) {
 
   // Get next batch of entities to index
   $query = _apachesolr_index_get_next_set_query($env_id, $entity_type);
+
   $result = db_query_range($query['query'], $query['args'], 0, $limit);
 
   $status_callbacks = apachesolr_entity_get_callback($entity_type, 'status callback');
@@ -572,7 +579,7 @@ function _apachesolr_index_get_next_set_query($env_id, $entity_type, $count = NU
   $query = 'SELECT ';
   $query .= ($count) ? 'COUNT(*)' : '*';
   $query .= " FROM {{$table}} aie
-      WHERE aie.status = 1 AND ((aie.changed > %d) OR ((aie.changed <= %d) AND (aie.entity_id > %d)))
+      WHERE aie.status = 1 AND ((aie.changed > %d) OR ((aie.changed = %d) AND (aie.entity_id > %d)))
       AND (aie.bundle IN (" . db_placeholders($bundles, 'varchar') . "))";
 
   if ($table == 'apachesolr_index_entities') {

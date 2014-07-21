@@ -1807,7 +1807,7 @@ function apachesolr_field_name_map($field_name) {
       'tags_a' => t('Body text inside links (A tags)'),
       'tid' => t('Taxonomy term IDs'),
       'is_uid' => t('User IDs'),
-      'bundle' => t('Content type names eg. article'),
+      'bundle' => t('Content type names eg. story'),
       'entity_type' => t('Entity type names eg. node'),
       'ss_language' => t('Language type eg. en or und (undefinded)'),
     );

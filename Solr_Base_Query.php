@@ -138,12 +138,12 @@ class SolrFilterSubQuery {
    * Make sure our query matches the pattern name:value or name:"value"
    * Make sure that if we are ranges we use name:[ AND ]
    * allowed inputs :
-   * a. bundle:article
+   * a. bundle:story
    * b. date:[1970-12-31T23:59:59Z TO NOW]
    * Split the text in 4 different parts
    * 1. name, eg.: bundle or date
    * 2. The first opening bracket (or nothing), eg.: [
-   * 3. The value of the field, eg. article or 1970-12-31T23:59:59Z TO NOW
+   * 3. The value of the field, eg. story or 1970-12-31T23:59:59Z TO NOW
    * 4. The last closing bracket, eg.: ]
    * @param string $filter
    *   The filter to validate

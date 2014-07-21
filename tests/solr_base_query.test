@@ -119,17 +119,17 @@ class SolrBaseQueryTests extends DrupalUnitTestCase {
       '#name' => NULL,
       '#value' => NULL,
     );
-    $examples['bundle:(article OR page)'] = array(
+    $examples['bundle:(story OR page)'] = array(
       '#local' => NULL,
       '#exclude' => FALSE,
       '#name' => 'bundle',
-      '#value' => '(article OR page)',
+      '#value' => '(story OR page)',
     );
-    $examples['-bundle:(article OR page)'] = array(
+    $examples['-bundle:(story OR page)'] = array(
       '#local' => NULL,
       '#exclude' => TRUE,
       '#name' => 'bundle',
-      '#value' => '(article OR page)',
+      '#value' => '(story OR page)',
     );
     $examples['-{!anything that appears to be local}'] = array(
       '#local' => 'anything that appears to be local',
@@ -188,11 +188,11 @@ class SolrBaseQueryTests extends DrupalUnitTestCase {
       '#name' => 'field_date',
       '#value' => '[1970-12-31 TO NOW]',
     );
-    $bad_examples['bundle:((article OR page)]'] = array(
+    $bad_examples['bundle:((story OR page)]'] = array(
       '#local' => NULL,
       '#exclude' => FALSE,
       '#name' => 'bundle',
-      '#value' => '((article OR page)]',
+      '#value' => '((story OR page)]',
     );
 
     foreach ($bad_examples as $fq => $example) {
