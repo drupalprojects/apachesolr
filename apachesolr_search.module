@@ -823,6 +823,7 @@ function apachesolr_search_form_search_block_form_alter(&$form, &$form_state) {
  * @see search_box_form_submit()
  */
 function apachesolr_search_search_box_form_submit($form, &$form_state) {
+  global $language;
   // The search form relies on control of the redirect destination for its
   // functionality, so we override any static destination set in the request,
   // for example by drupal_access_denied() or drupal_not_found()
@@ -853,6 +854,17 @@ function apachesolr_search_search_box_form_submit($form, &$form_state) {
     // Replace the beginning of the string with nothing. The regular expression
     // avoids that we replace too much
     $path = preg_replace($base_path_regex, '', $path);
+  }
+  if (!empty($language->prefix)) {
+    // Create a regular expression string to find a language prefix at the
+    // beginning of the string
+    $lang_prefix_regex = '#^' . $language->prefix . '/#';
+    // Find the language prefix in the path.
+    if (preg_match($lang_prefix_regex, $path)) {
+      // Replace the beginning of the string with nothing. The regular expression
+      // avoids that we replace too much.
+      $path = preg_replace($lang_prefix_regex, '', $path);
+    }
   }
   // Set our path to the correct search page
   $form_state['redirect'] = $path . '/' .trim($keys);
