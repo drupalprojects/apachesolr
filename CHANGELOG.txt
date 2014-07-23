@@ -70,6 +70,7 @@ Apache Solr integration 6.x-3.x, xxxx-xx-xx
 #2011492 by ianthomas_uk, Nick_vh, Mark_, mkalkbrenner: Remove duplicated indexing code
 #1795870 by hitfactory, tim_dj, alejandro_oses: fix to search path on serach box form submit when using i18n prefix
 #1828014 by Mark_, mkalkbrenner, ianthomas_uk, Nick_vh, DeFr: Fixed Mass re-indexation can miss (a lot of) content.
+#2187689 by siliconmeadow: Fixed the misspelling of 'successfully...
 
 Apache Solr integration 6.x-3.0-rc, 2012-10-22
 ------------------------------

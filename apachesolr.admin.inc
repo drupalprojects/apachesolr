@@ -923,7 +923,7 @@ function apachesolr_index_action_form_cron_submit($form, &$form_state) {
   unset($form_state['storage']);
   $form_state['redirect'] = 'admin/settings/apachesolr';
   apachesolr_cron($env_id);
-  drupal_set_message(t('Apachesolr cron succesfully executed'));
+  drupal_set_message(t('Apachesolr cron successfully executed'));
 }
 
 /**
