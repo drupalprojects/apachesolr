@@ -15,6 +15,8 @@ abstract class AbstractDrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
   }
 
   function setUpSolr() {
+    global $db_prefix;
+
     $patterns = func_get_args();
 
     // Load the default server.
@@ -28,7 +30,7 @@ abstract class AbstractDrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
     // Solr server is running locally.
     if ($this->coreAdminAvailable()) {
       // We will use a core named after the simpletest prefix.
-      $environment['url'] .= '/' . $this->databasePrefix;
+      $environment['url'] .= '/' . $db_prefix;
       $filesdir = file_directory_path();
 
       // Create our Solr core directory.
@@ -52,7 +54,7 @@ abstract class AbstractDrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
       // @todo - use solrcore.properties file for 3.x.
       file_put_contents("$instancedir/conf/solrconfig.xml", preg_replace('@<maxTime>[0-9]+</maxTime>@', '<maxTime>1000</maxTime>', $contents));
 
-      $query['name'] = $this->databasePrefix;
+      $query['name'] = $db_prefix;
       $query['instanceDir'] = $instancedir;
       $created = $this->coreAdmin('CREATE', $query);
 
@@ -62,7 +64,7 @@ abstract class AbstractDrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
         apachesolr_environment_save($environment);
         $this->solr = apachesolr_get_solr($env_id);
         $this->solr_available = TRUE;
-        $this->checkCoreStatus($this->databasePrefix);
+        $this->checkCoreStatus($db_prefix);
       }
     }
     // Workaround for drupal.org test bot.
@@ -103,10 +105,12 @@ abstract class AbstractDrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
   }
 
   function tearDown() {
+    global $db_prefix;
+
     // Workaround for drupal.org test bot
     if ($this->solr_available) {
       // Unload the Solr core.
-      $this->coreAdmin('UNLOAD', array('core' => $this->databasePrefix));
+      $this->coreAdmin('UNLOAD', array('core' => $db_prefix));
     }
     parent::tearDown();
   }
