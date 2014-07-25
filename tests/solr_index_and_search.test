@@ -24,7 +24,7 @@ abstract class AbstractDrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
     $modules[] = 'apachesolr_search';
     $modules[] = 'search';
 
-    parent::setUp($modules);
+    call_user_func_array('parent::setUp', $modules);
   }
 
   function setUpSolr() {
