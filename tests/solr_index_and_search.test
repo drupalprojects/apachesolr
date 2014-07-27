@@ -10,7 +10,10 @@ abstract class AbstractDrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
    * Implementation of setUp().
    */
   function setUp() {
+    global $db_prefix;
+    require_once dirname(dirname(realpath(__FILE__))) . '/apachesolr.interface.inc';
     require_once dirname(dirname(realpath(__FILE__))) . '/Apache_Solr_Document.php';
+    require_once dirname(dirname(realpath(__FILE__))) . '/Drupal_Apache_Solr_Service.php';
 
     // Install modules needed for this test. This could have been passed in as
     // either a single array argument or a variable number of string arguments.
@@ -20,41 +23,59 @@ abstract class AbstractDrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
     if (isset($modules[0]) && is_array($modules[0])) {
       $modules = $modules[0];
     }
+    $modules[] = 'content';
     $modules[] = 'apachesolr';
     $modules[] = 'apachesolr_search';
     $modules[] = 'search';
 
     call_user_func_array('parent::setUp', $modules);
+
+    $this->databasePrefix = $db_prefix;
   }
 
   function setUpSolr() {
-    global $db_prefix;
-
-    $patterns = func_get_args();
-
     // Load the default server.
     $env_id = apachesolr_default_environment();
     $environment = apachesolr_environment_load($env_id);
+    $this->base_solr_url = $environment['url'];
+
     // Because we are in a clean environment, this will always be the default
     // http://localhost:8983/solr
-    $this->core_admin_url = "{$environment['url']}/admin/cores";
+    $this->core_admin_url = "{$this->base_solr_url}/admin/cores";
 
     // The core admin url will give a valid response if the
     // Solr server is running locally.
     if ($this->coreAdminAvailable()) {
+
       // We will use a core named after the simpletest prefix.
-      $environment['url'] .= '/' . $db_prefix;
+      $environment['url'] .= '/' . $this->databasePrefix;
+
+      // file_directory_temp() will not be cleaned by DrupalWebTestCase::tearDown()
       $filesdir = file_directory_path();
-
       // Create our Solr core directory.
-      mkdir("$filesdir/solr", 0777, TRUE);
-      mkdir("$filesdir/solr/conf");
-
+      mkdir("{$filesdir}/solr", 0777, TRUE);
       // Our temporary core is located here.
-      $instancedir = realpath("$filesdir/solr");
+      $instancedir = realpath($filesdir . "/solr");
+
+      // use the Solr version confs where appropriate.
+      $version = $this->getSolrVersion();
+      if (isset($version) && $version == 3) {
+        $conf_path = dirname(__FILE__) . '/../solr-conf/solr-3.x/*';
+      }
+      elseif (isset($version) && $version == 4) {
+        $conf_path = dirname(__FILE__) . '/../solr-conf/solr-4.x/*';
+      }
+      else {
+        $conf_path = dirname(__FILE__) . '/../solr-conf/solr-1.4/*';
+      }
+
+      $patterns = array(
+        $conf_path,
+        dirname(__FILE__) . '/conf/*',
+      );
 
       // Copy all files in solr-conf dir to our temporary solr core.
-      // @todo - use the Solr 3.x conf where appropriate.
+      mkdir("{$instancedir}/conf", 0777, TRUE);
       foreach ($patterns as $pattern) {
         foreach (glob($pattern) as $conf_file) {
           copy($conf_file, "$instancedir/conf/" . basename($conf_file));
@@ -67,21 +88,21 @@ abstract class AbstractDrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
       // @todo - use solrcore.properties file for 3.x.
       file_put_contents("$instancedir/conf/solrconfig.xml", preg_replace('@<maxTime>[0-9]+</maxTime>@', '<maxTime>1000</maxTime>', $contents));
 
-      $query['name'] = $db_prefix;
-      $query['instanceDir'] = $instancedir;
-      $this->drupalGet($this->core_admin_url, array('query' => $query));
-      $this->assertResponse(200);
-      $this->instancedir = $instancedir;
+      // hard chmod -R because it seems drupal dirs are too restricted in a
+      // testing environment
+      system("chmod -R 777 {$instancedir}");
 
-      if (apachesolr_server_status($environment['url'])) {
+      $query['name'] = $this->databasePrefix;
+      $query['instanceDir'] = $instancedir;
+      $created = $this->coreAdmin('CREATE', $query);
+
+      if ($created && apachesolr_server_status($environment['url'])) {
+        $this->instancedir = $instancedir;
+        $this->solr_url = $environment['url'];
+        apachesolr_environment_save($environment);
         $this->solr = apachesolr_get_solr($env_id);
         $this->solr_available = TRUE;
-        $this->checkCoreStatus();
-      }
-      else {
-        // workaround for drupal.org test bot
-        // the tests succeed but further tests will not run because $this->solr_available is FALSE
-        $this->pass(t('Warning : The solr instance could not be found. Please enable a multicore one on http://localhost:8983/solr'));
+        $this->checkCoreStatus($this->databasePrefix);
       }
     }
     // Workaround for drupal.org test bot.
@@ -93,8 +114,23 @@ abstract class AbstractDrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
 
   protected function coreAdminAvailable() {
     $url = url($this->core_admin_url, array('query' => array('action' => 'STATUS')));
-    $result = drupal_http_request($url, array(), 'GET', NULL, 3, 2);
+    $options['timeout'] = 2;
+    $result = drupal_http_request($url, $options);
     return ($result->code == 200 && empty($result->error));
+  }
+
+  protected function getSolrVersion() {
+    $status = $this->coreAdmin('STATUS');
+    foreach($status['status'] as $core_id => $core) {
+      $solr = new DrupalApacheSolrService($this->base_solr_url . '/' . $core_id);
+      $version = $solr->getSolrVersion();
+      if (!empty($version)) {
+        return $version;
+      }
+      else {
+        return "1";
+      }
+    }
   }
 
   /**
@@ -103,10 +139,12 @@ abstract class AbstractDrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
   protected function coreAdmin($action, $query = array()) {
     $query['action'] = $action;
     $query['wt'] = 'json';
-    $query['indent'] = '1';
-    $this->drupalGet($this->core_admin_url, array('query' => $query));
-    if ($this->assertResponse(200)) {
-      return json_decode($this->drupalGetContent(), TRUE);
+    $url = url($this->core_admin_url, array('query' => $query));
+    $options['timeout'] = 2;
+    $result = drupal_http_request($url, $options);
+
+    if ($result->code == 200) {
+      return json_decode($result->data, TRUE);
     }
     else {
       return FALSE;
@@ -122,12 +160,18 @@ abstract class AbstractDrupalSolrOnlineWebTestCase extends DrupalWebTestCase {
   }
 
   function tearDown() {
-    global $db_prefix;
-
     // Workaround for drupal.org test bot
     if ($this->solr_available) {
-      // Unload the Solr core.
-      $this->coreAdmin('UNLOAD', array('core' => $db_prefix));
+      // Unload the Solr core & delete all files
+      $query = array(
+        'core' => $this->databasePrefix,
+        'deleteIndex' => 'true',
+        'deleteDataDir' => 'true',
+        'deleteInstanceDir' => 'true'
+      );
+      // This is currently broken due to
+      // https://issues.apache.org/jira/browse/SOLR-3586
+      $this->coreAdmin('UNLOAD', $query);
     }
     parent::tearDown();
   }

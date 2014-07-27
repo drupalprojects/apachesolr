@@ -93,7 +93,7 @@ class DrupalSolrOfflineEnvironmentWebTestCase extends DrupalSolrOfflineWebTestCa
     $environment = apachesolr_environment_load($env_id, TRUE);
     $environment['url'] = 'http://localhost/solr/core_that_should_not_exist';
     apachesolr_environment_save($environment);
-    //cache_clear_all('apachesolr:environments', 'cache_apachesolr');
+    cache_clear_all('apachesolr:environments', 'cache_apachesolr');
     $status = apachesolr_server_status($environment['url']);
     $this->assertFalse($status, t('A false URL could not be loaded and is offline'));
     $this->drupalLogin($this->admin_user);

@@ -247,7 +247,7 @@ class DrupalApacheSolrService implements DrupalApacheSolrServiceInterface {
     return $this->luke[$num_terms];
   }
 
-  protected function getSolrVersion() {
+  public function getSolrVersion() {
     $system_info = $this->getSystemInfo();
     // Get our solr version number
     if (isset($system_info->lucene->{'solr-spec-version'})) {
