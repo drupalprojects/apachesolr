@@ -71,6 +71,7 @@ Apache Solr integration 6.x-3.x, xxxx-xx-xx
 #1795870 by hitfactory, tim_dj, alejandro_oses: fix to search path on serach box form submit when using i18n prefix
 #1828014 by Mark_, mkalkbrenner, ianthomas_uk, Nick_vh, DeFr: Fixed Mass re-indexation can miss (a lot of) content.
 #2187689 by siliconmeadow: Fixed the misspelling of 'successfully...
+#1915614 by mkalkbrenner, Nick_vh: Added Complete admin settings for non-default environments.
 
 Apache Solr integration 6.x-3.0-rc, 2012-10-22
 ------------------------------
