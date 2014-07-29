@@ -349,8 +349,8 @@ function apachesolr_settings(&$form_state) {
     $confs['index'] = array(
       'class' => 'operation',
       'data' => l(t('Index'),
-        'admin/settings/apachesolr/settings/' . $data['env_id'] . '/index',
-         array('query' => array('destination' => $_GET['q']))
+        'admin/settings/apachesolr/settings/' . $data['env_id'] . '/index'
+        // No destination. A destination will interfere with the index action buttons.
       ),
     );
     $ops['edit'] = array(
