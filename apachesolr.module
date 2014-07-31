@@ -1878,8 +1878,11 @@ function apachesolr_get_index_callbacks() {
  * Implements hook_content_extra_fields().
  */
 function apachesolr_content_extra_fields($content_type) {
+  // Load all environments
+  $environments = apachesolr_load_all_environments();
+
   $default_entity_info = apachesolr_get_index_callbacks();
-  // First set defaults so that we needn't worry about NULL keys.
+  // First set defaults so that we don't need to worry about NULL keys.
   if (!isset($extra['apachesolr'])) {
     $extra['apachesolr'] = array();
   }
@@ -1900,16 +1903,24 @@ function apachesolr_content_extra_fields($content_type) {
   );
 
   $extra['apachesolr'] += $default;
-  $env_id = apachesolr_default_environment();
-  if ($extra['apachesolr']['indexable']) {
-    $supported = apachesolr_get_index_bundles($env_id, $entity_type);
-    if (in_array($content_type, $supported)) {
-      $extra['apachesolr']['index'] = TRUE;
-    }
-    else {
-      $extra['apachesolr']['index'] = FALSE;
+  $extra['apachesolr']['index'] = FALSE;
+
+  // Loop over each environment and check if any of them have other entity
+  // bundles of any entity type enabled and set the index value to TRUE
+  foreach ($environments as $env) {
+    // Skip if the environment is set to read only
+    if (empty($env['env_id']['conf']['apachesolr_read_only'])) {
+      // Get the supported bundles
+      $supported = apachesolr_get_index_bundles($env['env_id'], $entity_type);
+      // For each bundle in drupal, compare to the supported apachesolr
+      // bundles and enable where possible
+      if (in_array($content_type, $supported)) {
+        $extra['apachesolr']['index'] = TRUE;
+        break;
+      }
     }
   }
+
   return $extra;
 }
 
