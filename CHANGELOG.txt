@@ -73,6 +73,7 @@ Apache Solr integration 6.x-3.x, xxxx-xx-xx
 #2187689 by siliconmeadow: Fixed the misspelling of 'successfully...
 #1915614 by mkalkbrenner, Nick_vh: Added Complete admin settings for non-default environments.
 #1915418 by mkalkbrenner: Unable to index a node bundle in a dedicated index / environment
+#1953976 by mkalkbrenner: avoid use variable_set() in anything related to indexing content (because of performance)
 
 Apache Solr integration 6.x-3.0-rc, 2012-10-22
 ------------------------------
