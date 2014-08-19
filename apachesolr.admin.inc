@@ -1253,14 +1253,14 @@ function apachesolr_devel($node) {
   $output = '';
   foreach (apachesolr_load_all_environments() as $env_id => $environment) {
     $documents = apachesolr_index_entity_to_documents($item, $env_id);
-  }
-  $output .= '<h1>' . t('Environment %name (%env_id)', array('%name' => $environment['name'], '%env_id' => $env_id)). '</h1>';
-  foreach ($documents as $document) {
-    $debug_data = array();
-    foreach ($document as $key => $value) {
-      $debug_data[$key] = $value;
+    $output .= '<h1>' . t('Environment %name (%env_id)', array('%name' => $environment['name'], '%env_id' => $env_id)). '</h1>';
+    foreach ($documents as $document) {
+      $debug_data = array();
+      foreach ($document as $key => $value) {
+        $debug_data[$key] = $value;
+      }
+      $output .= kdevel_print_object($debug_data);
     }
-    $output .= kdevel_print_object($debug_data);
   }
   return $output;
 }
