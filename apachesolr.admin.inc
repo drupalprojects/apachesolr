@@ -934,8 +934,6 @@ function apachesolr_index_action_form_cron_submit($form, &$form_state) {
  */
 function apachesolr_index_action_form_remaining_confirm(&$form_state, $environment) {
   $form = array();
-  var_dump($environment);
-  exit();
   return confirm_form($form,
     t('Are you sure you want index all remaining content?'),
     'admin/settings/apachesolr/settings/' . $environment['env_id'] . '/index',
