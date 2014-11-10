@@ -1,4 +1,4 @@
-Apache Solr integration 6.x-3.x, xxxx-xx-xx
+Apache Solr integration 6.x-3.0-rc3, 2014-11-10
 ------------------------------
 #2157849 by Nick_vh, pwolanin: Copy over the new Solr Config files from the common schema project
 #2072211 by pwolanin: Document the behavior of apachesolr_access() relative to hook_node_access().
@@ -75,6 +75,8 @@ Apache Solr integration 6.x-3.x, xxxx-xx-xx
 #1915418 by mkalkbrenner: Unable to index a node bundle in a dedicated index / environment
 #1953976 by mkalkbrenner: avoid use variable_set() in anything related to indexing content (because of performance)
 #1918566 by mkalkbrenner: fixed erroneous backport of multi environment devel integration
+#2338591 by mkalkbrenner: apachesolr_index_get_entities_to_index() randomly fails
+#2334787 by gnindl, mkalkbrenner: Display shared fields
 
 Apache Solr integration 6.x-3.0-rc, 2012-10-22
 ------------------------------
