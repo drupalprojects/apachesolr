@@ -2092,13 +2092,26 @@ function apachesolr_entity_fields($entity_type = 'node') {
             $row['name'] = $field['field_name'];
           }
           $row['module_name'] = $field['widget']['module'];
-          // Set display name
-          $display_name = array();
-          // Todo, make the search index per content type
-          if (empty($field['display_settings'][NODE_BUILD_SEARCH_INDEX]) || !$field['display_settings'][NODE_BUILD_SEARCH_INDEX]['exclude']) {
-            $row['display_name'] = $field['widget']['label'];
-            $row['bundles'][] = $field['type_name'];
+
+          // Get content types which use this field.
+          $result = db_query("SELECT nt.type FROM {" . content_instance_tablename() . "} nfi " .
+            "LEFT JOIN {node_type} nt ON nt.type = nfi.type_name " .
+            "WHERE nfi.field_name = '%s' " .
+            // Keep disabled modules out of table.
+            "AND nfi.widget_active = 1",
+            $field['field_name']);
+          // Display this field if at least one content type which uses the
+          // field does not exclude it from the search index.
+          // In the worst case it's empty, but field values are still rendered.
+          while ($type = db_fetch_array($result)) {
+            $bundle = content_types($type['type']);
+            $field_display = isset($bundle['fields'][$field_name]['display_settings']) ? $bundle['fields'][$field_name]['display_settings'] : array();
+            if (empty($field_display[NODE_BUILD_SEARCH_INDEX]) || (!$field_display[NODE_BUILD_SEARCH_INDEX]['exclude'] && $field_display[NODE_BUILD_SEARCH_INDEX]['format'] != 'hidden')) {
+              $row['display_name'] = $bundle['fields'][$field_name]['widget']['label'];
+              $row['bundles'][] = $bundle['fields'][$field_name]['type_name'];
+            }
           }
+
           // Only add to the $fields array if some instances are displayed for the search index.
           if (!empty($row['bundles'])) {
             // Use the Solr index key as the array key.
