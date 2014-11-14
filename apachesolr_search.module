@@ -1597,9 +1597,9 @@ function apachesolr_search_preprocess_search_result(&$variables) {
   if ($variables['type'] == 'apachesolr_search') {
     $result = $variables['result'];
     if (!empty($result['entity_type'])) {
-      $variables['theme_hook_suggestions'][] = 'search_result__' . $variables['type'] . '__' . $result['entity_type'];
+      $variables['template_files'][] = 'search_result__' . $variables['type'] . '__' . $result['entity_type'];
       if (!empty($result['bundle'])) {
-        $variables['theme_hook_suggestions'][] = 'search_result__' . $variables['type'] . '__' . $result['entity_type'] . '__' . $result['bundle'];
+        $variables['template_files'][] = 'search_result__' . $variables['type'] . '__' . $result['entity_type'] . '__' . $result['bundle'];
       }
     }
   }
