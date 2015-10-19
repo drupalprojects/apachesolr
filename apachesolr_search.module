@@ -1596,8 +1596,8 @@ function apachesolr_search_form_search_submit($form, &$form_state) {
  *
  * Rebuild (empty) the spellcheck dictionary when the index is deleted..
  */
-function apachesolr_search_form_apachesolr_delete_index_confirm_alter(&$form, $form_state) {
-  $form['submit']['#submit'][] = 'apachesolr_search_build_spellcheck';
+function apachesolr_search_form_apachesolr_index_action_form_delete_confirm_alter(&$form, $form_state) {
+  $form['#submit'][] = 'apachesolr_search_build_spellcheck';
 }
 
 /**
@@ -1605,11 +1605,14 @@ function apachesolr_search_form_apachesolr_delete_index_confirm_alter(&$form, $f
  *
  */
 function apachesolr_search_build_spellcheck($form, &$form_state) {
+  $env_id = $form_state['build_info']['args'][0]['env_id'];
   try {
-    $solr = apachesolr_get_solr();
-    $params['spellcheck'] = 'true';
-    $params['spellcheck.build'] = 'true';
-    $response = $solr->search('solr', 0, 0, $params);
+    $solr = apachesolr_get_solr($env_id);
+    $params = array(
+      'spellcheck' => 'true',
+      'spellcheck.build' => 'true'
+    );
+    $response = $solr->search('solr', $params);
   }
   catch (Exception $e) {
     watchdog('Apache Solr', nl2br(check_plain($e->getMessage())), NULL, WATCHDOG_ERROR);
