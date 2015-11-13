@@ -728,7 +728,19 @@ function apachesolr_index_delete_entity_from_index($env_id, $entity_type, $entit
  * @param null $entity_type
  */
 function apachesolr_index_mark_for_reindex($env_id, $entity_type = NULL) {
-  foreach (entity_get_info() as $type => $entity_info) {
+  $entities = entity_get_info();
+  $node_types = node_type_get_names();
+  foreach ($node_types as $node_type => $node_info) {
+    if ($node_type == $entity_type) {
+      if (isset($entities['node']['apachesolr']) && ($entities['node']['apachesolr']['indexable'])) {
+        $reindex_callback = apachesolr_entity_get_callback('node', 'reindex callback');
+        if (!empty($reindex_callback)) {
+          call_user_func($reindex_callback, $env_id, $entity_type);
+        }
+      }
+    }
+  }
+  foreach ($entities as $type => $entity_info) {
     if (($type == $entity_type) || ($entity_type == NULL)) {
       if (isset($entity_info['apachesolr']) && ($entity_info['apachesolr']['indexable'])) {
         $reindex_callback = apachesolr_entity_get_callback($type, 'reindex callback');
