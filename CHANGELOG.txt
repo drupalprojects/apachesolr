@@ -1,3 +1,13 @@
+
+Apache Solr integration 6.x-3.1, 2015-12-02
+-----------------------------
+SA-CONTRIB-2015-170 by Dave Reid, theapi: fix for anonymous users can delete Solr environments that are not default.
+
+Apache Solr integration 6.x-3.0, 2015-06-18
+-----------------------------
+#1879762 by Nick_vh: Adding multiterm support for solr 3.6+ and solr 4.5+. This will help with allowing wildcard searches be more accurate
+#2375331 by mkalkbrenner: search result theme suggestions broken
+
 Apache Solr integration 6.x-3.0-rc3, 2014-11-10
 ------------------------------
 #2157849 by Nick_vh, pwolanin: Copy over the new Solr Config files from the common schema project
