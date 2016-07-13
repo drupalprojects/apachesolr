@@ -445,6 +445,8 @@ function apachesolr_search_page_clone($page_id) {
   // Set this id to the new search page
   $search_page['page_id'] = $new_search_page_id;
   $search_page['label'] = $search_page['label'] . ' [cloned]';
+  // Make sure the new label is <= 32 characters in length, to fit in the table.
+  $search_page['label'] = substr($search_page['label'], 0, 32);
   // All cloned search pages should be removable
   if (isset($search_page['settings']['apachesolr_search_not_removable'])) {
     unset($search_page['settings']['apachesolr_search_not_removable']);
