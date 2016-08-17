@@ -1959,8 +1959,11 @@ function apachesolr_get_index_bundles($env_id, $entity_type) {
  * Implements hook_entity_insert().
  */
 function apachesolr_entity_insert($entity, $type) {
-  // For our purposes there's really no difference between insert and update.
-  return apachesolr_entity_update($entity, $type);
+  // For our purposes there's really no difference between insert and update,
+  // unless $entity->status == 0, then don't bother
+  if($entity->status) {
+    return apachesolr_entity_update($entity, $type);
+  }
 }
 
 /**
