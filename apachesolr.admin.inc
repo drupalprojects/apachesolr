@@ -781,7 +781,7 @@ function apachesolr_config_files_overview(array $environment = array()) {
       }
       // Get data from the files.
       $name = ((string)$item->attributes()) ? (string)$item->attributes() : t('No name found');
-      $files[$item_id]['name'] = l($name, 'admin/reports/apachesolr/' . $env_id . '/conf/' . $name);
+      $files[$item_id]['name'] = l($name, 'admin/reports/apachesolr/' . $env_id . '/conf/' . $name, array('query' => array('no_fast_404' => 1)));
 
       // Retrieve the date attribute
       if (isset($item->date)) {
