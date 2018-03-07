@@ -340,7 +340,7 @@ function hook_apachesolr_search_result_alter(ApacheSolrDocument $document, array
 }
 
 /**
- * This is invoked by apachesolr_search.module for the whole resultset returned
+ * This is invoked by apachesolr_search.module for the whole result set returned
  * in a search.
  *
  * @param array $results
