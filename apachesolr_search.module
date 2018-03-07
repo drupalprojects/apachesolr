@@ -811,7 +811,7 @@ function apachesolr_search_search_page($results) {
 
 /**
  * Mimics apachesolr_search_search_page() but is used for custom search pages
- * We prefer to keep them seperate so we are not dependent from core search
+ * We prefer to keep them separate so we are not dependent from core search
  * when someone tries to disable the core search
  * @param $results
  *   The results that came from apache solr
