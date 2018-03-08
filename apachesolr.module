@@ -2065,10 +2065,13 @@ function apachesolr_get_indexer_table($type) {
  */
 function apachesolr_entity_delete($entity, $entity_type) {
   list($entity_id) = entity_extract_ids($entity_type, $entity);
-  // Get all environments and delete it from their table and index
-  $environments = apachesolr_load_all_environments();
-  foreach ($environments as $environment) {
-    apachesolr_remove_entity($environment['env_id'], $entity_type, $entity_id);
+
+  if (apachesolr_entity_should_index($entity, $entity_type)) {
+    // Get all environments and delete it from their table and index
+    $environments = apachesolr_load_all_environments();
+    foreach ($environments as $environment) {
+      apachesolr_remove_entity($environment['env_id'], $entity_type, $entity_id);
+    }
   }
 }
 
