@@ -1206,6 +1206,7 @@ function apachesolr_fields_default_indexing_callback($entity, $field_name, $inde
       $fields[] = array(
         'key' => $index_key,
         'value' => $function($values[$i]['value']),
+        'multiple' => $field_info['multiple'],
       );
     }
     // Also store the first value of the field in a singular index for multi value fields
@@ -1216,6 +1217,7 @@ function apachesolr_fields_default_indexing_callback($entity, $field_name, $inde
       $fields[] = array(
         'key' => $single_key,
         'value' => $function($values[0]['value']),
+        'multiple' => FALSE,
       );
     }
   }
