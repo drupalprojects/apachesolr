@@ -996,7 +996,7 @@ function apachesolr_cron($env_id = NULL) {
       try {
         $solr = apachesolr_get_solr($env_id);
         apachesolr_environment_variable_set($env_id, 'apachesolr_last_optimize_attempt', $time);
-        $solr->optimize(FALSE, FALSE);
+        $solr->optimize(FALSE, FALSE, 600);
         apachesolr_environment_variable_set($env_id, 'apachesolr_last_optimize_success', $time);
         apachesolr_set_last_index_updated($env_id, $time);
       }
