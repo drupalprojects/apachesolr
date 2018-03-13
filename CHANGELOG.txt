@@ -1,5 +1,8 @@
 Apache Solr integration 7.x-1.x, xxxx-xx-xx
 -----------------------------
+
+Apache Solr integration 7.x-1.10, 2018-03-13
+-----------------------------
 #2950882 by janusman: Protect against running optimize on every single cron run
 #2605756 by volkerk: Entity type is not checked during delete
 #2946579 by oadaeh: Remove usage of deprecrated each() function for PHP 7.2+ future proofing
