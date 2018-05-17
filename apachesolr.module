@@ -2279,13 +2279,8 @@ function field_apachesolr_index_document_build(ApacheSolrDocument $document, $en
               // entity field may be indexed to multiple Solr fields.
               $fields = $function($entity, $field_name, $index_key, $field_info);
               foreach ($fields as $field) {
-                // Make sure singular fields aren't added twice.
-                if (empty($field['multiple'])) {
-                  $document->setField($field['key'], $field['value']);
-                }
-                else {
-                  $document->addField($field['key'], $field['value']);
-                }
+                // It's fine to use this method also for single value fields.
+                $document->setMultiValue($field['key'], $field['value']);
               }
             }
           }
