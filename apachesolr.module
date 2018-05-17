@@ -958,7 +958,7 @@ function apachesolr_cron($env_id = NULL) {
   module_load_include('inc', 'apachesolr', 'apachesolr.index');
 
   // Optimize the index (by default once a day).
-  $optimize_interval = variable_get('apqachesolr_optimize_interval', 60 * 60 * 24);
+  $optimize_interval = variable_get('apachesolr_optimize_interval', 60 * 60 * 24);
   // Protect from too-frequent optimizations.
   $optimize_attempt_interval = variable_get('apachesolr_optimize_attempt_interval', 60 * 60);
 
