@@ -1576,9 +1576,10 @@ function apachesolr_index_env_is_readonly($env_id) {
  *   An apachesolr environment id.
  */
 function apachesolr_index_report_readonly($env_id) {
+  $backtrace = debug_backtrace();
   if (variable_get('apachesolr_report_readonly_to_watchdog', TRUE)) {
     watchdog('Apache Solr', 'Environment @env_id: Trying to update the Solr index while the environment @env_id is read-only in function %function', array(
-      '%function' => debug_backtrace()[1]['function'],
+      '%function' => $backtrace[1]['function'],
       '@env_id' => $env_id
     ), WATCHDOG_WARNING);
   }
