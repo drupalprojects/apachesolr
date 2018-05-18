@@ -706,8 +706,9 @@ function apachesolr_index_delete_bundles($env_id, $entity_type, array $excluded_
  * @return true on success, false on failure.
  */
 function apachesolr_index_delete_entity_from_index($env_id, $entity_type, $entity_id) {
-  static $failed = FALSE;
-  if ($failed) {
+  // Keep track of failures per environment.
+  static $failed = array();
+  if (!empty($failed[$env_id])) {
     return FALSE;
   }
 
@@ -731,8 +732,8 @@ function apachesolr_index_delete_entity_from_index($env_id, $entity_type, $entit
   }
   catch (Exception $e) {
     apachesolr_log_exception($env_id, $e);
-    // Don't keep trying queries if they are failing.
-    $failed = TRUE;
+    // Don't keep trying queries if they are failing for this environment.
+    $failed[$env_id] = TRUE;
     return FALSE;
   }
 }
