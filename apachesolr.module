@@ -10,16 +10,6 @@ define('APACHESOLR_READ_ONLY', 1);
 define('APACHESOLR_API_VERSION', '3.0');
 
 /**
- * Implements hook_init().
- */
-function apachesolr_init() {
-  if (arg(0) == 'admin') {
-    // Add the CSS for this module
-    drupal_add_css(drupal_get_path('module', 'apachesolr') . '/apachesolr.css');
-  }
-}
-
-/**
  * Implements hook_menu().
  */
 function apachesolr_menu() {
