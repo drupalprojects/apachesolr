@@ -545,7 +545,7 @@ function apachesolr_index_get_entities_to_index($env_id, $entity_type, $limit) {
  *   (optional) also specify a bundle to remove just the bundle from
  *   the index.
  *
- * @return
+ * @return bool
  *   TRUE for success, FALSE if an error occured.
  */
 function apachesolr_index_delete_index($env_id, $entity_type = NULL, $bundle = NULL) {
@@ -559,8 +559,13 @@ function apachesolr_index_delete_index($env_id, $entity_type = NULL, $bundle = N
     $solr = apachesolr_get_solr($env_id);
     $query = '*:*';
 
-    if (!empty($entity_type) && !empty($bundle)) {
-      $query = "(bundle:$bundle AND entity_type:$entity_type) OR sm_parent_entity_bundle:{$entity_type}-{$bundle}";
+    if (!empty($entity_type)) {
+      if (!empty($bundle)) {
+        $query = "(bundle:$bundle AND entity_type:$entity_type) OR sm_parent_entity_bundle:{$entity_type}-{$bundle}";
+      }
+      else {
+        $query = "(entity_type:$entity_type)";
+      }
     }
     elseif (!empty($bundle)) {
       $query = "(bundle:$bundle)";
