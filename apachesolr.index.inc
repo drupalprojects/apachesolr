@@ -549,10 +549,11 @@ function apachesolr_index_get_entities_to_index($env_id, $entity_type, $limit) {
  *   TRUE for success, FALSE if an error occured.
  */
 function apachesolr_index_delete_index($env_id, $entity_type = NULL, $bundle = NULL) {
-  if (apachesolr_environment_variable_get($env_id, 'apachesolr_read_only', APACHESOLR_READ_WRITE) == APACHESOLR_READ_ONLY) {
-    watchdog('Apache Solr', 'Environment @env_id: Trying to update the Solr index while the environment is read-only in function %function', array('%function' => __FUNCTION__, '@env_id' => $env_id), WATCHDOG_WARNING);
+  if (apachesolr_index_env_is_readonly($env_id)) {
+    apachesolr_index_report_readonly($env_id);
     return FALSE;
   }
+
   // Instantiate a new Solr object.
   try {
     $solr = apachesolr_get_solr($env_id);
@@ -658,10 +659,11 @@ function _apachesolr_index_get_next_set_query($env_id, $entity_type) {
  * @return true on success, false on failure.
  */
 function apachesolr_index_delete_bundles($env_id, $entity_type, array $excluded_bundles) {
-  if (apachesolr_environment_variable_get($env_id, 'apachesolr_read_only', APACHESOLR_READ_WRITE) == APACHESOLR_READ_ONLY) {
-    watchdog('Apache Solr', 'Environment @env_id: Trying to update the Solr index while the environment is read-only in function %function', array('%function' => __FUNCTION__, '@env_id' => $env_id), WATCHDOG_WARNING);
+  if (apachesolr_index_env_is_readonly($env_id)) {
+    apachesolr_index_report_readonly($env_id);
     return FALSE;
   }
+
   // Remove newly omitted bundles.
   try {
     $solr = apachesolr_get_solr($env_id);
@@ -708,10 +710,12 @@ function apachesolr_index_delete_entity_from_index($env_id, $entity_type, $entit
   if ($failed) {
     return FALSE;
   }
-  if (apachesolr_environment_variable_get($env_id, 'apachesolr_read_only', APACHESOLR_READ_WRITE) == APACHESOLR_READ_ONLY) {
-    watchdog('Apache Solr', 'Environment @env_id: Trying to update the Solr index while the environment is read-only in function %function', array('%function' => __FUNCTION__, '@env_id' => $env_id), WATCHDOG_WARNING);
+
+  if (apachesolr_index_env_is_readonly($env_id)) {
+    apachesolr_index_report_readonly($env_id);
     return FALSE;
   }
+
   try {
     $solr = apachesolr_get_solr($env_id);
     $document_id = apachesolr_document_id($entity_id, $entity_type);
@@ -1463,8 +1467,8 @@ function apachesolr_index_nodeapi_mass_update(array $nodes, $table = NULL) {
   }
 
   $env_id = apachesolr_default_environment();
-  if (apachesolr_environment_variable_get($env_id, 'apachesolr_read_only', APACHESOLR_READ_WRITE) == APACHESOLR_READ_ONLY) {
-    watchdog('Apache Solr', 'Environment @env_id: Trying to update the Solr index while the environment is read-only in function %function', array('%function' => __FUNCTION__, '@env_id' => $env_id), WATCHDOG_WARNING);
+  if (apachesolr_index_env_is_readonly($env_id)) {
+    apachesolr_index_report_readonly($env_id);
     return FALSE;
   }
 
@@ -1522,8 +1526,8 @@ function apachesolr_index_nodeapi_mass_delete(array $nodes, $table = NULL) {
   }
 
   $env_id = apachesolr_default_environment();
-  if (apachesolr_environment_variable_get($env_id, 'apachesolr_read_only', APACHESOLR_READ_WRITE) == APACHESOLR_READ_ONLY) {
-    watchdog('Apache Solr', 'Environment @env_id: Trying to update the Solr index while the environment %env_id is read-only in function %function', array('%function' => __FUNCTION__, '@env_id' => $env_id), WATCHDOG_WARNING);
+  if (apachesolr_index_env_is_readonly($env_id)) {
+    apachesolr_index_report_readonly($env_id);
     return FALSE;
   }
 
@@ -1546,5 +1550,36 @@ function apachesolr_index_nodeapi_mass_delete(array $nodes, $table = NULL) {
   catch (Exception $e) {
     apachesolr_log_exception($env_id, $e);
     return FALSE;
+  }
+}
+
+/**
+ * Determine if an environment is in read-only mode.
+ *
+ * @param string $env_id
+ *   An apachesolr environment id.
+ *
+ * @return bool
+ *   TRUE if the environment is read-only.
+ */
+function apachesolr_index_env_is_readonly($env_id) {
+  return (apachesolr_environment_variable_get($env_id, 'apachesolr_read_only', APACHESOLR_READ_WRITE) == APACHESOLR_READ_ONLY);
+}
+
+/**
+ * Report attempts to change the index when an env is read-only.
+ *
+ * A flag can be set to disable these watchdog warnings by setting the system
+ * variable 'apachesolr_report_readonly_to_watchdog' to FALSE.
+ *
+ * @param string $env_id
+ *   An apachesolr environment id.
+ */
+function apachesolr_index_report_readonly($env_id) {
+  if (variable_get('apachesolr_report_readonly_to_watchdog', TRUE)) {
+    watchdog('Apache Solr', 'Environment @env_id: Trying to update the Solr index while the environment @env_id is read-only in function %function', array(
+      '%function' => debug_backtrace()[1]['function'],
+      '@env_id' => $env_id
+    ), WATCHDOG_WARNING);
   }
 }
